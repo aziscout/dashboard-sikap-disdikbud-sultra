@@ -2,8 +2,9 @@ import { Head, usePage, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Megaphone, Plus, SquarePen } from 'lucide-react';
 import type { PageProps as InertiaPageProps } from '@inertiajs/core';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface MediaItem {
     file: string;
@@ -13,40 +14,56 @@ interface MediaItem {
 interface PageProps extends InertiaPageProps {
     logo?: MediaItem;
     heroes?: MediaItem[];
+    flash: { success?: string; error?: string };
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/dashboard' },
+    { 
+        title: 'Dashboard', 
+        href: '/dashboard' 
+    },
 ];
 
 export default function Dashboard() {
-    const { logo, heroes = [] } = usePage<PageProps>().props;
+    const { logo, flash, heroes = [] } = usePage<PageProps>().props;
 
-    const hasData = logo || heroes.length > 0; // cek sudah ada data atau belum
+    const hasData = logo || heroes.length > 0;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
                 <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-2xl font-semibold">Logo & Hero Section</h1>
+                    <h1 className="text-2xl font-semibold">Logo & Konten</h1>
 
-                    {/* tombol tambah kalau belum ada data */}
                     {!hasData ? (
                         <Link href={route('dashboard.create')}>
-                        <Button>
-                            <Plus /> Tambah
-                        </Button>
+                            <Button>
+                                <Plus /> Tambah
+                            </Button>
                         </Link>
                     ) : (
                         <Link href={route('dashboard.edit')}>
-                        <Button variant="default">
-                            <Plus /> Ubah
-                        </Button>
+                            <Button variant="default">
+                                <SquarePen /> Ubah
+                            </Button>
                         </Link>
                     )}
                 </div>
 
+                <div className="w-full md:w-1/2 px-4">
+                    {(flash.success || flash.error) && (
+                        <Alert variant={flash.error ? "destructive" : "default"}>
+                            <Megaphone className="h-4 w-4" />
+                            <AlertTitle>
+                            {flash.error ? "Terjadi Kesalahan!" : "Berhasil!"}
+                            </AlertTitle>
+                            <AlertDescription>
+                            {flash.error || flash.success}
+                            </AlertDescription>
+                        </Alert>
+                    )}
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* === LOGO === */}
@@ -72,7 +89,7 @@ export default function Dashboard() {
                     {/* === HERO === */}
                     <div className="border rounded-xl p-4 flex flex-col">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="font-semibold text-lg">Hero Section</h2>
+                            <h2 className="font-semibold text-lg">Konten</h2>
                         </div>
                         {heroes.length > 0 ? (
                             <div className="grid grid-cols-2 gap-4">

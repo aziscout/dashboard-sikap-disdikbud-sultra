@@ -1,29 +1,20 @@
 import React, { useMemo, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import AppLayout from "@/layouts/app-layout";
 import { type BreadcrumbItem } from "@/types";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
-import {
-    CalendarDays,
-    ListFilterPlus,
-    MapPin,
-    Megaphone,
-    Plus,
-    SquarePen,
-    Trash2,
-} from "lucide-react";
+import {CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2} from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: "Berita", href: "/berita" }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { 
+        title: "Berita",
+        href: "/berita" 
+    }
+];
 
 interface Media {
     id?: number;

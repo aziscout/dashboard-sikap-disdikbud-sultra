@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/dashboard' 
     },
     { 
-        title: 'Edit Logo & Hero Section', 
+        title: 'Ubah Logo & Konten', 
         href: '/dashboard/edit' 
     },
 ];
@@ -111,17 +111,17 @@ export default function Edit() {
 
         <form onSubmit={handleSubmit} className="p-4 space-y-6">
             {Object.keys(errors).length > 0 && (
-            <Alert variant="destructive">
-                <CircleAlert className="h-4 w-4" />
-                <AlertTitle>Terjadi Kesalahan</AlertTitle>
-                <AlertDescription>
-                <ul>
-                    {Object.entries(errors).map(([key, message]) => (
-                    <li key={key}>{message}</li>
-                    ))}
-                </ul>
-                </AlertDescription>
-            </Alert>
+                <Alert variant="destructive">
+                    <CircleAlert className="h-4 w-4" />
+                    <AlertTitle>Terjadi Kesalahan</AlertTitle>
+                    <AlertDescription>
+                    <ul>
+                        {Object.entries(errors).map(([key, message]) => (
+                        <li key={key}>{message}</li>
+                        ))}
+                    </ul>
+                    </AlertDescription>
+                </Alert>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -147,12 +147,12 @@ export default function Edit() {
 
             {/* HERO */}
             <div className="space-y-4 border rounded-lg p-4">
-                <h2 className="font-semibold text-lg mb-2">Hero Section</h2>
-                <Label htmlFor="hero">Pilih Gambar Hero (max 3 gambar)</Label>
+                <h2 className="font-semibold text-lg mb-2">Konten</h2>
+                <Label htmlFor="hero">Pilih Konten (max 3)</Label>
                 <Input name="hero" id="hero" type="file" accept="image/*" multiple onChange={handleHeroChange} />
 
                 <div className="mt-4">
-                <h3 className="font-medium mb-2">Preview Hero</h3>
+                <h3 className="font-medium mb-2">Preview Konten</h3>
                 {heroPreviews.length > 0 ? (
                     <div className="grid grid-cols-3 gap-4">
                     {heroPreviews.map((preview, index) => (
@@ -174,7 +174,7 @@ export default function Edit() {
             </div>
 
             <Button type="submit" className="w-full md:w-auto" disabled={processing}>
-            <Save className="mr-2" /> Simpan Perubahan
+            <Save className="mr-2" /> Simpan
             </Button>
         </form>
         </AppLayout>

@@ -11,16 +11,22 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $media = Media::latest()->first(); // ambil record terakhir
-        $files = $media ? $media->file : [];
+        $allMedia = Media::all()
+            ->flatMap(fn($item) => $item->file)
+            ->filter(fn($f) => in_array($f['type'], ['logo', 'hero']))
+            ->values();
 
-        // pisahkan logo & hero
-        $logo = collect($files)->firstWhere('type', 'logo');
-        $heroes = collect($files)->where('type', 'hero')->values();
+        $logo = $allMedia->firstWhere('type', 'logo');
+        $heroes = $allMedia->where('type', 'hero')->values();
+
 
         return Inertia::render('dashboard/index', [
             'logo' => $logo,
             'heroes' => $heroes,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
     }
 
@@ -69,11 +75,19 @@ class DashboardController extends Controller
 
     public function edit()
     {
-        $media = Media::latest()->first();
-        $files = $media ? $media->file : [];
+        // $media = Media::latest()->first();
+        // $files = $media ? $media->file : [];
 
-        $logo = collect($files)->firstWhere('type', 'logo');
-        $heroes = collect($files)->where('type', 'hero')->values();
+        // $logo = collect($files)->firstWhere('type', 'logo');
+        // $heroes = collect($files)->where('type', 'hero')->values();
+
+        $allMedia = Media::all()
+            ->flatMap(fn($item) => $item->file)
+            ->filter(fn($f) => in_array($f['type'], ['logo', 'hero']))
+            ->values();
+
+        $logo = $allMedia->firstWhere('type', 'logo');
+        $heroes = $allMedia->where('type', 'hero')->values();
 
         return Inertia::render('dashboard/edit', [
             'logo' => $logo,
@@ -91,9 +105,14 @@ class DashboardController extends Controller
             '_existing_heroes' => 'nullable|array',
         ]);
 
-        $media = Media::latest()->first();
+        $media = Media::all()
+            ->filter(fn($item) => collect($item->file)
+                ->contains(fn($f) => in_array($f['type'], ['logo', 'hero']))
+            )
+            ->first();
+
         if (!$media) {
-            return redirect()->route('dashboard.index')->with('error', 'Tidak ada data media untuk diperbarui.');
+            return redirect()->route('dashboard.index')->with('error', 'Tidak ada data media dashboard untuk diperbarui.');
         }
 
         $existingFiles = $media->file ?? [];
@@ -139,7 +158,6 @@ class DashboardController extends Controller
 
         $media->update(['file' => $newFiles]);
 
-        return redirect()->route('dashboard.index')->with('success', 'Logo & Hero berhasil diperbarui! 🚀');
-    }
-    
+        return redirect()->route('dashboard.index')->with('success', 'Logo & Hero berhasil diperbarui.');
+    }    
 }
