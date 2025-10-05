@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,5 +45,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get permissions for the user based on their role.
+     */
+    public function permissions()
+    {
+        return \App\Models\Permission::where('role', $this->role)->get();
     }
 }

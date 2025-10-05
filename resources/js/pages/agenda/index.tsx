@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import AppLayout from "@/layouts/app-layout";
 import { type BreadcrumbItem } from "@/types";
-import { Head, Link, useForm, usePage } from "@inertiajs/react";
-import { CalendarDays, FileText, MapPin, Megaphone } from "lucide-react";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
+import {
+  CalendarDays,
+  FileText,
+  ListFilterPlus,
+  MapPin,
+  Megaphone,
+} from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -47,9 +61,23 @@ export default function Index() {
   const { agenda, flash } = usePage<PageProps>().props;
   const { processing, delete: destroy } = useForm();
 
+  // 🔹 Filters
+  const [sortOrder, setSortOrder] = useState<"terbaru" | "terlama">("terbaru");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [instansiFilter, setInstansiFilter] = useState<
+    "all" | "SMA" | "SLB" | "SMK"
+  >("all");
+  const [categoryFilter, setCategoryFilter] = useState<
+    "all" | "foto" | "video" | "dokumen"
+  >("all");
+
   const handleDelete = (id: number, judul: string) => {
     if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
     destroy(route("agenda.destroy", id));
+  };
+
+  const handleEdit = (id: number) => {
+    router.visit(route("agenda.edit", id));
   };
 
   const getCoverUrl = (item: Agenda) => {
@@ -63,20 +91,124 @@ export default function Index() {
     return `/storage/agenda/cover/${cover}`;
   };
 
+  // 🔹 Apply filters and sorting
+  const filteredAgenda = useMemo(() => {
+    return [...agenda]
+      .filter((item) =>
+        item.judul.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .filter((item) =>
+        instansiFilter === "all"
+          ? true
+          : item.instansi?.trim().toLowerCase() ===
+            instansiFilter.toLowerCase()
+      )
+      .filter((item) =>
+        categoryFilter === "all"
+          ? true
+          : item.category?.toLowerCase() === categoryFilter
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return sortOrder === "terbaru" ? dateB - dateA : dateA - dateB;
+      });
+  }, [agenda, sortOrder, searchQuery, instansiFilter, categoryFilter]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Agenda" />
 
-      {/* Header */}
-      <div className="m-4 flex justify-between items-center">
+      {/* Header + Filters */}
+      <div className="m-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <h1 className="text-2xl font-semibold">Daftar Agenda</h1>
-        <Link href={route("agenda.create")}>
-          <Button>Tambah</Button>
-        </Link>
+
+        <div className="flex flex-col gap-2 md:flex-row md:items-center">
+          {/* Search Bar */}
+          <Input
+            placeholder="Cari judul agenda..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full md:w-64"
+          />
+
+          <Link href={route("agenda.create")}>
+            <Button>Tambah</Button>
+          </Link>
+
+          {/* Sort Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <ListFilterPlus /> {sortOrder}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40 capitalize">
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setSortOrder("terbaru")}>
+                  Terbaru
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder("terlama")}>
+                  Terlama
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Instansi Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <ListFilterPlus /> {instansiFilter}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40 capitalize">
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setInstansiFilter("all")}>
+                  Semua Instansi
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setInstansiFilter("SMA")}>
+                  SMA
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setInstansiFilter("SLB")}>
+                  SLB
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setInstansiFilter("SMK")}>
+                  SMK
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Category Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <ListFilterPlus /> {categoryFilter}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40 capitalize">
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setCategoryFilter("all")}>
+                  Semua
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCategoryFilter("foto")}>
+                  Foto
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCategoryFilter("video")}>
+                  Video
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCategoryFilter("dokumen")}>
+                  Dokumen
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Flash Message */}
-      <div className="w-full md:w-1/2 px-4">
+      <div className="w-full px-4 md:w-1/2">
         {flash?.message && (
           <Alert>
             <Megaphone className="h-4 w-4" />
@@ -86,23 +218,21 @@ export default function Index() {
         )}
       </div>
 
-      {/* Grid Card */}
+      {/* Grid Cards */}
       <div className="m-4">
-        {agenda && agenda.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {agenda.map((item) => (
+        {filteredAgenda.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredAgenda.map((item) => (
               <article
                 key={item.id}
                 className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
               >
-                {/* Cover Image */}
                 <img
                   src={getCoverUrl(item)}
                   alt={item.judul}
                   className="w-full h-48 object-cover"
                 />
 
-                {/* Content */}
                 <div className="p-4 flex flex-col flex-grow">
                   <h2 className="capitalize text-lg font-bold text-gray-800 mb-2 line-clamp-2">
                     {item.judul}
@@ -120,7 +250,7 @@ export default function Index() {
                     {item.instansi} - {item.lokasi}
                   </p>
 
-                  {/* Media files */}
+                  {/* Media Files */}
                   {item.medias?.file && item.medias.file.length > 0 && (
                     <div className="mt-2 space-y-1">
                       {item.medias.file.map((media, idx) => (
@@ -141,7 +271,6 @@ export default function Index() {
                     </div>
                   )}
 
-                  {/* Date */}
                   <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
                     <CalendarDays className="w-4 h-4" />
                     {new Date(item.created_at).toLocaleDateString("id-ID", {
@@ -151,16 +280,13 @@ export default function Index() {
                     })}
                   </p>
 
-                  {/* Actions */}
                   <div className="mt-auto flex gap-2">
-                    <Link
-                      href={route("agenda.edit", item.id)}
-                      className="flex-1"
+                    <Button
+                      onClick={() => handleEdit(item.id)}
+                      className="bg-blue-950 hover:bg-blue-900 flex-1"
                     >
-                      <Button className="bg-blue-950 hover:bg-blue-900 w-full">
-                        Edit
-                      </Button>
-                    </Link>
+                      Edit
+                    </Button>
                     <Button
                       disabled={processing}
                       onClick={() => handleDelete(item.id, item.judul)}
