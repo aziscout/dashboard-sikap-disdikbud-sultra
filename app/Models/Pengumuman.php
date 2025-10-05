@@ -20,7 +20,8 @@ class Pengumuman extends Model
     'penyelenggara',
     'instansi',
     'tabel',
-    'documents_id'
+    'documents_id',
+    'bidangs_id'
 ];
 
     public function document()

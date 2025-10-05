@@ -22,7 +22,8 @@ class Agenda extends Model
         'instansi',
         'lokasi',
         'tabel',
-        'medias_id'
+        'medias_id',
+        'bidangs_id'
     ];
 
     public function medias(){

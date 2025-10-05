@@ -76,7 +76,6 @@ export default function Index() {
   }, [pengumuman, sortOrder, searchQuery, instansiFilter, categoryFilter]);
 
 
-  console.log('instansi',instansiFilter);
   
   return (
     <AppLayout breadcrumbs={breadcrumbs}>

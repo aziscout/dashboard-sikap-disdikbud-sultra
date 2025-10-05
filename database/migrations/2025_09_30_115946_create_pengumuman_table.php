@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('tabel');
             $table->string('deskripsi');
             $table->foreignId('documents_id')->constrained('documents')->onDelete('cascade');
+            $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');
         });
     }
 

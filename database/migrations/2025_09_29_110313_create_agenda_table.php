@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('tabel');
             $table->string('deskripsi');
             $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
+            $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');
         });
     }
 

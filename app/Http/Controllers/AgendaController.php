@@ -6,15 +6,26 @@ use App\Models\Agenda;
 use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AgendaController extends Controller
 {
-    public function index()
-    {
-        $agenda = Agenda::with('medias')->latest()->get();
-        return Inertia::render("agenda/index", compact("agenda"));
+  public function index()
+{
+    $user = Auth::user();
+
+    if ($user->role === 'admin') {
+        // Admin can see all agendas
+        $agenda = Agenda::latest()->get();
+    } else {
+        // Bidang can only see their own agendas
+        $agenda = Agenda::where('bidangs_id', $user->id)->latest()->get();
     }
+
+    return Inertia::render("agenda/index", compact("agenda"));
+}
+
 
     public function create()
     {
@@ -71,6 +82,7 @@ class AgendaController extends Controller
             'deskripsi'    => $request->deskripsi,
             'coverImage'  => $coverPath,
             'tabel'        => 'agenda',
+            'bidangs_id'    => Auth::id(),
         ]);
 
         return redirect()->route('agenda.index')

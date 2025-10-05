@@ -6,15 +6,26 @@ use App\Models\Pengumuman;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PengumumanController extends Controller
 {
     public function index()
-    {
+{
+    $user = Auth::user();
+
+    if ($user->role === 'admin') {
+        // Admin can see all pengumuman
         $pengumuman = Pengumuman::latest()->get();
-        return Inertia::render("pengumuman/index", compact("pengumuman"));
+    } else {
+        // Bidang can only see their own pengumuman
+        $pengumuman = Pengumuman::where('bidangs_id', $user->id)->latest()->get();
     }
+
+    return Inertia::render("pengumuman/index", compact("pengumuman"));
+}
+
 
     public function create()
     {
@@ -62,6 +73,7 @@ class PengumumanController extends Controller
             'instansi'      => $request->instansi,
             'tabel'         => $filePath, // hanya satu file atau url
             'documents_id'  => $document->id,
+            'bidangs_id'  => Auth::id(),
         ]);
 
         return redirect()->route('pengumuman.index')
@@ -118,7 +130,9 @@ class PengumumanController extends Controller
         ]);
 
         // Update document file
-        $pengumuman->document->update(['file' => $filePath ? [$filePath] : []]);
+        if ($pengumuman->document) {
+            $pengumuman->document->update(['file' => $filePath ? [$filePath] : []]);
+        }
 
         return redirect()->route('pengumuman.index')
             ->with('message', 'Pengumuman berhasil diperbarui');
@@ -134,7 +148,9 @@ class PengumumanController extends Controller
         }
 
         // Delete document
-        $pengumuman->document->delete();
+        if ($pengumuman->document) {
+            $pengumuman->document->delete();
+        }
 
         $pengumuman->delete();
 

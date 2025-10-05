@@ -5,14 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\LaporanKegiatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class LaporanKegiatanController extends Controller
 {
-    public function index(){
-        $laporan_kegiatan = LaporanKegiatan::all();
-        return Inertia::render("laporan-kegiatan/index", compact('laporan_kegiatan'));
+    public function index()
+{
+    $user = Auth::user();
+
+    if ($user->role === 'admin') {
+        // Admin can see everything
+        $laporan_kegiatan = LaporanKegiatan::latest()->get();
+    } else {
+        // Bidang can only see their uploads
+        $laporan_kegiatan = LaporanKegiatan::where('bidangs_id', $user->id)->latest()->get();
     }
+
+    return Inertia::render('laporan-kegiatan/index', compact('laporan_kegiatan'));
+}
 
     public function create(){
         return Inertia::render("laporan-kegiatan/create",[]);
@@ -24,7 +35,7 @@ class LaporanKegiatanController extends Controller
             'penyelenggara' => 'required|string|max:255',
             'lokasi' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
+            'file' => 'nullable|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480'
         ]);
 
         $path = null;
@@ -38,6 +49,7 @@ class LaporanKegiatanController extends Controller
             'penyelenggara' => $request->penyelenggara,
             'lokasi' => $request->lokasi,
             'file' => $path,
+            'bidangs_id'  => Auth::id(),
         ]);
 
         return redirect()->route('laporan-kegiatan.index')->with('message', 'laporan kegiatan berhasil ditambahkan');

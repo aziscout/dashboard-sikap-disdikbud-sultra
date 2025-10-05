@@ -19,6 +19,7 @@ class LaporanKegiatan extends Model
         'deskripsi',
         'lokasi',
         'penyelenggara',
-        'file'
+        'file',
+        'bidangs_id'
     ];
 }
