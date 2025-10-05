@@ -1,20 +1,28 @@
 <?php
 
 use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\ProdukHukumController;
 use App\Models\Berita;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    // Route::get('dashboard', action: function () {
+    //     return Inertia::render('dashboard');
+    // })->name('dashboard');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboard.create');
+    Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboard.store');
+    Route::get('/dashboard/edit', [DashboardController::class, 'edit'])->name('dashboard.edit');
+    Route::post('/dashboard/update', [DashboardController::class, 'update'])->name('dashboard.update');
 
     // produk hukum
     Route::get('/produk-hukum', [ProdukHukumController::class, 'index'])->name('produk-hukum.index');
