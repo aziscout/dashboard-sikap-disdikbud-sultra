@@ -34,7 +34,7 @@ export default function Dashboard() {
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
                 <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-2xl font-semibold">Logo & Konten</h1>
+                    <h1 className="text-2xl font-semibold">Logo & Hero Section</h1>
 
                     {!hasData ? (
                         <Link href={route('dashboard.create')}>
@@ -76,7 +76,7 @@ export default function Dashboard() {
                                 <img
                                     src={`/storage/${logo.file}`}
                                     alt="Logo"
-                                    className="h-60 w-60 object-contain"
+                                    className="h-60 w-60 object-cover object-center"
                                 />
                             ) : (
                                 <div className="flex justify-center text-gray-500 border rounded p-8 w-full">
@@ -89,7 +89,7 @@ export default function Dashboard() {
                     {/* === HERO === */}
                     <div className="border rounded-xl p-4 flex flex-col">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="font-semibold text-lg">Konten</h2>
+                            <h2 className="font-semibold text-lg">Hero Section</h2>
                         </div>
                         {heroes.length > 0 ? (
                             <div className="grid grid-cols-2 gap-4">

@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/dashboard' 
     },
     { 
-        title: 'Ubah Logo & Konten', 
+        title: 'Ubah Logo & Hero Section', 
         href: '/dashboard/edit' 
     },
 ];
@@ -147,12 +147,12 @@ export default function Edit() {
 
             {/* HERO */}
             <div className="space-y-4 border rounded-lg p-4">
-                <h2 className="font-semibold text-lg mb-2">Konten</h2>
-                <Label htmlFor="hero">Pilih Konten (max 3)</Label>
+                <h2 className="font-semibold text-lg mb-2">Hero Section</h2>
+                <Label htmlFor="hero">Pilih Hero (max 3)</Label>
                 <Input name="hero" id="hero" type="file" accept="image/*" multiple onChange={handleHeroChange} />
 
                 <div className="mt-4">
-                <h3 className="font-medium mb-2">Preview Konten</h3>
+                <h3 className="font-medium mb-2">Preview Hero</h3>
                 {heroPreviews.length > 0 ? (
                     <div className="grid grid-cols-3 gap-4">
                     {heroPreviews.map((preview, index) => (
