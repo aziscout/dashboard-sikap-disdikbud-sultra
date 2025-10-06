@@ -39,13 +39,13 @@ export default function Dashboard() {
                     {!hasData ? (
                         <Link href={route('dashboard.create')}>
                             <Button>
-                                <Plus />Tambah
+                                <Plus /> Tambah
                             </Button>
                         </Link>
                     ) : (
                         <Link href={route('dashboard.edit')}>
                             <Button variant="default">
-                                <SquarePen />Ubah
+                                <SquarePen /> Ubah
                             </Button>
                         </Link>
                     )}
