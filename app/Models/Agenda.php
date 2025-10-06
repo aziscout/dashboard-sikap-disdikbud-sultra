@@ -23,7 +23,6 @@ class Agenda extends Model
         'lokasi',
         'tabel',
         'medias_id',
-        'bidangs_id'
     ];
 
     public function medias(){

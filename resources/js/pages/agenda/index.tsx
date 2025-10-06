@@ -227,11 +227,17 @@ export default function Index() {
                 key={item.id}
                 className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
               >
-                <img
-                  src={getCoverUrl(item)}
-                  alt={item.judul}
-                  className="w-full h-48 object-cover"
-                />
+                <a
+                  href={getCoverUrl(item)}
+                  target="_blank"
+                  className="block"
+                >
+                  <img
+                    src={getCoverUrl(item)}
+                    alt={item.judul}
+                    className="w-full h-48 object-cover"
+                  />
+                </a>
 
                 <div className="p-4 flex flex-col flex-grow">
                   <h2 className="capitalize text-lg font-bold text-gray-800 mb-2 line-clamp-2">
@@ -250,24 +256,34 @@ export default function Index() {
                     {item.instansi} - {item.lokasi}
                   </p>
 
-                  {/* Media Files */}
+                  {/* 🔹 Media Files (Adapted from laporan-kegiatan) */}
                   {item.medias?.file && item.medias.file.length > 0 && (
                     <div className="mt-2 space-y-1">
-                      {item.medias.file.map((media, idx) => (
-                        <a
-                          key={idx}
-                          href={
-                            media?.file?.startsWith("http")
-                              ? media.file
-                              : `/storage/${media.file}`
-                          }
-                          target="_blank"
-                          className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-                        >
-                          <FileText className="h-4 w-4" />
-                          Lihat File {idx + 1}
-                        </a>
-                      ))}
+                      {item.medias.file.map((media, idx) => {
+                        if (!media?.file) return null;
+                        const fileUrl = media.file.startsWith("http")
+                          ? media.file
+                          : `/storage/${media.file}`;
+                        const lower = media.file.toLowerCase();
+                        const isVideo = /\.(mp4|mov|avi)$/i.test(lower);
+                        const isImage = /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(lower);
+
+                        return (
+                          <a
+                            key={idx}
+                            href={fileUrl}
+                            target="_blank"
+                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                          >
+                            <FileText className="h-4 w-4" />
+                            {isVideo
+                              ? `Lihat Video ${idx + 1}`
+                              : isImage
+                              ? `Lihat File ${idx + 1}`
+                              : `Unduh File ${idx + 1}`}
+                          </a>
+                        );
+                      })}
                     </div>
                   )}
 

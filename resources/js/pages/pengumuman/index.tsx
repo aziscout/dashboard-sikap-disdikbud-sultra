@@ -24,11 +24,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Pengumuman {
   id: number;
   judul: string;
+  deskripsi: string;
   penyelenggara: string;
   lokasi: string;
   instansi: string;
   category: string;
-  file?: string; // foto atau video
+  tabel?: string; // foto atau video
   created_at: string;
   updated_at: string;
 }
@@ -185,37 +186,57 @@ export default function Index() {
                 key={item.id}
                 className="flex flex-col overflow-hidden rounded-2xl bg-white shadow transition hover:shadow-lg"
               >
+                {/* Image for foto */}
+                {item.tabel && item.category === 'foto' && (
+                  <a
+                    href={item.tabel.startsWith('http') ? item.tabel : `/storage/${item.tabel}`}
+                    target="_blank"
+                    className="block aspect-video overflow-hidden"
+                  >
+                    <img
+                      src={item.tabel.startsWith('http') ? item.tabel : `/storage/${item.tabel}`}
+                      alt={item.judul}
+                      className="w-full h-full object-cover"
+                    />
+                  </a>
+                )}
+
                 {/* Content */}
                 <div className="flex flex-grow flex-col p-4">
                   <h2 className="mb-2 line-clamp-2 text-lg font-bold text-gray-800 capitalize">
                     {item.judul}
                   </h2>
 
-                  <p className="mb-2 text-sm text-gray-600">
+                  <p className="mb-1 text-sm text-gray-600">
                     <strong>Penyelenggara:</strong> {item.penyelenggara}
                   </p>
-                  <p className="mb-2 text-sm text-gray-600">
+                  <p className="mb-1 text-sm text-gray-600">
                     <MapPin className="mr-1 inline h-4 w-4 text-gray-500" />
                     {item.instansi} - {item.lokasi}
                   </p>
-                  <p className="mb-2 text-sm text-gray-600">
-                    <strong>Kategori:</strong> {item.category}
+                  {item.category && (
+                    <p className="mb-1 text-sm text-gray-600">
+                      <strong>Kategori:</strong> {item.category}
+                    </p>
+                  )}
+                  <p className="mb-3 text-sm text-gray-700 line-clamp-3">
+                    {item.deskripsi}
                   </p>
 
-                  {/* File or Video */}
-                  {item.file && (
+                  {/* File link for video or if no image */}
+                  {item.tabel && (item.category === 'video' || item.category !== 'foto') && (
                     <a
-                      href={item.file.startsWith('http') ? item.file : `/storage/${item.file}`}
+                      href={item.tabel.startsWith('http') ? item.tabel : `/storage/${item.tabel}`}
                       target="_blank"
                       className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:underline"
                     >
                       <FileText className="h-4 w-4" />
-                      {item.category === 'video' ? 'Lihat Video' : 'Lihat Foto'}
+                      {item.category === 'video' ? 'Lihat Video' : 'Lihat File'}
                     </a>
                   )}
 
                   {/* Date */}
-                  <p className="mb-2 flex items-center gap-2 text-sm text-gray-500">
+                  <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
                     <CalendarDays className="h-4 w-4" />
                     {new Date(item.created_at).toLocaleDateString('id-ID', {
                       day: 'numeric',
@@ -225,12 +246,12 @@ export default function Index() {
                   </p>
 
                   {/* Actions */}
-                  <div className="mt-auto flex gap-2">
+                  <div className="mt-auto flex gap-2 pt-3">
                     <Button
                       onClick={() => handleEdit(item.id)}
                       className="flex-1 bg-blue-950 hover:bg-blue-900"
                     >
-                      Edit
+                      Ubah
                     </Button>
                     <Button
                       disabled={processing}

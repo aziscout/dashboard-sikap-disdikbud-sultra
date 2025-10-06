@@ -56,21 +56,31 @@ export default function Index() {
   };
 
   // 🔹 Search + Filter + Sort Logic
-  const filteredData = useMemo(() => {
-    return [...laporan_kegiatan]
-      .filter((item) => item.judul.toLowerCase().includes(searchQuery.toLowerCase()))
-      .filter((item) =>
-        categoryFilter === 'all'
-          ? true
-          : item.category?.toLowerCase() === categoryFilter
-      )
-      .sort((a, b) => {
-        const dateA = new Date(a.created_at).getTime();
-        const dateB = new Date(b.created_at).getTime();
-        return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
-      });
-  }, [laporan_kegiatan, sortOrder, searchQuery, categoryFilter]);
+ const filteredData = useMemo(() => {
+  return [...laporan_kegiatan]
+    .filter((item) =>
+      item.judul?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter((item) => {
+      if (categoryFilter === 'all') return true;
 
+      const file = item.file?.toLowerCase() || '';
+      const category = item.category?.toLowerCase() || '';
+
+      // Fallback detection based on file extension (in case category is missing)
+      const isFoto = /\.(jpg|jpeg|png|gif|svg|webp|bmp|tiff)$/.test(file);
+      const isVideo = /\.(mp4|mov|avi)$/.test(file);
+
+      const actualCategory = category || (isFoto ? 'foto' : isVideo ? 'video' : '');
+
+      return actualCategory === categoryFilter;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
+    });
+}, [laporan_kegiatan, sortOrder, searchQuery, categoryFilter]);
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Laporan Kegiatan" />
@@ -183,7 +193,7 @@ export default function Index() {
                       className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:underline"
                     >
                       <FileText className="h-4 w-4" />
-                      {item.category === 'video' ? 'Lihat Video' : 'Lihat Foto'}
+                      {item.category === 'video' ? 'Lihat Video' : 'Lihat File'}
                     </a>
                   )}
 
