@@ -1,10 +1,15 @@
 @component('mail::message')
-<table width="100%" cellpadding="0" cellspacing="0" style="text-align:center; margin-bottom: 10px;">
-    <tr>
-        <td>
-            <img src="{{ asset('logo.png') }}" alt="Logo Dikbud Sultra" width="100" style="margin-bottom: 20px;">
-        </td>
-    </tr>
+@php
+    // Embed gambar ke email
+    $logoCid = $message->embed($imagePath);
+@endphp
+
+<table width="100%" style="text-align:center; margin-bottom: 20px;">
+  <tr>
+    <td>
+      <img src="{{ $logoCid }}" alt="Logo" width="90">
+    </td>
+  </tr>
 </table>
 
 # Terima Kasih Telah Mengirim Laporan

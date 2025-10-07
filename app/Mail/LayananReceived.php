@@ -20,10 +20,13 @@ class LayananReceived extends Mailable
 
     public function build()
     {
-        
+        $imagePath = public_path('images/logo.png'); // lokasi gambar kamu
+
         return $this->subject('Kode Tracking Laporan Anda')
                     ->markdown('emails.layanan.received')
-                    ->with(['layanan' => $this->layanan]); 
+                    ->with([
+                        'layanan' => $this->layanan,
+                        'imagePath' => $imagePath,
+                    ]);
     }
-
 }

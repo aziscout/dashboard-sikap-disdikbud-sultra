@@ -58,20 +58,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
     // layanan
     Route::middleware(['permission:Layanan'])->group(function(){
-    Route::get('/layanan', [LayananController::class, 'index'])->name('layanan.index'); // list laporan
-    Route::get('/layanan/{layanan}', [LayananController::class, 'show'])->name('layanan.show'); // detail laporan
-    Route::get('/layanan/{layanan}/edit', [LayananController::class, 'edit'])->name('layanan.edit'); // form edit
-    Route::put('/layanan/{layanan}', [LayananController::class, 'update'])->name('layanan.update'); // update status
-    Route::delete('/layanan/{layanan}', [LayananController::class, 'destroy'])->name('layanan.destroy'); // hapus
+        Route::get('/layanan', [LayananController::class, 'index'])->name('layanan.index'); // list laporan
+        Route::get('/layanan/{layanan}', [LayananController::class, 'show'])->name('layanan.show'); // detail laporan
+        Route::get('/layanan/{layanan}/edit', [LayananController::class, 'edit'])->name('layanan.edit'); // form edit
+        Route::put('/layanan/{layanan}', [LayananController::class, 'update'])->name('layanan.update'); // update status
+        Route::delete('/layanan/{layanan}', [LayananController::class, 'destroy'])->name('layanan.destroy'); // hapus
     });
 
     //inovasi
     Route::get('/inovasi', [InovasiController::class, 'index'])->name('inovasi.index');
-    Route::get('/inovasi/create', [InovasiController::class, 'create'])->name('inovasi.create');
-    Route::post('/inovasi', [InovasiController::class, 'store'])->name('inovasi.store');
-    Route::get('/inovasi/{inovasi}/edit', [InovasiController::class, 'edit'])->name('inovasi.edit');
-    Route::put('/inovasi/{inovasi}', [InovasiController::class, 'update'])->name('inovasi.update');
-    Route::delete('/inovasi/{inovasi}', [InovasiController::class, 'destroy'])->name('inovasi.destroy');
+        Route::get('/inovasi/create', [InovasiController::class, 'create'])->name('inovasi.create');
+        Route::post('/inovasi', [InovasiController::class, 'store'])->name('inovasi.store');
+        Route::get('/inovasi/{inovasi}/edit', [InovasiController::class, 'edit'])->name('inovasi.edit');
+        Route::put('/inovasi/{inovasi}', [InovasiController::class, 'update'])->name('inovasi.update');
+        Route::delete('/inovasi/{inovasi}', [InovasiController::class, 'destroy'])->name('inovasi.destroy');
 
 
 
