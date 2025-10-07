@@ -18,4 +18,8 @@ class Document extends Model
     {
         return $this->hasMany(Pengumuman::class, 'documents_id');
     }
+    public function layanans()
+    {
+        return $this->hasMany(Layanan::class, 'documents_id');
+    }
 }
