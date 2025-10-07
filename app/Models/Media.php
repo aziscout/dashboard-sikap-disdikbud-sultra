@@ -22,4 +22,8 @@ class Media extends Model
     {
         return $this->hasMany(LaporanKegiatan::class);
     }
+    public function agenda()
+    {
+        return $this->hasMany(Agenda::class);
+    }
 }
