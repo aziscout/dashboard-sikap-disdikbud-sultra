@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('penyelenggara');
             $table->string('file')->nullable();
             $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');
-            // $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
             $table->foreignId('medias_id')->nullable()->constrained('medias')->onDelete('cascade');
         });
     }
