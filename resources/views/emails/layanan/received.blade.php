@@ -2,13 +2,14 @@
 <table width="100%" cellpadding="0" cellspacing="0" style="text-align:center; margin-bottom: 10px;">
     <tr>
         <td>
-            {{-- Ganti path dengan logo kamu yang sudah disimpan di public/images/logo.png --}}
-            <img src="{{ asset('public/logo.png') }}" alt="Logo Dikbud Sultra" width="100" style="margin-bottom: 20px;">
+            <img src="{{ asset('logo.png') }}" alt="Logo Dikbud Sultra" width="100" style="margin-bottom: 20px;">
         </td>
     </tr>
 </table>
 
 # Terima Kasih Telah Mengirim Laporan
+
+**Dashboard Dinas Pendidikan dan Kebudayaan Provinsi Sulawesi Tenggara**
 
 Halo {{ $layanan->nama_pengirim }},
 

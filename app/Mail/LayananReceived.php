@@ -20,7 +20,10 @@ class LayananReceived extends Mailable
 
     public function build()
     {
+        
         return $this->subject('Kode Tracking Laporan Anda')
-                    ->markdown('emails.layanan.received');
+                    ->markdown('emails.layanan.received')
+                    ->with(['layanan' => $this->layanan]); 
     }
+
 }
