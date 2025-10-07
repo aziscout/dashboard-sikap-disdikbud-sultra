@@ -6,7 +6,9 @@ use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\ProdukHukumController;
 use App\Models\Berita;
 use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\InovasiController;
 use App\Http\Controllers\LaporanKegiatanController;
+use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PengumumanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,11 +19,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Route::get('dashboard', action: function () {
-    //     return Inertia::render('dashboard');
-    // })->name('dashboard');
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboard.create');
     Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboard.store');
     Route::get('/dashboard/edit', [DashboardController::class, 'edit'])->name('dashboard.edit');
@@ -53,25 +51,44 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/laporan-kegiatan/{laporanKegiatan}/edit',[LaporanKegiatanController::class,'edit'])->name('laporan-kegiatan.edit');
         Route::put('/laporan-kegiatan/{laporanKegiatan}',[LaporanKegiatanController::class,'update'])->name('laporan-kegiatan.update');
         Route::delete('/laporan-kegiatan/{laporanKegiatan}',[LaporanKegiatanController::class,'destroy'])->name('laporan-kegiatan.destroy');
-});
+    });
 
-// produk hukum
-Route::middleware(['permission:Produk Hukum'])->group(function(){
-    Route::get('/produk-hukum', [ProdukHukumController::class, 'index'])->name('produk-hukum.index');
-    Route::get('/produk-hukum/create', [ProdukHukumController::class, 'create'])->name('produk-hukum.create');
-    Route::post('/produk-hukum', [ProdukHukumController::class, 'store'])->name('produk-hukum.store');
-    Route::get('/produk-hukum/{produkHukum}/edit', [ProdukHukumController::class, 'edit'])->name('produk-hukum.edit');
-    Route::post('/produk-hukum/{produkHukum}', [ProdukHukumController::class, 'update'])->name('produk-hukum.update');
-    Route::delete('/produk-hukum/{produkHukum}', [ProdukHukumController::class, 'destroy'])->name('produk-hukum.destroy');
+    // produk hukum
+    Route::middleware(['permission:Produk Hukum'])->group(function(){
+        Route::get('/produk-hukum', [ProdukHukumController::class, 'index'])->name('produk-hukum.index');
+        Route::get('/produk-hukum/create', [ProdukHukumController::class, 'create'])->name('produk-hukum.create');
+        Route::post('/produk-hukum', [ProdukHukumController::class, 'store'])->name('produk-hukum.store');
+        Route::get('/produk-hukum/{produkHukum}/edit', [ProdukHukumController::class, 'edit'])->name('produk-hukum.edit');
+        Route::post('/produk-hukum/{produkHukum}', [ProdukHukumController::class, 'update'])->name('produk-hukum.update');
+        Route::delete('/produk-hukum/{produkHukum}', [ProdukHukumController::class, 'destroy'])->name('produk-hukum.destroy');
     
+    });
     // Berita
-    Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
-    Route::get('/berita/create', [BeritaController::class, 'create'])->name('berita.create');
-    Route::post('/berita', [BeritaController::class, 'store'])->name('berita.store');
-    Route::get('/berita/{berita}/edit', [BeritaController::class, 'edit'])->name('berita.edit');
-    Route::put('/berita/{berita}', [BeritaController::class, 'update'])->name('berita.update');
-    Route::delete('/berita/{berita}', [BeritaController::class, 'destroy'])->name('berita.destroy');
-});
+    Route::middleware(['permission:Produk Hukum'])->group(function(){
+        Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
+        Route::get('/berita/create', [BeritaController::class, 'create'])->name('berita.create');
+        Route::post('/berita', [BeritaController::class, 'store'])->name('berita.store');
+        Route::get('/berita/{berita}/edit', [BeritaController::class, 'edit'])->name('berita.edit');
+        Route::put('/berita/{berita}', [BeritaController::class, 'update'])->name('berita.update');
+        Route::delete('/berita/{berita}', [BeritaController::class, 'destroy'])->name('berita.destroy');
+    });
+    // invoasi
+    Route::middleware(['permission:Inovasi'])->group(function(){
+        Route::get('/inovasi', [InovasiController::class, 'index'])->name('inovasi.index');
+        Route::get('/inovasi/create', [InovasiController::class, 'create'])->name('inovasi.create');
+        Route::post('/inovasi', [InovasiController::class, 'store'])->name('inovasi.store');
+        Route::get('/inovasi/{inovasi}/edit', [InovasiController::class, 'edit'])->name('inovasi.edit');
+        Route::put('/inovasi/{inovasi}', [InovasiController::class, 'update'])->name('inovasi.update');
+        Route::delete('/inovasi/{inovasi}', [InovasiController::class, 'destroy'])->name('inovasi.destroy');
+    });
+    // layanan
+      Route::middleware(['permission:Layanan'])->group(function(){
+        Route::get('/layanan', [LayananController::class, 'index'])->name('layanan.index'); // list laporan
+        Route::get('/layanan/{layanan}', [LayananController::class, 'show'])->name('layanan.show'); // detail laporan
+        Route::get('/layanan/{layanan}/edit', [LayananController::class, 'edit'])->name('layanan.edit'); // form edit
+        Route::put('/layanan/{layanan}', [LayananController::class, 'update'])->name('layanan.update'); // update status
+        Route::delete('/layanan/{layanan}', [LayananController::class, 'destroy'])->name('layanan.destroy'); // hapus
+    });
 });
 
 require __DIR__.'/settings.php';
