@@ -9,15 +9,13 @@
 
 # Terima Kasih Telah Mengirim Laporan
 
-**Dashboard Dinas Pendidikan dan Kebudayaan Provinsi Sulawesi Tenggara**
-
 Halo {{ $layanan->nama_pengirim }},
 
 Laporan Anda telah kami terima dengan rincian sebagai berikut:
 
 - **Judul:** {{ $layanan->judul }}
 - **Deskripsi:** {{ $layanan->deskripsi }}
-- **Bidang:** {{ $layanan->bidang }}
+- **Tujuan Bidang:** {{ $layanan->bidang }}
 
 Kode tracking laporan Anda adalah:
 
