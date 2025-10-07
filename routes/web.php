@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // produk hukum
+    // produk hukum
     Route::middleware(['permission:Produk Hukum'])->group(function(){
         Route::get('/produk-hukum', [ProdukHukumController::class, 'index'])->name('produk-hukum.index');
         Route::get('/produk-hukum/create', [ProdukHukumController::class, 'create'])->name('produk-hukum.create');
