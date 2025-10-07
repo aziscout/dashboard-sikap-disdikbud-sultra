@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->string('cover_image');
             $table->string('lokasi');
-            $table->string('tabel')->default('berita');
+            $table->string('tabel')->default('beritas');
             $table->enum('category',['foto','video'])->nullable();
             $table->enum('instansi',['umum','sma','smk','slb']);
             $table->timestamps();

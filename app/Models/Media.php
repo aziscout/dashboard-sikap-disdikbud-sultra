@@ -18,4 +18,8 @@ class Media extends Model
     {
         return $this->hasMany(Berita::class);
     }
+    public function laporan_kegiatan()
+    {
+        return $this->hasMany(LaporanKegiatan::class);
+    }
 }

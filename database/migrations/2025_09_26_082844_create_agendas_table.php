@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('agendas', function (Blueprint $table) {
-            $table->id(); 
-            $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
-            $table->string('judul');
-            $table->text('deskripsi');
-            $table->string('cover_image');
-            $table->string('lokasi');
-            $table->string('tabel')->default('agenda');
-            $table->enum('category',['foto','video'])->nullable();
-            $table->enum('instansi',['umum','sma','smk','slb']);
+        Schema::create('agenda', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
+            $table->string('judul');
+            $table->string('coverImage');
+            $table->enum('category',['foto','video'])->default('foto');
+            $table->enum('instansi',['umum','slb','smk','smp'])->default('umum');
+            $table->string('penyelenggara');
+            $table->string('lokasi');
+            $table->string('tabel');
+            $table->string('deskripsi');
+            $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
+            $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');
         });
     }
 
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('agendas');
+        Schema::dropIfExists('agenda');
     }
 };
