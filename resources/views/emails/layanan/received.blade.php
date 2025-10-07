@@ -19,7 +19,7 @@ Halo {{ $layanan->nama_pengirim }},
 Laporan Anda telah kami terima dengan rincian sebagai berikut:
 
 - **Judul:** {{ $layanan->judul }}
-- **Deskripsi:** {{ $layanan->deskripsi }}
+{{-- - **Deskripsi:** {{ $layanan->deskripsi }} --}}
 - **Tujuan Bidang:** {{ $layanan->bidang }}
 
 Kode tracking laporan Anda adalah:
