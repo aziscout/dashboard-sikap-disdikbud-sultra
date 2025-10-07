@@ -76,7 +76,7 @@ export default function Dashboard() {
                                 <img
                                     src={`/storage/${logo.file}`}
                                     alt="Logo"
-                                    className="h-60 w-60 object-cover object-center"
+                                    className="h-60 object-contain"
                                 />
                             ) : (
                                 <div className="flex justify-center text-gray-500 border rounded p-8 w-full">

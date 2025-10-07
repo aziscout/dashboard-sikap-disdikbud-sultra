@@ -93,7 +93,7 @@ return (
                 <img
                     src={logoPreview}
                     alt="Logo Preview"
-                    className="h-32 w-32 object-cover object-center p-2"
+                    className="h-32 object-contain p-2"
                 />
                 </div>
             ) : (
