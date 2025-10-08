@@ -29,7 +29,7 @@ class Layanan extends Model
         'nama_pengirim',
         'email_pengirim',
         'media_id',
-        'documents_id',
+        'dokumens_id',
         'kode_tracking',
         'status',
     ];
@@ -43,12 +43,8 @@ class Layanan extends Model
         return $this->belongsTo(Media::class, 'media_id');
     }
 
-    /**
-     * Mendefinisikan relasi "belongsTo" ke model Document.
-     * Setiap layanan dapat memiliki satu dokumen.
-     */
-    public function documents(): BelongsTo
+    public function dokumen(): BelongsTo
     {
-        return $this->belongsTo(Document::class, 'documents_id');
+        return $this->belongsTo(Document::class, 'dokumens_id');
     }
 }

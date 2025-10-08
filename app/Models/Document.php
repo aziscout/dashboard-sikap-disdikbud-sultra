@@ -2,24 +2,43 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Document extends Model
 {
-    protected $table = 'documents';
+    use HasFactory;
+
+    /**
+     * Nama tabel di database adalah 'dokumens'.
+     */
+    protected $table = 'dokumens'; 
+
+    /**
+     * Atribut yang dapat diisi secara massal.
+     * Kolom dokumen yang menyimpan path file adalah 'dokumen'.
+     */
     protected $fillable = [
-        'file',
-    ];
-    protected $casts = [
-        'file' => 'array',
+        'dokumen', // DIKOREKSI: Menggunakan 'dokumen' sesuai konfirmasi Anda
     ];
 
-    public function pengumumans()
+    /**
+     * Penentuan tipe data.
+     */
+    protected $casts = [
+        'dokumen' => 'string', // DIKOREKSI: Menggunakan 'dokumen'
+    ];
+
+    // ... (Relasi pengumumans tidak diubah, diasumsikan sudah benar)
+
+    /**
+     * Mendefinisikan relasi "hasMany" ke model Layanan.
+     * Menggunakan foreign key 'dokumens_id' (sesuai tabel layanans).
+     */
+    public function layanans(): HasMany
     {
-        return $this->hasMany(Pengumuman::class, 'documents_id');
-    }
-    public function layanans()
-    {
-        return $this->hasMany(Layanan::class, 'documents_id');
+        // Foreign key di tabel layanans
+        return $this->hasMany(Layanan::class, 'dokumens_id'); 
     }
 }

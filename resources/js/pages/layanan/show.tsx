@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, Head } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
 import {
   Select,
@@ -11,28 +11,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Copy, 
-  FileText, 
-  User, 
-  Tag, 
-  Hash, 
-  ArrowLeft, 
-  Image, 
+import {
+  Copy,
+  FileText,
+  User,
+  Tag,
+  Hash,
+  ArrowLeft,
+  Image,
   File,
   Download,
   Mail,
-  Calendar
+  Calendar,
 } from "lucide-react";
-import { Head } from "@inertiajs/react";
 import { BreadcrumbItem } from "@/types";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: "Layanan / Detail",
-    href: "/layanan / Detail",
+    href: "/layanan/Detail",
   },
 ];
+
 interface MediaFile {
   file: string;
   type: string;
@@ -45,9 +45,9 @@ interface Media {
   updated_at: string;
 }
 
-interface Document {
+interface Dokumen {
   id: number;
-  file: string;
+  dokumen: string;
   created_at: string;
   updated_at: string;
 }
@@ -63,11 +63,11 @@ interface PageProps {
     kode_tracking: string;
     status: string;
     media_id: number | null;
-    document_id: number | null;
+    dokumens_id: number | null;
     updated_at: string;
     created_at: string;
     media: Media;
-    document: Document;
+    dokumen: Dokumen;
   };
 }
 
@@ -114,11 +114,11 @@ export default function Show() {
   };
 
   const openFileInNewTab = (fileUrl: string) => {
-    window.open(`/storage/${fileUrl}`, '_blank');
+    window.open(`/storage/${fileUrl}`, "_blank");
   };
 
   const downloadFile = (fileUrl: string, fileName: string) => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = `/storage/${fileUrl}`;
     link.download = fileName;
     document.body.appendChild(link);
@@ -127,43 +127,45 @@ export default function Show() {
   };
 
   const getFileNameFromPath = (path: string) => {
-    return path.split('/').pop() || 'file';
+    return path.split("/").pop() || "file";
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   return (
-    <AppLayout breadcrumbs={breadcrumbs} >
+    <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Detail Laporan - ${layanan.judul}`} />
-      
+
       <div className="w-full p-4 lg:p-6 space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex-1">
-            
             <h1 className="text-lg font-bold">Detail Laporan</h1>
-            <p className="text-black-600">ID: #{layanan.id} • {formatDate(layanan.created_at)}</p>
+            <p className="text-black-600">
+              ID: #{layanan.id} • {formatDate(layanan.created_at)}
+            </p>
           </div>
-          <Badge 
-            className={`text-xs px-4 py-2 border ${getStatusColor(layanan.status)}`}
+          <Badge
+            className={`text-xs px-4 py-2 border ${getStatusColor(
+              layanan.status
+            )}`}
           >
             {layanan.status}
           </Badge>
         </div>
 
-        {/* Informasi Utama */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Kolom Kiri - Informasi Laporan */}
+          {/* Kiri */}
           <div className="xl:col-span-2 space-y-6">
-            {/* Detail Laporan */}
+            {/* Informasi Laporan */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -173,29 +175,37 @@ export default function Show() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">Judul Laporan</label>
-                  <p className="text-sm font-semibold border-b pb-2 break-words">{layanan.judul}</p>
+                  <label className="block text-sm font-medium mb-1">
+                    Judul Laporan
+                  </label>
+                  <p className="text-sm font-semibold border-b pb-2 break-words">
+                    {layanan.judul}
+                  </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">Deskripsi</label>
-                  <p className="text-black-700 whitespace-pre-wrap bg-black-50 p-3 rounded border break-words">
+                  <label className="block text-sm font-medium mb-1">
+                    Deskripsi
+                  </label>
+                  <p className="whitespace-pre-wrap bg-black-50 p-3 rounded border break-words">
                     {layanan.deskripsi}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">Bidang</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Bidang
+                  </label>
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4 text-black-500 flex-shrink-0" />
-                    <span className="text-black-700 break-words">{layanan.bidang}</span>
+                    <span className="break-words">{layanan.bidang}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* File Gambar */}
-            {layanan.media && layanan.media.file && layanan.media.file.length > 0 && (
+            {layanan.media && layanan.media.file?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -206,27 +216,33 @@ export default function Show() {
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {layanan.media.file.map((file, index) => (
-                      <div key={index} className="border rounded-lg overflow-hidden">
+                      <div
+                        key={index}
+                        className="border rounded-lg overflow-hidden"
+                      >
                         <div className="aspect-square bg-black-100">
-                          <img 
-                            src={`/storage/${file.file}`} 
+                          <img
+                            src={`/storage/${file.file}`}
                             alt={`Gambar ${index + 1}`}
                             className="w-full h-full object-cover cursor-pointer"
                             onClick={() => openFileInNewTab(file.file)}
                           />
                         </div>
                         <div className="p-3">
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => downloadFile(file.file, getFileNameFromPath(file.file))}
-                              className="flex-1"
-                            >
-                              <Download className="h-4 w-4 mr-1" />
-                              Unduh
-                            </Button>
-                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              downloadFile(
+                                file.file,
+                                getFileNameFromPath(file.file)
+                              )
+                            }
+                            className="w-full flex items-center justify-center"
+                          >
+                            <Download className="h-4 w-4 mr-1" />
+                            Unduh
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -236,7 +252,7 @@ export default function Show() {
             )}
 
             {/* File Dokumen */}
-            {layanan.document && layanan.document.file && (
+            {layanan.dokumen && layanan.dokumen.dokumen && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -250,15 +266,25 @@ export default function Show() {
                       <div className="flex items-center gap-3 min-w-0">
                         <File className="h-8 w-8 text-red-500 flex-shrink-0" />
                         <div className="min-w-0">
-                          <p className="font-semibold text-sm truncate" title={getFileNameFromPath(layanan.document.file)}>
-                            {getFileNameFromPath(layanan.document.file)}
+                          <p
+                            className="font-semibold text-sm truncate"
+                            title={getFileNameFromPath(layanan.dokumen.dokumen)}
+                          >
+                            {getFileNameFromPath(layanan.dokumen.dokumen)}
                           </p>
-                          <p className="text-sm text-black-500">PDF Document</p>
+                          <p className="text-sm text-black-500">
+                            PDF Document
+                          </p>
                         </div>
                       </div>
                       <div className="flex gap-2 w-full sm:w-auto">
                         <Button
-                          onClick={() => downloadFile(layanan.document.file, getFileNameFromPath(layanan.document.file))}
+                          onClick={() =>
+                            downloadFile(
+                              layanan.dokumen.dokumen,
+                              getFileNameFromPath(layanan.dokumen.dokumen)
+                            )
+                          }
                           className="flex items-center gap-2 w-full sm:w-auto"
                         >
                           <Download className="h-4 w-4" />
@@ -272,9 +298,9 @@ export default function Show() {
             )}
           </div>
 
-          {/* Kolom Kanan - Informasi Tambahan */}
+          {/* Kanan */}
           <div className="space-y-6">
-            {/* Informasi Pengirim */}
+            {/* Pengirim */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -284,19 +310,26 @@ export default function Show() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">Nama Pengirim</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Nama Pengirim
+                  </label>
                   <div className="flex items-center gap-2 p-2 bg-black-50 rounded border">
                     <User className="h-4 w-4 text-black-500 flex-shrink-0" />
-                    <span className="font-medium break-words">{layanan.nama_pengirim}</span>
+                    <span className="font-medium break-words">
+                      {layanan.nama_pengirim}
+                    </span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium mb-1">Email</label>
                   <div className="flex items-center justify-between p-2 bg-black-50 rounded border">
                     <div className="flex items-center gap-2 min-w-0">
                       <Mail className="h-4 w-4 text-black-500 flex-shrink-0" />
-                      <span className="truncate" title={layanan.email_pengirim}>
+                      <span
+                        className="truncate"
+                        title={layanan.email_pengirim}
+                      >
                         {layanan.email_pengirim}
                       </span>
                     </div>
@@ -313,7 +346,7 @@ export default function Show() {
               </CardContent>
             </Card>
 
-            {/* Informasi Tracking */}
+            {/* Tracking */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -323,9 +356,14 @@ export default function Show() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">Kode Tracking</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Kode Tracking
+                  </label>
                   <div className="flex items-center justify-between p-2 bg-black-50 rounded border">
-                    <code className="font-mono font-bold truncate min-w-0" title={layanan.kode_tracking}>
+                    <code
+                      className="font-mono font-bold truncate min-w-0"
+                      title={layanan.kode_tracking}
+                    >
                       {layanan.kode_tracking}
                     </code>
                     <Button
@@ -340,7 +378,9 @@ export default function Show() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-2">Ubah Status</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Ubah Status
+                  </label>
                   <Select
                     onValueChange={ubahStatus}
                     defaultValue={layanan.status}
@@ -359,7 +399,7 @@ export default function Show() {
               </CardContent>
             </Card>
 
-            {/* Informasi Waktu */}
+            {/* Timeline */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -370,24 +410,29 @@ export default function Show() {
               <CardContent className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm text-black-600">Dibuat</span>
-                  <span className="text-sm font-medium text-right">{formatDate(layanan.created_at)}</span>
+                  <span className="text-sm font-medium text-right">
+                    {formatDate(layanan.created_at)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-sm text-black-600">Diupdate</span>
-                  <span className="text-sm font-medium text-right">{formatDate(layanan.updated_at)}</span>
+                  <span className="text-sm font-medium text-right">
+                    {formatDate(layanan.updated_at)}
+                  </span>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
-            <Button 
-              variant="ghost" 
-              onClick={handleKembali}
-              className="flex items-center gap-2 mb-4 pl-0 border-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Kembali
-            </Button>
+
+        <Button
+          variant="ghost"
+          onClick={handleKembali}
+          className="flex items-center gap-2 mb-4 pl-0 border-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Kembali
+        </Button>
       </div>
     </AppLayout>
   );
