@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\LaporanKegiatan;
 use App\Models\Media;
-use App\Models\Dokumen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -17,14 +16,12 @@ class LaporanKegiatanController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'admin') {
-            // Admin can see all reports
             $laporan_kegiatan = LaporanKegiatan::latest()->get();
         } else {
-            // Bidang only sees their own uploads
             $laporan_kegiatan = LaporanKegiatan::where('bidangs_id', $user->id)->latest()->get();
         }
 
-        return Inertia::render('laporan-kegiatan/index', compact('laporan_kegiatan'));
+        return Inertia::render("laporan-kegiatan/index", compact("laporan_kegiatan"));
     }
 
     public function create()
@@ -35,117 +32,157 @@ class LaporanKegiatanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'judul' => 'required|string|max:255',
+            'judul'         => 'required|string|max:255',
             'penyelenggara' => 'required|string|max:255',
-            'lokasi' => 'required|string|max:255',
-            'deskripsi' => 'required|string|max:255',
-
-            // support both image and document uploads
-            'file' => 'nullable|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff,pdf,doc,docx,xls,xlsx,ppt,pptx|max:30000',
+            'lokasi'        => 'required|string|max:255',
+            'instansi'      => 'required|in:umum,sma,smk,slb',
+            'deskripsi'     => 'required|string|max:1000',
+            'coverImage'    => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'video_urls'    => 'nullable|array',
+            'video_urls.*'  => 'url',
         ]);
 
-        $mediaId = null;
-        $dokumenId = null;
-        $path = null;
+        // Upload cover image
+        $coverPath = $request->file('coverImage')->store('laporan-kegiatan/cover', 'public');
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $extension = strtolower($file->getClientOriginalExtension());
+        // Collect media files
+        $mediaFiles = [];
 
-            // store file
-            $path = $file->store('laporan-kegiatan', 'public');
-
-            // if it's an image → store in media
-            if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'tiff'])) {
-                $media = Media::create(['file' => $path]);
-                $mediaId = $media->id;
-            } 
-            // if it's a document → store in dokumen
-            else {
-                $dokumen = Dokumen::create(['dokumen' => $path]);
-                $dokumenId = $dokumen->id;
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('laporan-kegiatan/file', 'public');
+                $type = in_array($file->extension(), ['mp4','mov','avi']) ? 'video' : 'foto';
+                $mediaFiles[] = ['file' => $path, 'type' => $type];
             }
         }
 
-        // create laporan kegiatan record
+        if ($request->video_urls) {
+            foreach ($request->video_urls as $url) {
+                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
+            }
+        }
+
+        // Save media
+        $media = Media::create([
+            'file' => $mediaFiles
+        ]);
+
+        // Save laporan kegiatan
         LaporanKegiatan::create([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
+            'medias_id'     => $media->id,
+            'judul'         => $request->judul,
             'penyelenggara' => $request->penyelenggara,
-            'lokasi' => $request->lokasi,
-            'file' => $path,
-            'bidangs_id'  => Auth::id(),
-            'medias_id'   => $mediaId,
-            'dokumens_id' => $dokumenId,
+            'lokasi'        => $request->lokasi,
+            'instansi'      => $request->instansi,
+            'deskripsi'     => $request->deskripsi,
+            'coverImage'    => $coverPath,
+            'tabel'         => 'laporan_kegiatan',
+            'bidangs_id'    => Auth::id(),
         ]);
 
-        return redirect()->route('laporan-kegiatan.index')->with('message', 'Laporan kegiatan berhasil ditambahkan');
+        return redirect()->route('laporan-kegiatan.index')
+            ->with('message', 'Laporan kegiatan berhasil ditambahkan');
     }
 
-    public function edit(LaporanKegiatan $laporanKegiatan)
+    public function edit($id)
     {
-        return Inertia::render("laporan-kegiatan/edit", compact('laporanKegiatan'));
+        $user = Auth::user();
+        $laporan_kegiatan = LaporanKegiatan::with('medias')->findOrFail($id);
+
+        if ($user->role !== 'admin' && $laporan_kegiatan->bidangs_id !== $user->id) {
+            abort(403, 'Unauthorized to edit this laporan kegiatan.');
+        }
+
+        return Inertia::render("laporan-kegiatan/edit", ['laporanKegiatan' => $laporan_kegiatan]);
     }
 
-    public function update(Request $request, LaporanKegiatan $laporanKegiatan)
+    public function update(Request $request, LaporanKegiatan $laporan_kegiatan)
     {
+        $user = Auth::user();
+
+        if ($user->role !== 'admin' && $laporan_kegiatan->bidangs_id !== $user->id) {
+            abort(403, 'Unauthorized to update this laporan kegiatan.');
+        }
+
         $request->validate([
-            'judul' => 'sometimes|required|string|max:255',
-            'penyelenggara' => 'sometimes|required|string|max:255',
-            'lokasi' => 'sometimes|required|string|max:255',
-            'deskripsi' => 'sometimes|required|string|max:255',
-            'file' => 'nullable|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff,pdf,doc,docx,xls,xlsx,ppt,pptx|max:30000',
+            'judul'         => 'required|string|max:255',
+            'penyelenggara' => 'required|string|max:255',
+            'lokasi'        => 'required|string|max:255',
+            'instansi'      => 'required|in:umum,sma,smk,slb',
+            'deskripsi'     => 'required|string|max:1000',
+            'coverImage'    => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'video_urls'    => 'nullable|array',
+            'video_urls.*'  => 'url',
         ]);
 
-        $updateData = [
-            'judul' => $request->input('judul', $laporanKegiatan->judul),
-            'penyelenggara' => $request->input('penyelenggara', $laporanKegiatan->penyelenggara),
-            'lokasi' => $request->input('lokasi', $laporanKegiatan->lokasi),
-            'deskripsi' => $request->input('deskripsi', $laporanKegiatan->deskripsi),
-        ];
-
-        if ($request->hasFile('file')) {
-            // delete old file
-            if ($laporanKegiatan->file && Storage::disk('public')->exists($laporanKegiatan->file)) {
-                Storage::disk('public')->delete($laporanKegiatan->file);
+        // Update cover image
+        if ($request->hasFile('coverImage')) {
+            if ($laporan_kegiatan->coverImage && Storage::disk('public')->exists($laporan_kegiatan->coverImage)) {
+                Storage::disk('public')->delete($laporan_kegiatan->coverImage);
             }
+            $coverPath = $request->file('coverImage')->store('laporan-kegiatan/cover', 'public');
+            $laporan_kegiatan->coverImage = $coverPath;
+        }
 
-            $file = $request->file('file');
-            $extension = strtolower($file->getClientOriginalExtension());
-            $path = $file->store('laporan-kegiatan', 'public');
-            $updateData['file'] = $path;
+        // Update media
+        $mediaFiles = [];
 
-            // update media or dokumen based on file type
-            if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'tiff'])) {
-                if ($laporanKegiatan->medias_id) {
-                    $laporanKegiatan->media->update(['file' => $path]);
-                } else {
-                    $media = Media::create(['file' => $path]);
-                    $updateData['medias_id'] = $media->id;
-                }
-            } else {
-                if ($laporanKegiatan->dokumens_id) {
-                    $laporanKegiatan->dokumen->update(['dokumen' => $path]);
-                } else {
-                    $dokumen = Dokumen::create(['dokumen' => $path]);
-                    $updateData['dokumens_id'] = $dokumen->id;
-                }
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('laporan-kegiatan/file', 'public');
+                $type = in_array($file->extension(), ['mp4','mov','avi']) ? 'video' : 'foto';
+                $mediaFiles[] = ['file' => $path, 'type' => $type];
             }
         }
 
-        $laporanKegiatan->update($updateData);
+        if ($request->video_urls) {
+            foreach ($request->video_urls as $url) {
+                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
+            }
+        }
 
-        return redirect()->route('laporan-kegiatan.index')->with('message', 'Laporan kegiatan berhasil diperbarui');
+        if ($laporan_kegiatan->medias) {
+            $laporan_kegiatan->medias->update(['file' => $mediaFiles]);
+        }
+
+        $laporan_kegiatan->update([
+            'judul'         => $request->judul,
+            'penyelenggara' => $request->penyelenggara,
+            'lokasi'        => $request->lokasi,
+            'instansi'      => $request->instansi,
+            'deskripsi'     => $request->deskripsi,
+        ]);
+
+        return redirect()->route('laporan-kegiatan.index')
+            ->with('message', 'Laporan kegiatan berhasil diperbarui');
     }
 
-    public function destroy(LaporanKegiatan $laporanKegiatan)
+    public function destroy($id)
     {
-        // delete file from storage
-        if ($laporanKegiatan->file && Storage::disk('public')->exists($laporanKegiatan->file)) {
-            Storage::disk('public')->delete($laporanKegiatan->file);
+        $laporan_kegiatan = LaporanKegiatan::with('medias')->findOrFail($id);
+
+        // Delete cover image
+        if ($laporan_kegiatan->coverImage && Storage::disk('public')->exists($laporan_kegiatan->coverImage)) {
+            Storage::disk('public')->delete($laporan_kegiatan->coverImage);
         }
 
-        $laporanKegiatan->delete();
-        return redirect()->route('laporan-kegiatan.index')->with('message', 'Laporan kegiatan berhasil dihapus');
+        // Delete all media files
+        if ($laporan_kegiatan->medias && is_array($laporan_kegiatan->medias->file)) {
+            foreach ($laporan_kegiatan->medias->file as $media) {
+                if (isset($media['file']) && !preg_match('/^https?:\/\//', $media['file'])) {
+                    if (Storage::disk('public')->exists($media['file'])) {
+                        Storage::disk('public')->delete($media['file']);
+                    }
+                }
+            }
+            $laporan_kegiatan->medias->delete();
+        }
+
+        $laporan_kegiatan->delete();
+
+        return redirect()->route('laporan-kegiatan.index')
+            ->with('message', 'Laporan kegiatan berhasil dihapus beserta media terkait');
     }
 }

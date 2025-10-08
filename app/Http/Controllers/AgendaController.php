@@ -80,6 +80,7 @@ class AgendaController extends Controller
             'deskripsi'    => $request->deskripsi,
             'coverImage'  => $coverPath,
             'tabel'        => 'agenda',
+             'medias_id'     => $media->id,
             'bidangs_id'    => Auth::id(),
         ]);
 

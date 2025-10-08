@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Media;
 
 class Pengumuman extends Model
 {
@@ -15,17 +16,17 @@ class Pengumuman extends Model
     protected $fillable = [
     'judul',
     'deskripsi',
-    'lokasi',
-    'category',
+    'coverImage',
     'penyelenggara',
     'instansi',
+    'lokasi',
     'tabel',
-    'documents_id',
-    'bidangs_id'
+    'medias_id'
 ];
 
-    public function document()
+    public function medias()
     {
-        return $this->belongsTo(Document::class, 'documents_id');
+        return $this->belongsTo(Media::class, 'medias_id');
     }
+
 }

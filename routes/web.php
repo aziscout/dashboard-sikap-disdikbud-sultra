@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Bidang\DashboardController as BidangDashboardController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\ProdukHukumController;
 use App\Models\Berita;
@@ -19,11 +21,26 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboard.create');
-    Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboard.store');
-    Route::get('/dashboard/edit', [DashboardController::class, 'edit'])->name('dashboard.edit');
-    Route::post('/dashboard/update', [DashboardController::class, 'update'])->name('dashboard.update');
+    
+    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    // Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboard.create');
+    // Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboard.store');
+    // Route::get('/dashboard/edit', [DashboardController::class, 'edit'])->name('dashboard.edit');
+    // Route::post('/dashboard/update', [DashboardController::class, 'update'])->name('dashboard.update');
+
+    Route::middleware(['role:admin'])->group(function () {
+        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/dashboard/create', [AdminDashboardController::class, 'create'])->name('admin.dashboard.create');
+        Route::post('/admin/dashboard', [AdminDashboardController::class, 'store'])->name('admin.dashboard.store');
+        Route::get('/admin/dashboard/edit', [AdminDashboardController::class, 'edit'])->name('admin.dashboard.edit');
+        Route::post('/admin/dashboard/update', [AdminDashboardController::class, 'update'])->name('admin.dashboard.update');
+    });
+
+    // DASHBOARD BIDANG
+    Route::middleware(['role:bidang'])->group(function () {
+        Route::get('/bidang/dashboard', [BidangDashboardController::class, 'index'])
+            ->name('bidang.dashboard');
+    });
 
     Route::middleware(['permission:Pengumuman'])->group(function(){
         Route::get('/pengumuman',[PengumumanController::class,'index'])->name('pengumuman.index');
@@ -64,7 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     });
     // Berita
-    Route::middleware(['permission:Produk Hukum'])->group(function(){
+    Route::middleware(['permission:Berita'])->group(function(){
         Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
         Route::get('/berita/create', [BeritaController::class, 'create'])->name('berita.create');
         Route::post('/berita', [BeritaController::class, 'store'])->name('berita.store');
@@ -82,7 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/inovasi/{inovasi}', [InovasiController::class, 'destroy'])->name('inovasi.destroy');
     });
     // layanan
-      Route::middleware(['permission:Layanan'])->group(function(){
+    Route::middleware(['permission:Layanan'])->group(function(){
         Route::get('/layanan', [LayananController::class, 'index'])->name('layanan.index'); // list laporan
         Route::get('/layanan/{layanan}', [LayananController::class, 'show'])->name('layanan.show'); // detail laporan
         Route::get('/layanan/{layanan}/edit', [LayananController::class, 'edit'])->name('layanan.edit'); // form edit

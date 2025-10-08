@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Dokumen;
 
 class LaporanKegiatan extends Model
 {
@@ -19,20 +18,16 @@ class LaporanKegiatan extends Model
         'judul',
         'deskripsi',
         'lokasi',
+        'coverImage',
         'penyelenggara',
-        'file',
-        'bidangs_id',
+        'instansi',
+        'tabel',
         'medias_id',
-        'dokumens_id'
+        'bidangs_id'
     ];
 
     public function medias()
     {
         return $this->belongsTo(Media::class);
-    }
-
-    public function dokumen()
-    {
-        return $this->belongsTo(Dokumen::class, 'dokumens_id');
     }
 }

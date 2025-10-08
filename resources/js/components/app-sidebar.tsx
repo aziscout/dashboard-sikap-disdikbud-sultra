@@ -61,13 +61,28 @@ const { auth } = usePage<PageProps>().props;
     
     const mainNavItems: NavItem[] = [];
 
+    // if (userPermissions.includes('Dashboard')) {
+    //     mainNavItems.push({
+    //         title: 'Dashboard',
+    //         href: '/dashboard',
+    //         icon: LayoutGrid,
+    //     });
+    // }
     if (userPermissions.includes('Dashboard')) {
+        const dashboardLink =
+            auth.user?.role === 'admin'
+                ? '/admin/dashboard'
+                : auth.user?.role === 'bidang'
+                ? '/bidang/dashboard'
+                : '/dashboard';
+
         mainNavItems.push({
             title: 'Dashboard',
-            href: '/dashboard',
+            href: dashboardLink,
             icon: LayoutGrid,
         });
     }
+
     if (userPermissions.includes('Layanan')) {
         mainNavItems.push({
             title: 'Layanan',
@@ -131,7 +146,19 @@ const { auth } = usePage<PageProps>().props;
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch>
+                            {/* <Link href="/dashboard" prefetch>
+                                <AppLogo />
+                            </Link> */}
+                            <Link
+                                href={
+                                    auth.user?.role === 'admin'
+                                        ? '/admin/dashboard'
+                                        : auth.user?.role === 'bidang'
+                                        ? '/bidang/dashboard'
+                                        : '/dashboard'
+                                }
+                                prefetch
+                            >
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
