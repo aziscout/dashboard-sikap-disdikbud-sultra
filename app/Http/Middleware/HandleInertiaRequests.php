@@ -53,7 +53,7 @@ class HandleInertiaRequests extends Middleware
             'message' => fn() => $request->session()->get('message')
         ],
         'ziggy' => fn (): array => [
-            ...(new \Tighten\Ziggy\Ziggy)->toArray(),
+            ...(new Ziggy)->toArray(),
             'location' => $request->url(),
         ],
         'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
