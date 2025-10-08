@@ -21,12 +21,18 @@ import {
   Image, 
   File,
   Download,
-  Eye,
   Mail,
   Calendar
 } from "lucide-react";
 import { Head } from "@inertiajs/react";
+import { BreadcrumbItem } from "@/types";
 
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: "Layanan / Detail",
+    href: "/layanan / Detail",
+  },
+];
 interface MediaFile {
   file: string;
   type: string;
@@ -92,18 +98,18 @@ export default function Show() {
     router.visit(`/layanan`);
   };
 
-  const getStatusVariant = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "Diterima":
-        return "default";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "Diproses":
-        return "secondary";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "Selesai":
-        return "destructive";
+        return "bg-green-100 text-green-800 border-green-200";
       case "Ditolak":
-        return "outline";
+        return "bg-red-100 text-red-800 border-red-200";
       default:
-        return "outline";
+        return "bg-black-100 text-black-800 border-black-200";
     }
   };
 
@@ -135,33 +141,28 @@ export default function Show() {
   };
 
   return (
-    <AppLayout>
+    <AppLayout breadcrumbs={breadcrumbs} >
       <Head title={`Detail Laporan - ${layanan.judul}`} />
       
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="w-full p-4 lg:p-6 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <Button 
-              variant="ghost" 
-              onClick={handleKembali}
-              className="flex items-center gap-2 mb-4 pl-0"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Kembali
-            </Button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ">
+          <div className="flex-1">
+            
             <h1 className="text-lg font-bold">Detail Laporan</h1>
-            <p className="text-gray-600">ID: #{layanan.id} • {formatDate(layanan.created_at)}</p>
+            <p className="text-black-600">ID: #{layanan.id} • {formatDate(layanan.created_at)}</p>
           </div>
-          <Badge variant={getStatusVariant(layanan.status)} className="text-xs px-4 py-2">
+          <Badge 
+            className={`text-xs px-4 py-2 border ${getStatusColor(layanan.status)}`}
+          >
             {layanan.status}
           </Badge>
         </div>
 
         {/* Informasi Utama */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Kolom Kiri - Informasi Laporan */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-6">
             {/* Detail Laporan */}
             <Card>
               <CardHeader>
@@ -172,22 +173,22 @@ export default function Show() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Judul Laporan</label>
-                  <p className="text-xs font-semibold border-b pb-2">{layanan.judul}</p>
+                  <label className="block text-sm font-medium text-black-700 mb-1">Judul Laporan</label>
+                  <p className="text-sm font-semibold border-b pb-2 break-words">{layanan.judul}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                  <p className="text-gray-700 whitespace-pre-wrap bg-gray-50 p-3 rounded border">
+                  <label className="block text-sm font-medium text-black-700 mb-1">Deskripsi</label>
+                  <p className="text-black-700 whitespace-pre-wrap bg-black-50 p-3 rounded border break-words">
                     {layanan.deskripsi}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Bidang</label>
+                  <label className="block text-sm font-medium text-black-700 mb-1">Bidang</label>
                   <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-gray-500" />
-                    <span className="text-gray-700">{layanan.bidang}</span>
+                    <Tag className="h-4 w-4 text-black-500 flex-shrink-0" />
+                    <span className="text-black-700 break-words">{layanan.bidang}</span>
                   </div>
                 </div>
               </CardContent>
@@ -203,10 +204,10 @@ export default function Show() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {layanan.media.file.map((file, index) => (
                       <div key={index} className="border rounded-lg overflow-hidden">
-                        <div className="aspect-square bg-gray-100">
+                        <div className="aspect-square bg-black-100">
                           <img 
                             src={`/storage/${file.file}`} 
                             alt={`Gambar ${index + 1}`}
@@ -215,11 +216,7 @@ export default function Show() {
                           />
                         </div>
                         <div className="p-3">
-                          {/* <p className="text-sm text-gray-600 truncate mb-2">
-                            {getFileNameFromPath(file.file)}
-                          </p> */}
                           <div className="flex gap-2">
-
                             <Button
                               size="sm"
                               variant="outline"
@@ -249,18 +246,20 @@ export default function Show() {
                 </CardHeader>
                 <CardContent>
                   <div className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <File className="h-8 w-8 text-red-500" />
-                        <div>
-                          <p className="font-semibold text-xs">{getFileNameFromPath(layanan.document.file)}</p>
-                          <p className="text-sm text-gray-500">PDF Document</p>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <File className="h-8 w-8 text-red-500 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-sm truncate" title={getFileNameFromPath(layanan.document.file)}>
+                            {getFileNameFromPath(layanan.document.file)}
+                          </p>
+                          <p className="text-sm text-black-500">PDF Document</p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full sm:w-auto">
                         <Button
                           onClick={() => downloadFile(layanan.document.file, getFileNameFromPath(layanan.document.file))}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 w-full sm:w-auto"
                         >
                           <Download className="h-4 w-4" />
                           Unduh
@@ -285,25 +284,27 @@ export default function Show() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pengirim</label>
-                  <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border">
-                    <User className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium">{layanan.nama_pengirim}</span>
+                  <label className="block text-sm font-medium text-black-700 mb-1">Nama Pengirim</label>
+                  <div className="flex items-center gap-2 p-2 bg-black-50 rounded border">
+                    <User className="h-4 w-4 text-black-500 flex-shrink-0" />
+                    <span className="font-medium break-words">{layanan.nama_pengirim}</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded border">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-gray-500" />
-                      <span>{layanan.email_pengirim}</span>
+                  <label className="block text-sm font-medium text-black-700 mb-1">Email</label>
+                  <div className="flex items-center justify-between p-2 bg-black-50 rounded border">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Mail className="h-4 w-4 text-black-500 flex-shrink-0" />
+                      <span className="truncate" title={layanan.email_pengirim}>
+                        {layanan.email_pengirim}
+                      </span>
                     </div>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={copyEmail}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 flex-shrink-0 ml-2"
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -322,14 +323,16 @@ export default function Show() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Kode Tracking</label>
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded border">
-                    <code className="font-mono font-bold">{layanan.kode_tracking}</code>
+                  <label className="block text-sm font-medium text-black-700 mb-1">Kode Tracking</label>
+                  <div className="flex items-center justify-between p-2 bg-black-50 rounded border">
+                    <code className="font-mono font-bold truncate min-w-0" title={layanan.kode_tracking}>
+                      {layanan.kode_tracking}
+                    </code>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={copyTrackingCode}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 flex-shrink-0 ml-2"
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -337,7 +340,7 @@ export default function Show() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Ubah Status</label>
+                  <label className="block text-sm font-medium text-black-700 mb-2">Ubah Status</label>
                   <Select
                     onValueChange={ubahStatus}
                     defaultValue={layanan.status}
@@ -366,17 +369,25 @@ export default function Show() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-sm text-gray-600">Dibuat</span>
-                  <span className="text-sm font-medium">{formatDate(layanan.created_at)}</span>
+                  <span className="text-sm text-black-600">Dibuat</span>
+                  <span className="text-sm font-medium text-right">{formatDate(layanan.created_at)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-gray-600">Diupdate</span>
-                  <span className="text-sm font-medium">{formatDate(layanan.updated_at)}</span>
+                  <span className="text-sm text-black-600">Diupdate</span>
+                  <span className="text-sm font-medium text-right">{formatDate(layanan.updated_at)}</span>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
+            <Button 
+              variant="ghost" 
+              onClick={handleKembali}
+              className="flex items-center gap-2 mb-4 pl-0 border-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Kembali
+            </Button>
       </div>
     </AppLayout>
   );

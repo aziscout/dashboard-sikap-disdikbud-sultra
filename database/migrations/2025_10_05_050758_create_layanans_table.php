@@ -16,14 +16,14 @@ return new class extends Migration
     $table->string('nama_pengirim');
     $table->string('email_pengirim');
     $table->unsignedBigInteger('media_id')->nullable();
-    $table->unsignedBigInteger('document_id')->nullable();
+    $table->unsignedBigInteger('documents_id')->nullable();
     $table->string('kode_tracking')->unique();
     $table->enum('status', ['Diterima', 'Diproses', 'Selesai', "Ditolak"])->default('Diterima');
     $table->timestamps();
 
     // perbaikan: tabelnya 'medias'
     $table->foreign('media_id')->references('id')->on('medias')->onDelete('set null');
-    $table->foreign('document_id')->references('id')->on('documents')->onDelete('set null');
+    $table->foreign('documents_id')->references('id')->on('documents')->onDelete('set null');
 });
 
 
