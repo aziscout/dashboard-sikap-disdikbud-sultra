@@ -23,7 +23,10 @@ import {
   Download,
   Mail,
   Calendar,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { BreadcrumbItem } from "@/types";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -74,14 +77,24 @@ interface PageProps {
 export default function Show() {
   const { layanan } = usePage<PageProps>().props;
 
+  // State Alert
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertType, setAlertType] = useState<"success" | "error">("success");
+
+  const showAlert = (message: string, type: "success" | "error") => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setTimeout(() => setAlertMessage(null), 3000);
+  };
+
   const copyEmail = () => {
     navigator.clipboard.writeText(layanan.email_pengirim);
-    window.alert("Email berhasil disalin");
+    showAlert("Email berhasil disalin", "success");
   };
 
   const copyTrackingCode = () => {
     navigator.clipboard.writeText(layanan.kode_tracking);
-    window.alert("Kode tracking berhasil disalin");
+    showAlert("Kode tracking berhasil disalin", "success");
   };
 
   const ubahStatus = (status: string) => {
@@ -89,7 +102,8 @@ export default function Show() {
       `/layanan/${layanan.id}`,
       { status },
       {
-        onSuccess: () => window.alert(`Status diubah menjadi ${status}`),
+        onSuccess: () => showAlert(`Status diubah menjadi ${status}`, "success"),
+        onError: () => showAlert("Gagal mengubah status", "error"),
       }
     );
   };
@@ -145,6 +159,25 @@ export default function Show() {
       <Head title={`Detail Laporan - ${layanan.judul}`} />
 
       <div className="w-full p-4 lg:p-6 space-y-6">
+        {/* ✅ Alert muncul di atas halaman */}
+        {alertMessage && (
+          <Alert
+            className={`${
+              alertType === "success" ? "border-green-500" : "border-red-500"
+            }`}
+          >
+            {alertType === "success" ? (
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            ) : (
+              <XCircle className="h-4 w-4 text-red-500" />
+            )}
+            <AlertTitle>
+              {alertType === "success" ? "Berhasil" : "Gagal"}
+            </AlertTitle>
+            <AlertDescription>{alertMessage}</AlertDescription>
+          </Alert>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex-1">
@@ -193,9 +226,7 @@ export default function Show() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Bidang
-                  </label>
+                  <label className="block text-sm font-medium mb-1">Bidang</label>
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4 text-black-500 flex-shrink-0" />
                     <span className="break-words">{layanan.bidang}</span>
