@@ -28,7 +28,6 @@ export default function Index() {
         tabel: currentTable,
         files: [] as File[],
         video_urls: [] as string[],
-        category: '',
         deskripsi: '',
         instansi: '',
         coverImage: null as File | null,
@@ -144,7 +143,7 @@ export default function Index() {
                             )}
                         </div>
 
-                        <div>
+                        {/* <div>
                             <Label htmlFor="category">Kategori</Label>
                             <Select value={data.category} onValueChange={(value) => setData('category', value)}>
                                 <SelectTrigger className="w-full">
@@ -155,7 +154,7 @@ export default function Index() {
                                     <SelectItem value="video">Video</SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
+                        </div> */}
 
                         <div>
                             <Label htmlFor="instansi">Instansi</Label>

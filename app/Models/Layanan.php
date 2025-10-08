@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Dokumen;
 
 class Layanan extends Model
 {
@@ -44,11 +45,11 @@ class Layanan extends Model
     }
 
     /**
-     * Mendefinisikan relasi "belongsTo" ke model Document.
+     * Mendefinisikan relasi "belongsTo" ke model Dokumen.
      * Setiap layanan dapat memiliki satu dokumen.
      */
     public function document(): BelongsTo
     {
-        return $this->belongsTo(Document::class, 'document_id');
+        return $this->belongsTo(Dokumen::class, 'document_id');
     }
 }

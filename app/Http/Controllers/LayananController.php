@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Layanan;
 use App\Models\Media;
-use App\Models\Document;
+use App\Models\Dokumen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -21,6 +21,7 @@ class LayananController extends Controller
 public function store(Request $request)
 {
     // 1. Validasi input
+
     $validated = $request->validate([
         'judul'          => 'required|string|max:255',
         'deskripsi'      => 'required|string',
@@ -77,8 +78,8 @@ public function store(Request $request)
     // 4. Upload dokumen (pdf/docx dsb)
     if ($request->hasFile('document_file')) {
         $docPath = $request->file('document_file')->store('layanan/document', 'public');
-        $document = Document::create([
-            'file' => $docPath
+        $document = Dokumen::create([
+            'dokumen' => $docPath
         ]);
         $validated['document_id'] = $document->id;
     }
@@ -87,10 +88,10 @@ public function store(Request $request)
     $layanan = Layanan::create($validated);
 
     // 6. Kirim email ke pelapor (opsional)
-    if (!empty($layanan->email_pengirim)) {
-        Mail::to($layanan->email_pengirim)
-            ->send(new LayananReceived($layanan));
-    }
+    // if (!empty($layanan->email_pengirim)) {
+    //     Mail::to($layanan->email_pengirim)
+    //         ->send(new LayananReceived($layanan));
+    // }
 
     // 7. Return response JSON
     return response()->json([

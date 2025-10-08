@@ -17,7 +17,6 @@ class Agenda extends Model
         'deskripsi',
         'lokasi',
         'coverImage',
-        'category',
         'penyelenggara',
         'instansi',
         'lokasi',
