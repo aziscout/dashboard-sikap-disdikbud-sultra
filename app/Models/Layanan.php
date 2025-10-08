@@ -20,7 +20,7 @@ class Layanan extends Model
     /**
      * Atribut yang dapat diisi secara massal (mass assignable).
      *
-     * @var array<int, string>
+     * @var array<int, 
      */
     protected $fillable = [
         'judul',
@@ -34,10 +34,7 @@ class Layanan extends Model
         'status',
     ];
 
-    /**
-     * Mendefinisikan relasi "belongsTo" ke model Media.
-     * Setiap layanan dapat memiliki satu media (gambar/video).
-     */
+    
     public function media(): BelongsTo
     {
         return $this->belongsTo(Media::class, 'media_id');

@@ -10,35 +10,20 @@ class Document extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel di database adalah 'dokumens'.
-     */
     protected $table = 'dokumens'; 
 
-    /**
-     * Atribut yang dapat diisi secara massal.
-     * Kolom dokumen yang menyimpan path file adalah 'dokumen'.
-     */
     protected $fillable = [
-        'dokumen', // DIKOREKSI: Menggunakan 'dokumen' sesuai konfirmasi Anda
+        'dokumen', 
     ];
 
-    /**
-     * Penentuan tipe data.
-     */
+ 
     protected $casts = [
-        'dokumen' => 'string', // DIKOREKSI: Menggunakan 'dokumen'
+        'dokumen' => 'string', 
     ];
 
-    // ... (Relasi pengumumans tidak diubah, diasumsikan sudah benar)
-
-    /**
-     * Mendefinisikan relasi "hasMany" ke model Layanan.
-     * Menggunakan foreign key 'dokumens_id' (sesuai tabel layanans).
-     */
+ 
     public function layanans(): HasMany
     {
-        // Foreign key di tabel layanans
         return $this->hasMany(Layanan::class, 'dokumens_id'); 
     }
 }
