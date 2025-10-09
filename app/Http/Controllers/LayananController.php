@@ -1,114 +1,132 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
+
+use App\Mail\LayananReceived;
+use App\Models\Document;
 use App\Models\Layanan;
 use App\Models\Media;
-use App\Models\Dokumen;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\LayananReceived;
 
 class LayananController extends Controller
 {
     /**
-     * Simpan layanan baru
+     * Simpan layanan baru.
      */
-    
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'judul'          => 'required|string|max:255',
+            'deskripsi'      => 'required|string',
+            'bidang'         => 'required|string|max:255',
+            'nama_pengirim'  => 'required|string|max:255',
+            'email_pengirim' => 'required|email|max:255',
 
-public function store(Request $request)
-{
-    // 1. Validasi input
+            // file media
+            'files.*'        => 'nullable|mimes:jpg,jpeg,png,|max:50000',
 
-    $validated = $request->validate([
-        'judul'          => 'required|string|max:255',
-        'deskripsi'      => 'required|string',
-        'bidang'         => 'required|string|max:255',
-        'nama_pengirim'  => 'required|string|max:255',
-        'email_pengirim' => 'required|email|max:255',
+            // file dokumen
+            'dokumen'   => 'nullable|mimes:pdf|max:30000',
+        ]);
 
-        // upload file
-        'files.*'        => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-        'document_file'  => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:30000',
+        // Mapping bidang ke singkatan
+        $mapBidang = [
+            'bidang_sma'         => 'SMA',
+            'bidang_smk'         => 'SMK',
+            'bidang_pklk'        => 'PKLK',
+            'bidang_gtk'         => 'GTK',
+            'bidang_perencanaan' => 'PRC',
+            'bidang_kebudayaan'  => 'KBD',
+        ];
 
-        // url video
-        'video_urls'     => 'nullable|array',
-        'video_urls.*'   => 'url',
-    ]);
+        $singkatanBidang = $mapBidang[$validated['bidang']] ?? 'UMUM';
+        $tanggal = now()->format('Ymd');
 
-    // 2. Generate kode tracking unik
-    $singkatanBidang = strtoupper(implode('', array_map(fn ($word) => $word[0], explode(' ', $validated['bidang']))));
-    $tanggal = date('Ymd');
-    $jumlahHariIni = Layanan::where('bidang', $validated['bidang'])
-        ->whereDate('created_at', now()->toDateString())
-        ->count() + 1;
-    $increment = str_pad($jumlahHariIni, 4, '0', STR_PAD_LEFT);
+        $jumlahHariIni = Layanan::where('bidang', $validated['bidang'])
+            ->whereDate('created_at', now()->toDateString())
+            ->count() + 1;
 
-    $validated['kode_tracking'] = "{$singkatanBidang}-{$tanggal}-{$increment}";
-    $validated['status'] = 'Diterima';
+        $increment = str_pad($jumlahHariIni, 4, '0', STR_PAD_LEFT);
+        $validated['kode_tracking'] = "{$singkatanBidang}{$tanggal}{$increment}";
+        $validated['status'] = 'Diterima';
 
-    // 3. Simpan media (foto/video)
-    $mediaFiles = [];
+        DB::beginTransaction();
+        try {
+            // Upload media (foto/video file)
+            $mediaFiles = [];
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    if ($file->getSize() > 50000 * 1024) continue;
+                    $path = $file->store('layanan/file', 'public');
+                    $type = in_array($file->extension(), ['mp4', 'mov', 'avi']) ? 'video' : 'foto';
+                    $mediaFiles[] = ['file' => $path, 'type' => $type];
+                }
+            }
 
-    if ($request->hasFile('files')) {
-        foreach ($request->file('files') as $file) {
-            $path = $file->store('layanan/file', 'public'); // simpan di storage/app/public
-            $type = in_array($file->extension(), ['mp4','mov','avi']) ? 'video' : 'foto';
-            $mediaFiles[] = ['file' => $path, 'type' => $type];
+            if (count($mediaFiles) > 0) {
+                $media = Media::create(['file' => $mediaFiles]);
+                $validated['media_id'] = $media->id;
+            } else {
+                $validated['media_id'] = null;
+            }
+
+            // Upload dokumen
+            if ($request->hasFile('dokumen')) {
+                $docFile = $request->file('dokumen');
+                if ($docFile->getSize() <= 30000 * 1024) {
+                    $docPath = $docFile->store('layanan/documents', 'public');
+                    $documents = Document::create(['dokumen' => $docPath]);
+                    $validated['dokumens_id'] = $documents->id;
+                } else {
+                    Log::warning('Dokumen file terlalu besar untuk layanan submission.');
+                    $validated['dokumens_id'] = null;
+                }
+            } else {
+                $validated['dokumens_id'] = null;
+            }
+
+            unset($validated['dokumen']);
+
+            // Simpan data layanan
+            $layanan = Layanan::create($validated);
+
+            // Kirim email konfirmasi
+            if (!empty($layanan->email_pengirim)) {
+                try {
+                    Mail::to($layanan->email_pengirim)->send(new LayananReceived($layanan));
+                } catch (\Exception $e) {
+                    Log::error('Gagal mengirim email untuk layanan: ' . $layanan->kode_tracking . ' - ' . $e->getMessage());
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message'       => 'Laporan berhasil dikirim',
+                'kode_tracking' => $layanan->kode_tracking,
+                'data'          => $layanan->load('media', 'dokumen'),
+            ], 201);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Gagal menyimpan layanan: ' . $e->getMessage());
+            return response()->json(['message' => 'Gagal mengirim laporan.'], 500);
         }
     }
-
-    // Tambahkan video dari URL
-    if ($request->video_urls) {
-        foreach ($request->video_urls as $url) {
-            $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-        }
-    }
-
-    // Buat media record jika ada file/URL
-    if (count($mediaFiles) > 0) {
-        $media = Media::create([
-            'file' => $mediaFiles,
-        ]);
-        $validated['media_id'] = $media->id;
-    }
-
-    // 4. Upload dokumen (pdf/docx dsb)
-    if ($request->hasFile('document_file')) {
-        $docPath = $request->file('document_file')->store('layanan/document', 'public');
-        $document = Dokumen::create([
-            'dokumen' => $docPath
-        ]);
-        $validated['document_id'] = $document->id;
-    }
-
-    // 5. Buat layanan baru
-    $layanan = Layanan::create($validated);
-
-    // 6. Kirim email ke pelapor (opsional)
-    // if (!empty($layanan->email_pengirim)) {
-    //     Mail::to($layanan->email_pengirim)
-    //         ->send(new LayananReceived($layanan));
-    // }
-
-    // 7. Return response JSON
-    return response()->json([
-        'message'       => 'Laporan berhasil dikirim',
-        'kode_tracking' => $layanan->kode_tracking,
-        'data'          => $layanan->load('media','document'),
-    ], 201);
-}
-
 
     /**
-     * Cek status layanan berdasarkan kode tracking
+     * Cek status layanan berdasarkan kode tracking.
      */
     public function status($kode_tracking)
     {
         $layanan = Layanan::where('kode_tracking', $kode_tracking)
-            ->with('media','document')
+            ->with('media', 'dokumen')
             ->first();
 
         if (!$layanan) {
@@ -119,7 +137,7 @@ public function store(Request $request)
     }
 
     /**
-     * List layanan untuk Inertia
+     * List layanan untuk Inertia.
      */
     public function index()
     {
@@ -127,10 +145,11 @@ public function store(Request $request)
         $layanans = Layanan::query();
 
         if ($user && $user->role === 'bidang') {
-            $layanans->where('bidang', $user->username ?? $user->name);
+            $bidangFilter = $user->name ?? explode('@', $user->email)[0];
+            $layanans->where('bidang', $bidangFilter);
         }
 
-        $data = $layanans->with('media','document')->latest()->get();
+        $data = $layanans->with('media', 'dokumen')->latest()->get();
 
         return Inertia::render('layanan/index', [
             'layanans' => $data
@@ -138,11 +157,11 @@ public function store(Request $request)
     }
 
     /**
-     * Tampilkan detail layanan
+     * Tampilkan detail layanan.
      */
     public function show($id)
     {
-        $layanan = Layanan::with('media','document')->findOrFail($id);
+        $layanan = Layanan::with('media', 'dokumen')->findOrFail($id);
 
         return inertia('layanan/show', [
             'layanan' => $layanan,
@@ -150,22 +169,20 @@ public function store(Request $request)
     }
 
     /**
-     * Update layanan
+     * Update layanan.
      */
     public function update(Request $request, $id)
     {
         $layanan = Layanan::findOrFail($id);
 
         $validated = $request->validate([
-            'judul'       => 'sometimes|string|max:255',
-            'deskripsi'   => 'sometimes|string',
-            'bidang'      => 'sometimes|string|max:255',
-            'status'      => 'sometimes|in:Diterima,Diproses,Selesai,Ditolak',
-            'files.*'     => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'document_file' => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:30000',
+            'judul'         => 'sometimes|string|max:255',
+            'deskripsi'     => 'sometimes|string',
+            'bidang'        => 'sometimes|string|max:255',
+            'status'        => 'sometimes|in:Diterima,Diproses,Selesai,Ditolak',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png|max:50000',
+            'dokumen'  => 'nullable|mimes:pdf|max:30000',
         ]);
-
-        // (optional) tambahkan logika update file media & dokumen di sini
 
         $layanan->update($validated);
 
@@ -173,16 +190,15 @@ public function store(Request $request)
     }
 
     /**
-     * Hapus layanan
+     * Hapus layanan.
      */
     public function destroy($id)
     {
-        $layanan = Layanan::with('media','document')->findOrFail($id);
+        $layanan = Layanan::with('media', 'dokumen')->findOrFail($id);
 
-        // hapus file-file di storage
+        // Hapus file media
         if ($layanan->media && is_array($layanan->media->file)) {
             foreach ($layanan->media->file as $m) {
-                // hanya hapus file lokal, bukan URL
                 if (isset($m['file']) && !preg_match('/^https?:\/\//', $m['file'])) {
                     if (Storage::disk('public')->exists($m['file'])) {
                         Storage::disk('public')->delete($m['file']);
@@ -192,9 +208,13 @@ public function store(Request $request)
             $layanan->media->delete();
         }
 
-        if ($layanan->document && Storage::disk('public')->exists($layanan->document->file)) {
-            Storage::disk('public')->delete($layanan->document->file);
-            $layanan->document->delete();
+        // Hapus file dokumen
+        if ($layanan->dokumen) {
+            $docPath = $layanan->dokumen->dokumen;
+            if (Storage::disk('public')->exists($docPath)) {
+                Storage::disk('public')->delete($docPath);
+            }
+            $layanan->dokumen->delete();
         }
 
         $layanan->delete();
