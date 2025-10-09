@@ -102,10 +102,6 @@ export default function index() {
     }
   };
 
-  const handleDelete = (id: number, judul: string) => {
-    if (!confirm(`Yakin ingin menghapus laporan "${judul}"?`)) return;
-    router.delete(`/layanan/${id}`);
-  };
 
   const handleDetail = (id: number) => {
     router.visit(`/layanan/${id}`);
@@ -250,22 +246,14 @@ export default function index() {
                       <TableCell>
                         <div className="flex justify-center gap-3">
                           <Button
-                            size="sm"
+                            // size="lg"
                             variant="outline"
                             onClick={() => handleDetail(l.id)}
-                            className="h-8 w-8 p-0"
+                            className="p-1.5 w-fit"
                             title="Detail"
                           >
-                            <Eye className="h-6 w-6" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleDelete(l.id, l.judul)}
-                            className="h-8 w-8 p-0"
-                            title="Hapus"
-                          >
-                            <Trash2 className="h-4 w-4" />
+                           
+                           Detail
                           </Button>
                         </div>
                       </TableCell>

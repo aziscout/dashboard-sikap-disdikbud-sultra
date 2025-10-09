@@ -48,8 +48,8 @@ class Layanan extends Model
      * Mendefinisikan relasi "belongsTo" ke model Dokumen.
      * Setiap layanan dapat memiliki satu dokumen.
      */
-    public function document(): BelongsTo
+    public function dokumen(): BelongsTo
     {
-        return $this->belongsTo(Dokumen::class, 'document_id');
+        return $this->belongsTo(Dokumen::class, 'dokumen_id');
     }
 }
