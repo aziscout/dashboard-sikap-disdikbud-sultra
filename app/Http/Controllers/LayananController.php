@@ -29,10 +29,10 @@ class LayananController extends Controller
             'email_pengirim' => 'required|email|max:255',
 
             // file media
-            'files.*'        => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'files.*'        => 'nullable|mimes:jpg,jpeg,png,|max:50000',
 
             // file dokumen
-            'dokumen'   => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:30000',
+            'dokumen'   => 'nullable|mimes:pdf|max:30000',
         ]);
 
         // Mapping bidang ke singkatan
@@ -53,7 +53,7 @@ class LayananController extends Controller
             ->count() + 1;
 
         $increment = str_pad($jumlahHariIni, 4, '0', STR_PAD_LEFT);
-        $validated['kode_tracking'] = "{$singkatanBidang}-{$tanggal}-{$increment}";
+        $validated['kode_tracking'] = "{$singkatanBidang}{$tanggal}{$increment}";
         $validated['status'] = 'Diterima';
 
         DB::beginTransaction();
@@ -180,8 +180,8 @@ class LayananController extends Controller
             'deskripsi'     => 'sometimes|string',
             'bidang'        => 'sometimes|string|max:255',
             'status'        => 'sometimes|in:Diterima,Diproses,Selesai,Ditolak',
-            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'dokumen'  => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:30000',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png|max:50000',
+            'dokumen'  => 'nullable|mimes:pdf|max:30000',
         ]);
 
         $layanan->update($validated);
