@@ -39,9 +39,7 @@ public function store(Request $request)
     ]);
 
     // 2. Generate kode tracking unik
-    // Replace underscores with spaces to get correct initials
-    $bidangFormatted = str_replace('_', ' ', $validated['bidang']);
-    $singkatanBidang = strtoupper(implode('', array_map(fn ($word) => $word[0], explode(' ', $bidangFormatted))));
+    $singkatanBidang = strtoupper(implode('', array_map(fn ($word) => $word[0], explode(' ', $validated['bidang']))));
     $tanggal = date('Ymd');
     $jumlahHariIni = Layanan::where('bidang', $validated['bidang'])
         ->whereDate('created_at', now()->toDateString())
@@ -83,7 +81,7 @@ public function store(Request $request)
         $document = Dokumen::create([
             'dokumen' => $docPath
         ]);
-        $validated['dokumens_id'] = $document->id;
+        $validated['document_id'] = $document->id;
     }
 
     // 5. Buat layanan baru
