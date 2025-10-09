@@ -90,15 +90,15 @@ export default function index() {
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "Diterima":
-        return "default"; // Biru
+        return "bg-blue-100 text-blue-800 border-blue-200"; // Biru
       case "Diproses":
-        return "secondary"; // Kuning
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"; // Kuning
       case "Selesai":
-        return "destructive"; // Hijau
+        return "bg-green-100 text-green-800 border-green-200"; // Hijau
       case "Ditolak":
-        return "outline"; // Merah
+        return "bg-red-100 text-red-800 border-red-200"; // Merah
       default:
-        return "outline";
+        return "bg-black-100 text-black-800 border-black-200";
     }
   };
 
@@ -125,16 +125,16 @@ export default function index() {
                 Total: {layanans.length}
               </span>
               <div className="flex flex-wrap gap-3">
-                <Badge variant="default" className="text-xs px-2 py-1">
+                <Badge variant="default" className="text-xs px-2 py-1 bg-blue-100 text-blue-800 border-blue-200">
                   Diterima: {layanans.filter(l => l.status === "Diterima").length}
                 </Badge>
-                <Badge variant="secondary" className="text-xs px-2 py-1">
+                <Badge variant="secondary" className="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 border-yellow-200">
                   Diproses: {layanans.filter(l => l.status === "Diproses").length}
                 </Badge>
-                <Badge variant="destructive" className="text-xs px-2 py-1">
+                <Badge variant="destructive" className="text-xs px-2 py-1 bg-green-100 text-green-800 border-green-200">
                   Selesai: {layanans.filter(l => l.status === "Selesai").length}
                 </Badge>
-                <Badge variant="outline" className="text-xs px-2 py-1">
+                <Badge variant="outline" className="text-xs px-2 py-1 bg-red-100 text-red-800 border-red-200">
                   Ditolak: {layanans.filter(l => l.status === "Ditolak").length}
                 </Badge>
               </div>
@@ -232,7 +232,7 @@ export default function index() {
                         </code>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getStatusVariant(l.status)} className="text-xs">
+                        <Badge className={`${getStatusVariant(l.status)} text-xs`}>
                           {l.status}
                         </Badge>
                       </TableCell>
