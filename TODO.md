@@ -1,0 +1,7 @@
+- [x] Update Pengumuman interface: add deskripsi, change file? to tabel?
+- [x] Add description display in the card with line-clamp-3
+- [x] Modify file display: for 'foto', show clickable image; for 'video', show text link
+- [x] Update all references from item.file to item.tabel
+- [x] Make cover image clickable in agenda/index.tsx
+- [x] Fix pengumuman edit to display uploaded photos by changing interface from documents to medias
+- [x] Fix controller update method coverImage key

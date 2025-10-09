@@ -2,19 +2,29 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Agenda extends Model
 {
+    use HasFactory, Notifiable;
+
+    protected $table = 'agenda';
+
     protected $fillable = [
-        'medias_id',
         'judul',
         'deskripsi',
-        'file',
-        'cover_image',
-        'category',
+        'lokasi',
+        'coverImage',
+        'penyelenggara',
         'instansi',
         'lokasi',
         'tabel',
+        'medias_id',
     ];
+
+    public function medias(){
+        return $this->belongsTo(Media::class, 'medias_id');
+    }
 }

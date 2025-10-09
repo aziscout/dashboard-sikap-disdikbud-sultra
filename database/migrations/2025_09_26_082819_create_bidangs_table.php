@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('bidangs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('laporans_id')->constrained('laporans')->onDelete('cascade');
+            // $table->foreignId('laporans_id')->constrained('laporans')->onDelete('cascade');
+            $table->foreignId('laporan_kegiatan_id')->constrained('laporan_kegiatan')->onDelete('cascade');
             $table->string('nama');
             $table->string('email');
             $table->integer('nomor');
             $table->enum('role',['admin','bidang']);
             $table->timestamps();
+            $table->string('name');
         });
     }
 

@@ -135,7 +135,7 @@ export default function Edit() {
                 <h3 className="font-medium mb-2">Preview Logo</h3>
                 {logoPreview ? (
                     <div className="border rounded flex justify-center">
-                    <img src={logoPreview} alt="Logo Preview" className="h-32 w-32 object-cover object-center p-2" />
+                    <img src={logoPreview} alt="Logo Preview" className="h-32 object-contain p-2" />
                     </div>
                 ) : (
                     <div className="flex items-center justify-center h-32 border rounded text-gray-500 p-2">
