@@ -13,11 +13,23 @@ use App\Http\Controllers\LaporanKegiatanController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PengumumanController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->role === 'admin') {
+            return redirect('admin/dashboard');
+        }
+        if ($user->role === 'bidang') {
+            return redirect('bidang/dashboard');
+        }
+        return redirect('login');
+    } else {
+        return redirect('login');
+    }
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
