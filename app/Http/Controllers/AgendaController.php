@@ -110,11 +110,11 @@ class AgendaController extends Controller
 
         // Update cover
         if ($request->hasFile('coverImage')) {
-            if ($agenda->cover_image && Storage::disk('public')->exists($agenda->cover_image)) {
-                Storage::disk('public')->delete($agenda->cover_image);
+            if ($agenda->coverImage && Storage::disk('public')->exists($agenda->coverImage)) {
+                Storage::disk('public')->delete($agenda->coverImage);
             }
             $coverPath = $request->file('coverImage')->store('agenda/cover', 'public');
-            $agenda->cover_image = $coverPath;
+            $agenda->coverImage = $coverPath;
         }
 
         // Ambil media lama
@@ -178,8 +178,8 @@ class AgendaController extends Controller
         $agenda = Agenda::with('medias')->findOrFail($id);
 
         // hapus cover
-        if ($agenda->cover_image && Storage::disk('public')->exists($agenda->cover_image)) {
-            Storage::disk('public')->delete($agenda->cover_image);
+        if ($agenda->coverImage && Storage::disk('public')->exists($agenda->coverImage)) {
+            Storage::disk('public')->delete($agenda->coverImage);
         }
 
         // hapus semua file media
