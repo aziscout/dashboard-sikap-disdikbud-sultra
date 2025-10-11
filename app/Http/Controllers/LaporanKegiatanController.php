@@ -106,29 +106,45 @@ class LaporanKegiatanController extends Controller
         }
 
         $request->validate([
-            'judul'         => 'required|string|max:255',
-            'penyelenggara' => 'required|string|max:255',
-            'lokasi'        => 'required|string|max:255',
-            'instansi'      => 'required|in:umum,sma,smk,slb',
-            'deskripsi'     => 'required|string|max:1000',
-            'coverImage'    => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
-            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'video_urls'    => 'nullable|array',
-            'video_urls.*'  => 'url',
+            'judul'        => 'required|string|max:255',
+            'penyelenggara'=> 'required|string|max:255',
+            'lokasi'       => 'required|string|max:255',
+            'instansi'     => 'required|in:umum,sma,smk,slb',
+            'deskripsi'    => 'required|string|max:1000',
+            'coverImage'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
+            'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'video_urls'   => 'nullable|array',
+            'video_urls.*' => 'url',
+            'deleted_files'=> 'nullable|array',
         ]);
 
-        // Update cover image
+        // Update cover
         if ($request->hasFile('coverImage')) {
-            if ($laporan_kegiatan->coverImage && Storage::disk('public')->exists($laporan_kegiatan->coverImage)) {
-                Storage::disk('public')->delete($laporan_kegiatan->coverImage);
+            if ($laporan_kegiatan->cover_image && Storage::disk('public')->exists($laporan_kegiatan->cover_image)) {
+                Storage::disk('public')->delete($laporan_kegiatan->cover_image);
             }
             $coverPath = $request->file('coverImage')->store('laporan-kegiatan/cover', 'public');
-            $laporan_kegiatan->coverImage = $coverPath;
+            $laporan_kegiatan->cover_image = $coverPath;
         }
 
-        // Update media
-        $mediaFiles = [];
+        // Ambil media lama
+        $oldMedia = $laporan_kegiatan->medias ? $laporan_kegiatan->medias->file : [];
+        $mediaFiles = $oldMedia ?? [];
 
+        // Hapus media yang dipilih user
+        if ($request->deleted_files) {
+            foreach ($request->deleted_files as $delFile) {
+                if (!preg_match('/^https?:\/\//', $delFile) && Storage::disk('public')->exists($delFile)) {
+                    Storage::disk('public')->delete($delFile);
+                }
+                $mediaFiles = array_filter($mediaFiles, function ($m) use ($delFile) {
+                    return $m['file'] !== $delFile;
+                });
+            }
+            $mediaFiles = array_values($mediaFiles);
+        }
+
+        // Tambah file baru (foto/video upload)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $file->store('laporan-kegiatan/file', 'public');
@@ -137,22 +153,30 @@ class LaporanKegiatanController extends Controller
             }
         }
 
+        $mediaFiles = array_filter($mediaFiles, function ($m) {
+            return $m['type'] !== 'video' || !preg_match('/^https?:\/\//', $m['file']);
+        });
+
+        // Masukkan ulang link video dari request
         if ($request->video_urls) {
             foreach ($request->video_urls as $url) {
                 $mediaFiles[] = ['file' => $url, 'type' => 'video'];
             }
         }
 
+        // Simpan media
         if ($laporan_kegiatan->medias) {
-            $laporan_kegiatan->medias->update(['file' => $mediaFiles]);
+            $laporan_kegiatan->medias->update(['file' => array_values($mediaFiles)]);
+        } else {
+            $laporan_kegiatan->medias()->create(['file' => array_values($mediaFiles)]);
         }
 
         $laporan_kegiatan->update([
-            'judul'         => $request->judul,
-            'penyelenggara' => $request->penyelenggara,
-            'lokasi'        => $request->lokasi,
-            'instansi'      => $request->instansi,
-            'deskripsi'     => $request->deskripsi,
+            'judul'        => $request->judul,
+            'penyelenggara'=> $request->penyelenggara,
+            'lokasi'       => $request->lokasi,
+            'instansi'     => $request->instansi,
+            'deskripsi'    => $request->deskripsi,
         ]);
 
         return redirect()->route('laporan-kegiatan.index')
