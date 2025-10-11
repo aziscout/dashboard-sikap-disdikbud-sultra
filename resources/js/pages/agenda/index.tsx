@@ -18,6 +18,9 @@ import {
   ListFilterPlus,
   MapPin,
   Megaphone,
+  Plus,
+  SquarePen,
+  Trash2,
 } from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 
@@ -133,7 +136,9 @@ export default function Index() {
           />
 
           <Link href={route("agenda.create")}>
-            <Button>Tambah</Button>
+            <Button>
+              <Plus />Tambah
+            </Button>
           </Link>
 
           {/* Sort Dropdown */}
@@ -251,10 +256,7 @@ export default function Index() {
                   <p className="text-gray-600 text-sm mb-2">
                     <strong>Penyelenggara:</strong> {item.penyelenggara}
                   </p>
-                  <p className="text-gray-600 text-sm mb-2">
-                    <MapPin className="inline h-4 w-4 mr-1 text-gray-500" />
-                    {item.instansi} - {item.lokasi}
-                  </p>
+                  
 
                   {/* 🔹 Media Files (Adapted from laporan-kegiatan) */}
                   {item.medias?.file && item.medias.file.length > 0 && (
@@ -287,28 +289,34 @@ export default function Index() {
                     </div>
                   )}
 
-                  <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
-                    <CalendarDays className="w-4 h-4" />
-                    {new Date(item.created_at).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
+                  <div className="flex justify-between">
+                    <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
+                      <CalendarDays className="w-4 h-4" />
+                      {new Date(item.created_at).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                    <p className="text-gray-600 text-sm mb-2">
+                      <MapPin className="inline h-4 w-4 mr-1 text-gray-500" />
+                      {item.instansi} - {item.lokasi}
+                    </p>
+                  </div>
 
                   <div className="mt-auto flex gap-2">
                     <Button
                       onClick={() => handleEdit(item.id)}
                       className="bg-blue-950 hover:bg-blue-900 flex-1"
                     >
-                      Edit
+                      <SquarePen />Edit
                     </Button>
                     <Button
                       disabled={processing}
                       onClick={() => handleDelete(item.id, item.judul)}
                       className="bg-red-600 hover:bg-red-500 flex-1"
                     >
-                      Hapus
+                      <Trash2 />Hapus
                     </Button>
                   </div>
                 </div>
