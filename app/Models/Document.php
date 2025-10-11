@@ -2,20 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Document extends Model
 {
-    protected $table = 'documents';
+    use HasFactory;
+
+    protected $table = 'dokumens'; 
+
     protected $fillable = [
-        'file',
-    ];
-    protected $casts = [
-        'file' => 'array',
+        'dokumen', 
     ];
 
-    public function pengumumans()
+ 
+    protected $casts = [
+        'dokumen' => 'string', 
+    ];
+
+ 
+    public function layanans(): HasMany
     {
-        return $this->hasMany(Pengumuman::class, 'documents_id');
+        return $this->hasMany(Layanan::class, 'dokumens_id'); 
     }
 }

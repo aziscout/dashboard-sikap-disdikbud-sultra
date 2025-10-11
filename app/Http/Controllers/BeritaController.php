@@ -167,9 +167,6 @@ class BeritaController extends Controller
         return redirect()->route('berita.index')->with('message', 'Berita berhasil diperbarui');
     }
 
-
-
-
     public function destroy($id)
     {
         $berita = Berita::with('medias')->findOrFail($id);

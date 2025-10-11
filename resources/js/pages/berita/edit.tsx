@@ -6,11 +6,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { CircleAlert, Plus, Save, SquarePen, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Ubah Berita', href: '/berita/edit' }];
+const breadcrumbs: BreadcrumbItem[] = [
+  { 
+    title: 'Berita',
+    href: '/berita' 
+  },
+  { 
+    title: 'Ubah Berita',
+    href: '/berita/edit' 
+  },
+];
 
 interface MediaItem {
   file: string;
@@ -34,7 +43,7 @@ interface Props {
 }
 
 export default function Edit({ berita }: Props) {
-  const { data, setData, post, errors } = useForm({
+  const { data, setData, post, errors, processing } = useForm({
     judul: berita.judul || '',
     deskripsi: berita.deskripsi || '',
     cover_image: null as File | null,
@@ -211,9 +220,14 @@ const handleChangePhoto = (index: number, file: File) => {
               <Input value={data.lokasi} onChange={(e) => setData('lokasi', e.target.value)} />
             </div>
 
-            <Button type="submit" className="w-full md:w-auto">
-              <Save /> Simpan
-            </Button>
+            <div className="flex space-x-2">
+                          <Button type="submit" disabled={processing}>
+                            {processing ? 'Updating...' : <><Save /> Simpan</>}
+                          </Button>
+                          <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
+                            Batal
+                          </Button>
+            </div>
           </form>
         </div>
 

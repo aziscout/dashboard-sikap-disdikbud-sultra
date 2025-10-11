@@ -8,11 +8,11 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { CircleAlert, Plus, Save, SquarePen, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Agenda', href: '/agenda' },
-  { title: 'Edit Agenda', href: '/agenda/edit' },
+  { title: 'Ubah Agenda', href: '/agenda/edit' },
 ];
 
 interface MediaItem {
@@ -56,6 +56,7 @@ export default function Edit() {
     video_urls: (agenda.medias?.file || [])
       .filter((m) => m.type === 'video' && m.file.startsWith('http'))
       .map((m) => m.file),
+    deleted_files: [] as string[],
     _method: 'PUT',
   });
 
@@ -67,6 +68,9 @@ export default function Edit() {
       .filter((m) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http')))
       .map((m) => `/storage/${m.file}`),
   );
+  const localMediaIndices = useMemo(() => {
+    return (agenda.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
+  }, [agenda.medias]);
   const [videoUrlInput, setVideoUrlInput] = useState('');
 
   const MAX_FILES = 5;
@@ -103,6 +107,31 @@ export default function Edit() {
       const newPreview = [...previewFileUrls, ...incoming.map((f) => URL.createObjectURL(f))];
       setPreviewFileUrls(newPreview);
     }
+  };
+
+  const handleChangePhoto = (index: number, file: File) => {
+    const originalIndex = localMediaIndices[index];
+    const removedFile = agenda.medias?.file[originalIndex]?.file;
+    if (removedFile) {
+      setData("deleted_files", [...data.deleted_files, removedFile]);
+    }
+
+    const newPreviews = [...previewFileUrls];
+    newPreviews[index] = URL.createObjectURL(file);
+    setPreviewFileUrls(newPreviews);
+
+    setData("files", [...data.files, file]);
+  };
+
+  const handleVideoUrlChange = (index: number, value: string) => {
+    const updatedUrls = [...data.video_urls];
+    updatedUrls[index] = value;
+    setData('video_urls', updatedUrls);
+  };
+
+  const handleVideoUrlRemove = (index: number) => {
+    const updatedUrls = data.video_urls.filter((_, i) => i !== index);
+    setData('video_urls', updatedUrls);
   };
 
   return (
@@ -149,36 +178,41 @@ export default function Edit() {
             </div>
 
             <div>
-              <Label>Tambah Link Video</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="url"
-                  placeholder="https://youtube.com/..."
-                  value={videoUrlInput}
-                  onChange={(e) => setVideoUrlInput(e.target.value)}
-                />
-                <Button
-                  type="button"
-                  onClick={() => {
+              <Label>Link Video</Label>
+              <div className="space-y-2">
+                {data.video_urls.map((url, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Input type="url" value={url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} />
+                    <Button
+                      type="button"
+                      onClick={() => handleVideoUrlRemove(idx)}
+                      className="flex-shrink-0 bg-red-600 hover:bg-red-500"
+                    >
+                      <Trash2 />
+                    </Button>
+                  </div>
+                ))}
+
+                <div className="mt-2 flex gap-2">
+                  <Input
+                    type="url"
+                    placeholder="https://youtube.com/..."
+                    value={videoUrlInput}
+                    onChange={(e) => setVideoUrlInput(e.target.value)}
+                  />
+                  <Button type="button" onClick={() => {
                     if (videoUrlInput.trim() !== '') {
                       setData('video_urls', [...data.video_urls, videoUrlInput.trim()]);
                       setVideoUrlInput('');
                     }
-                  }}
-                >
-                  <Plus />
-                </Button>
+                  }} className="flex-shrink-0">
+                    <Plus />
+                  </Button>
+                </div>
               </div>
-              {data.video_urls.length > 0 && (
-                <ul className="mt-2 list-disc pl-4 text-sm text-gray-600">
-                  {data.video_urls.map((url, idx) => (
-                    <li key={idx}>{url}</li>
-                  ))}
-                </ul>
-              )}
             </div>
 
-            <div>
+            {/* <div>
               <Label htmlFor="category">Kategori</Label>
               <Select value={data.category} onValueChange={(value) => setData('category', value)}>
                 <SelectTrigger className="w-full">
@@ -189,7 +223,7 @@ export default function Edit() {
                   <SelectItem value="video">Video</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
 
             <div>
               <Label htmlFor="instansi">Instansi</Label>
@@ -213,7 +247,7 @@ export default function Edit() {
 
             <div className="flex space-x-2">
               <Button type="submit" disabled={processing}>
-                {processing ? 'Updating...' : <><Save /> Update</>}
+                {processing ? 'Updating...' : <><Save /> Simpan</>}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
                 Batal
@@ -257,13 +291,7 @@ export default function Edit() {
                           input.onchange = (e: Event) => {
                             const file = (e.target as HTMLInputElement).files?.[0];
                             if (file) {
-                              const newFiles = [...data.files];
-                              newFiles[i] = file;
-                              setData('files', newFiles);
-
-                              const newPreview = [...previewFileUrls];
-                              newPreview[i] = URL.createObjectURL(file);
-                              setPreviewFileUrls(newPreview);
+                              handleChangePhoto(i, file);
                             }
                           };
                           input.click();
@@ -277,6 +305,12 @@ export default function Edit() {
                         type="button"
                         className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500"
                         onClick={() => {
+                          const originalIndex = localMediaIndices[i];
+                          const removedFile = agenda.medias?.file[originalIndex]?.file;
+                          if (removedFile) {
+                            setData("deleted_files", [...data.deleted_files, removedFile]);
+                          }
+
                           const newFiles = data.files.filter((_, idx) => idx !== i);
                           const newPreview = previewFileUrls.filter((_, idx) => idx !== i);
                           setData('files', newFiles);

@@ -146,7 +146,7 @@ return (
         </div>
         </div>
         <Button type="submit" className="w-full md:w-auto">
-            <Save /> Simpan
+            <Save />Simpan
         </Button>
     </form>
     </AppLayout>

@@ -16,9 +16,9 @@ class PengumumanController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'admin') {
-            $pengumuman = Pengumuman::latest()->get();
+            $pengumuman = Pengumuman::with('medias')->latest()->get();
         } else {
-            $pengumuman = Pengumuman::where('bidangs_id', $user->id)->latest()->get();
+            $pengumuman = Pengumuman::with('medias')->where('bidangs_id', $user->id)->latest()->get();
         }
 
         return Inertia::render("pengumuman/index", compact("pengumuman"));
@@ -37,6 +37,7 @@ class PengumumanController extends Controller
             'lokasi'        => 'nullable|string|max:255',
             'instansi'      => 'required|in:umum,slb,smk,sma',
             'deskripsi'     => 'required|string|max:2000',
+            // 'category'      => 'required|in:foto,video,dokumen',
             'coverImage'    => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
             'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'video_urls'    => 'nullable|array',
@@ -75,6 +76,7 @@ class PengumumanController extends Controller
             'penyelenggara' => $request->penyelenggara,
             'lokasi'        => $request->lokasi,
             'instansi'      => $request->instansi,
+            'category'      => $request->category,
             'coverImage'    => $coverPath,
             'tabel'         => 'pengumuman',
             'medias_id'     => $media->id,
@@ -99,13 +101,15 @@ class PengumumanController extends Controller
             'penyelenggara' => 'nullable|string|max:255',
             'lokasi'        => 'nullable|string|max:255',
             'instansi'      => 'required|in:umum,slb,smk,sma',
+            // 'category'      => 'required|in:foto,video,dokumen',
             'coverImage'    => 'nullable|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
             'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'video_urls'    => 'nullable|array',
             'video_urls.*'  => 'url',
+            'deleted_files' => 'nullable|array',
         ]);
 
-        // Update cover image
+        // Update cover
         if ($request->hasFile('coverImage')) {
             if ($pengumuman->coverImage && Storage::disk('public')->exists($pengumuman->coverImage)) {
                 Storage::disk('public')->delete($pengumuman->coverImage);
@@ -114,25 +118,48 @@ class PengumumanController extends Controller
             $pengumuman->coverImage = $coverPath;
         }
 
-        // Update media
-        $mediaFiles = [];
+        // Ambil media lama
+        $oldMedia = $pengumuman->medias ? $pengumuman->medias->file : [];
+        $mediaFiles = $oldMedia ?? [];
 
+        // Hapus media yang dipilih user
+        if ($request->deleted_files) {
+            foreach ($request->deleted_files as $delFile) {
+                if (!preg_match('/^https?:\/\//', $delFile) && Storage::disk('public')->exists($delFile)) {
+                    Storage::disk('public')->delete($delFile);
+                }
+                $mediaFiles = array_filter($mediaFiles, function ($m) use ($delFile) {
+                    return $m['file'] !== $delFile;
+                });
+            }
+            $mediaFiles = array_values($mediaFiles);
+        }
+
+        // Tambah file baru (foto/video upload)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $file->store('pengumuman/file', 'public');
-                $type = in_array($file->extension(), ['mp4', 'mov', 'avi']) ? 'video' : 'foto';
+                $type = in_array($file->extension(), ['mp4','mov','avi']) ? 'video' : 'foto';
                 $mediaFiles[] = ['file' => $path, 'type' => $type];
             }
         }
 
+        $mediaFiles = array_filter($mediaFiles, function ($m) {
+            return $m['type'] !== 'video' || !preg_match('/^https?:\/\//', $m['file']);
+        });
+
+        // Masukkan ulang link video dari request
         if ($request->video_urls) {
             foreach ($request->video_urls as $url) {
                 $mediaFiles[] = ['file' => $url, 'type' => 'video'];
             }
         }
 
+        // Simpan media
         if ($pengumuman->medias) {
-            $pengumuman->medias->update(['file' => $mediaFiles]);
+            $pengumuman->medias->update(['file' => array_values($mediaFiles)]);
+        } else {
+            $pengumuman->medias()->create(['file' => array_values($mediaFiles)]);
         }
 
         $pengumuman->update([
@@ -141,6 +168,7 @@ class PengumumanController extends Controller
             'penyelenggara' => $request->penyelenggara,
             'lokasi'        => $request->lokasi,
             'instansi'      => $request->instansi,
+            'category'      => $request->category,
         ]);
 
         return redirect()->route('pengumuman.index')
