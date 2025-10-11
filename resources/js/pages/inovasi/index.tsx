@@ -14,7 +14,6 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import {
   CalendarDays,
-  FileText,
   ListFilterPlus,
   Megaphone,
   Plus,
@@ -210,14 +209,12 @@ export default function Index() {
                 key={item.id}
                 className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
               >
-                {/* Cover bisa diklik */}
-                <a href={getCoverUrl(item)} target="_blank" className="block">
-                  <img
-                    src={getCoverUrl(item)}
-                    alt={item.judul}
-                    className="w-full h-48 object-cover"
-                  />
-                </a>
+                {/* Cover hanya tampil gambar, tidak bisa diklik */}
+                <img
+                  src={getCoverUrl(item)}
+                  alt={item.judul}
+                  className="w-full h-48 object-cover"
+                />
 
                 <div className="p-4 flex flex-col flex-grow">
                   <h2 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
@@ -227,44 +224,16 @@ export default function Index() {
                     {item.deskripsi}
                   </p>
 
-                  {/* 🔸 Tampilkan Media */}
-                  {item.medias?.file && item.medias.file.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {item.medias.file.map((media, idx) => {
-                        if (!media?.file) return null;
-                        const fileUrl = media.file.startsWith('http')
-                          ? media.file
-                          : `/storage/${media.file}`;
-                        const lower = media.file.toLowerCase();
-                        const isVideo = /\.(mp4|mov|avi)$/i.test(lower);
-                        const isImage = /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(lower);
-
-                        return (
-                          <a
-                            key={idx}
-                            href={fileUrl}
-                            target="_blank"
-                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-                          >
-                            <FileText className="h-4 w-4" />
-                            {isVideo
-                              ? `Lihat Video ${idx + 1}`
-                              : isImage
-                              ? `Lihat File ${idx + 1}`
-                              : `Unduh File ${idx + 1}`}
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
+                  {/* 📅 Tanggal + Kategori + Lokasi */}
+                  <p className="text-gray-500 text-sm  flex items-center gap-2 mb-2 flex-wrap">
                     <CalendarDays className="w-4 h-4" />
                     {new Date(item.created_at).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'long',
                       year: 'numeric',
                     })}
+                    <span className="text-black-600 font-medium">• {item.category}</span>
+                    <span className="text-blcak-600 font-medium">• {item.lokasi}</span>
                   </p>
 
                   <div className="mt-auto flex gap-2">
