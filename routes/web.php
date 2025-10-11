@@ -109,6 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/inovasi/{inovasi}/edit', [InovasiController::class, 'edit'])->name('inovasi.edit');
         Route::put('/inovasi/{inovasi}', [InovasiController::class, 'update'])->name('inovasi.update');
         Route::delete('/inovasi/{inovasi}', [InovasiController::class, 'destroy'])->name('inovasi.destroy');
+
     });
     // layanan
     Route::middleware(['permission:Layanan'])->group(function(){
