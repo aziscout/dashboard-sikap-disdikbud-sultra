@@ -12,20 +12,8 @@ export function NavUser() {
     const { state } = useSidebar();
     const isMobile = useIsMobile();
 
-    const capitalizeLetter = auth.user.name
-        .split('_')
-        .map((item) => {
-            return item
-                .split('')
-                .map((letter, index) => {
-                    if (index === 0) {
-                        return letter.toUpperCase();
-                    }
-                    return letter;
-                })
-                .join('');
-        })
-        .join(' ');
+    
+    
 
     return (
         <SidebarMenu>

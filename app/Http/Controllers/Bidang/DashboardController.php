@@ -15,14 +15,23 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        $layananQuery = Layanan::query();
+        $laporanQuery = LaporanKegiatan::query();
+
+        if ($user && $user->role === 'bidang') {
+            $bidangFilter = $user->name ?? explode('@', $user->email)[0];
+            $layananQuery->where('bidang', $bidangFilter);
+            $laporanQuery->where('bidangs_id', $user->id);
+        }
+
         return Inertia::render('bidang/dashboard/index', [
             'title' => 'Dashboard Bidang',
             'user' => $user,
             'data' => [
-                'totalLayanan' => Layanan::count(),
-                'totalLayananAktif' => Layanan::where('status', 'aktif')->count(),
-                'totalLaporanKegiatan' => LaporanKegiatan::count(),
-            ],    
+                'totalLayanan' => $layananQuery->count(),
+                'totalLayananAktif' => (clone $layananQuery)->where('status', 'Diproses')->count(),
+                'totalLaporanKegiatan' => $laporanQuery->count(),
+            ],
         ]);
     }
 }
