@@ -26,7 +26,7 @@ class InovasiController extends Controller
         $request->validate([
             'judul'        => 'required|string|max:255',
             'deskripsi'    => 'required|string',
-            'cover_image'  => 'required|image|mimes:jpg,jpeg,png|max:20048',
+            'coverImage'  => 'required|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'     => 'nullable|in:foto,video',
             'instansi'     => 'required|in:umum,sma,smk,slb',
@@ -36,7 +36,7 @@ class InovasiController extends Controller
         ]);
 
         // Simpan cover image
-        $coverPath = $request->file('cover_image')->store('inovasi/cover', 'public');
+        $coverPath = $request->file('coverImage')->store('inovasi/cover', 'public');
 
         // Kumpulkan file media
         $mediaFiles = [];
@@ -62,7 +62,7 @@ class InovasiController extends Controller
             'medias_id'   => $media->id,
             'judul'       => $request->judul,
             'deskripsi'   => $request->deskripsi,
-            'cover_image' => $coverPath,
+            'coverImage' => $coverPath,
             'category'    => $request->category,
             'instansi'    => $request->instansi,
             'lokasi'      => $request->lokasi,
@@ -85,7 +85,7 @@ class InovasiController extends Controller
     $request->validate([
         'judul'         => 'required|string|max:255',
         'deskripsi'     => 'required|string',
-        'cover_image'   => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
+        'coverImage'   => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
         'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
         'category'      => 'nullable|in:foto,video',
         'instansi'      => 'required|in:umum,sma,smk,slb',
@@ -96,12 +96,12 @@ class InovasiController extends Controller
     ]);
 
     // ✅ Update cover image jika ada file baru
-    if ($request->hasFile('cover_image')) {
-        if ($inovasi->cover_image && Storage::disk('public')->exists($inovasi->cover_image)) {
-            Storage::disk('public')->delete($inovasi->cover_image);
+    if ($request->hasFile('coverImage')) {
+        if ($inovasi->coverImage && Storage::disk('public')->exists($inovasi->coverImage)) {
+            Storage::disk('public')->delete($inovasi->coverImage);
         }
-        $coverPath = $request->file('cover_image')->store('inovasi/cover', 'public');
-        $inovasi->cover_image = $coverPath;
+        $coverPath = $request->file('coverImage')->store('inovasi/cover', 'public');
+        $inovasi->coverImage = $coverPath;
     }
 
     // ✅ Ambil media lama dari database
@@ -166,8 +166,8 @@ class InovasiController extends Controller
         $inovasi = Inovasi::with('medias')->findOrFail($id);
 
         // Hapus cover image
-        if ($inovasi->cover_image && Storage::disk('public')->exists($inovasi->cover_image)) {
-            Storage::disk('public')->delete($inovasi->cover_image);
+        if ($inovasi->coverImage && Storage::disk('public')->exists($inovasi->coverImage)) {
+            Storage::disk('public')->delete($inovasi->coverImage);
         }
 
         // Hapus semua media file

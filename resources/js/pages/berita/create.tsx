@@ -27,7 +27,7 @@ export default function Index() {
     const { data, setData, post, errors } = useForm({
         judul: '',
         deskripsi: '',
-        cover_image: null as File | null,
+        coverImage: null as File | null,
         files: [] as File[],
         video_urls: [] as string[],
         category: '',
@@ -49,7 +49,7 @@ export default function Index() {
     const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-        setData('cover_image', file);
+        setData('coverImage', file);
         setPreviewCoverUrl(URL.createObjectURL(file));
         }
     };
@@ -175,7 +175,7 @@ export default function Index() {
             <div className="w-full md:w-1/2 space-y-6">
             {/* COVER IMAGE */}
             <div className="space-y-2 rounded border p-4">
-                <Label htmlFor="cover_image">Cover Image</Label>
+                <Label htmlFor="coverImage">Cover Image</Label>
                 <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
                 {previewCoverUrl ? (
                 <img src={previewCoverUrl} alt="Preview Cover" className="mt-2 h-30 w-46 rounded object-cover" />

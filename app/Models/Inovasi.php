@@ -10,7 +10,7 @@ class Inovasi extends Model
         'medias_id',
         'judul',
         'deskripsi',
-        'cover_image',
+        'coverImage',
         'category',
         'instansi',
         'lokasi',

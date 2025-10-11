@@ -21,7 +21,7 @@ export default function create() {
   const { data, setData, post, errors } = useForm({
     judul: '',
     deskripsi: '',
-    cover_image: null as File | null,
+    coverImage: null as File | null,
     files: [] as File[],
     video_urls: [] as string[],
     category: '',
@@ -43,7 +43,7 @@ export default function create() {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setData('cover_image', file);
+      setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
     }
   };
@@ -161,7 +161,7 @@ export default function create() {
         <div className="w-full md:w-1/2 space-y-6">
           {/* COVER IMAGE */}
           <div className="space-y-2 rounded border p-4">
-            <Label htmlFor="cover_image">Cover Image</Label>
+            <Label htmlFor="coverImage">Cover Image</Label>
             <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
             {previewCoverUrl ? (
               <img

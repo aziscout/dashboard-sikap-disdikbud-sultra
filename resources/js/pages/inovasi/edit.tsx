@@ -27,7 +27,7 @@ interface Inovasi {
   instansi: string;
   lokasi: string;
   category: string;
-  cover_image: string | null;
+  coverImage: string | null;
   medias: { file: MediaItem[] } | null;
 }
 
@@ -44,7 +44,7 @@ export default function EditInovasi() {
     instansi: inovasi.instansi || '',
     lokasi: inovasi.lokasi || '',
     category: inovasi.category || '',
-    cover_image: null as File | null,
+    coverImage: null as File | null,
     files: [] as File[],
     video_urls: (inovasi.medias?.file || [])
       .filter((m) => m.type === 'video' && m.file.startsWith('http'))
@@ -53,7 +53,7 @@ export default function EditInovasi() {
   });
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(
-    inovasi.cover_image ? `/storage/${inovasi.cover_image}` : null,
+    inovasi.coverImage ? `/storage/${inovasi.coverImage}` : null,
   );
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
     (inovasi.medias?.file || [])
@@ -86,7 +86,7 @@ export default function EditInovasi() {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setData('cover_image', file);
+      setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
       showNotif('Cover berhasil diubah', 'success');
     }

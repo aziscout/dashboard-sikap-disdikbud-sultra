@@ -26,7 +26,7 @@ class BeritaController extends Controller
         $request->validate([
             'judul'       => 'required|string|max:255',
             'deskripsi'   => 'required|string',
-            'cover_image' => 'required|image|mimes:jpg,jpeg,png|max:20048',
+            'coverImage' => 'required|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'     => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'    => 'nullable|in:foto,video',
             'instansi'    => 'required|in:umum,sma,smk,slb',
@@ -36,7 +36,7 @@ class BeritaController extends Controller
         ]);
 
         // cover image
-        $coverPath = $request->file('cover_image')->store('berita/cover', 'public');
+        $coverPath = $request->file('coverImage')->store('berita/cover', 'public');
 
         // simpan semua media ke array JSON
         $mediaFiles = [];
@@ -73,7 +73,7 @@ class BeritaController extends Controller
             'medias_id'   => $media->id,
             'judul'       => $request->judul,
             'deskripsi'   => $request->deskripsi,
-            'cover_image' => $coverPath,
+            'coverImage' => $coverPath,
             'category'    => $request->category,
             'instansi'    => $request->instansi,
             'lokasi'      => $request->lokasi,
@@ -95,7 +95,7 @@ class BeritaController extends Controller
         $request->validate([
             'judul'        => 'required|string|max:255',
             'deskripsi'    => 'required|string',
-            'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
+            'coverImage'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'     => 'nullable|in:foto,video',
             'instansi'     => 'required|in:umum,sma,smk,slb',
@@ -106,9 +106,9 @@ class BeritaController extends Controller
         ]);
 
         // Update cover
-        if ($request->hasFile('cover_image')) {
-            $coverPath = $request->file('cover_image')->store('berita/cover', 'public');
-            $berita->cover_image = $coverPath;
+        if ($request->hasFile('coverImage')) {
+            $coverPath = $request->file('coverImage')->store('berita/cover', 'public');
+            $berita->coverImage = $coverPath;
         }
 
         // Ambil media lama
@@ -172,8 +172,8 @@ class BeritaController extends Controller
         $berita = Berita::with('medias')->findOrFail($id);
 
         // Hapus cover image di storage
-        if ($berita->cover_image && Storage::disk('public')->exists($berita->cover_image)) {
-            Storage::disk('public')->delete($berita->cover_image);
+        if ($berita->coverImage && Storage::disk('public')->exists($berita->coverImage)) {
+            Storage::disk('public')->delete($berita->coverImage);
         }
 
         // Hapus semua file media
