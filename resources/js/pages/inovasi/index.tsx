@@ -203,11 +203,11 @@ export default function Index() {
       {/* Grid Card */}
       <div className="m-4">
         {filteredInovasi.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
             {filteredInovasi.map((item) => (
               <article
                 key={item.id}
-                className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
+                className="bg-white dark:bg-background rounded-2xl shadow hover:shadow-lg dark:hover:bg-sidebar transition flex flex-col overflow-hidden"
               >
                 {/* Cover hanya tampil gambar, tidak bisa diklik */}
                 <img
@@ -217,23 +217,23 @@ export default function Index() {
                 />
 
                 <div className="p-4 flex flex-col flex-grow">
-                  <h2 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+                  <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">
                     {item.judul}
                   </h2>
-                  <p className="text-gray-600 text-sm mb-2 line-clamp-3 min-h-[60px]">
+                  <p className="text-gray-600 dark:text-white-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
                     {item.deskripsi}
                   </p>
 
                   {/* 📅 Tanggal + Kategori + Lokasi */}
-                  <p className="text-gray-500 text-sm  flex items-center gap-2 mb-2 flex-wrap">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm  flex items-center gap-2 mb-2 flex-wrap">
                     <CalendarDays className="w-4 h-4" />
                     {new Date(item.created_at).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'long',
                       year: 'numeric',
                     })}
-                    <span className="text-black-600 font-medium">• {item.category}</span>
-                    <span className="text-blcak-600 font-medium">• {item.lokasi}</span>
+                    <span className="text-gray-600 dark:text-gray-200 font-medium">• {item.category}</span>
+                    <span className="text-gray-600 dark:text-gray-200 font-medium">• {item.lokasi}</span>
                   </p>
 
                   <div className="mt-auto flex gap-2">
@@ -255,7 +255,7 @@ export default function Index() {
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500 mt-10">
+          <div className="text-center text- y-500 mt-10">
             <p>Belum ada inovasi</p>
           </div>
         )}

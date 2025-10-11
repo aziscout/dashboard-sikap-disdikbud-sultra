@@ -1,13 +1,8 @@
-# TODO: Fix Inovasi Photo Upload, Delete, and Replace Issue
+# Fix Inovasi Cards Dark Mode
 
-## Current Issue
-- When uploading three photos in inovasi edit, deleting or replacing one doesn't work because the frontend doesn't distinguish between existing and new files, and doesn't send deleted_files to backend.
-
-## Steps to Fix
-- [x] Modify resources/js/pages/inovasi/edit.tsx to track existing files separately
-- [x] Add deleted_files to form data
-- [x] Update handleRemovePhoto to handle existing vs new files
-- [x] Update handleReplacePhoto to handle existing vs new files
-- [x] Adjust preview to not update until update button is pressed
-- [x] Remove alerts/notifications for actions before update
-- [x] Update inovasi/index.tsx to match agenda/index.tsx layout
+## Tasks
+- [x] Update card background to match app layout in dark mode (dark:bg-black -> dark:bg-background)
+- [x] Add hover effect in dark mode (dark:hover:bg-sidebar)
+- [x] Update text colors for dark mode (text-gray-800 -> dark:text-gray-100, etc.)
+- [x] Fix typos in text classes (text-black-600 -> text-gray-600, text-blcak-600 -> text-gray-600)
+- [ ] Test the changes in dark mode
