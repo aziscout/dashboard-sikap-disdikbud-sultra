@@ -23,3 +23,4 @@
 - [x] Test video URL editing/removal
 - [x] Verify cover image updates
 - [x] Test instansi filter and display
+- [x] Modify app/Http/Controllers/Bidang/DashboardController.php to filter counts by user data for bidang role
