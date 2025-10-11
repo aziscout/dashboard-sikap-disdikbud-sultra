@@ -207,7 +207,7 @@ export default function Index() {
             {filteredInovasi.map((item) => (
               <article
                 key={item.id}
-                className="bg-white dark:bg-background rounded-2xl shadow hover:shadow-lg dark:hover:bg-sidebar transition flex flex-col overflow-hidden"
+                className="bg-white dark:bg-background rounded-2xl shadow-sm hover:shadow-lg dark:hover:bg-sidebar transition flex flex-col overflow-hidden"
               >
                 {/* Cover hanya tampil gambar, tidak bisa diklik */}
                 <img

@@ -163,25 +163,25 @@ export default function Index() {
             {filteredData.map((item) => (
               <article
                 key={item.id}
-                className="flex flex-col overflow-hidden rounded-2xl bg-white shadow transition hover:shadow-lg"
+                className="flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-background shadow-sm transition hover:shadow-lg dark:hover:bg-sidebar"
               >
                 <div className="flex flex-grow flex-col p-4">
-                  <h2 className="mb-2 line-clamp-2 text-lg font-bold text-gray-800 capitalize">
+                  <h2 className="mb-2 line-clamp-2 text-lg font-bold text-gray-800 dark:text-gray-100 capitalize">
                     {item.judul}
                   </h2>
 
-                  <p className="mb-1 text-sm text-gray-600">
+                  <p className="mb-1 text-sm text-gray-600 dark:text-gray-300">
                     <strong>Penyelenggara:</strong> {item.penyelenggara}
                   </p>
-                  <p className="mb-1 text-sm text-gray-600">
+                  <p className="mb-1 text-sm text-gray-600 dark:text-gray-300">
                     <strong>Lokasi:</strong> {item.lokasi}
                   </p>
                   {item.category && (
-                    <p className="mb-1 text-sm text-gray-600">
+                    <p className="mb-1 text-sm text-gray-600 dark:text-gray-300">
                       <strong>Kategori:</strong> {item.category}
                     </p>
                   )}
-                  <p className="mb-3 text-sm text-gray-700 line-clamp-3">
+                  <p className="mb-3 text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
                     {item.deskripsi}
                   </p>
 
@@ -190,7 +190,7 @@ export default function Index() {
                     <a
                       href={item.file.startsWith('http') ? item.file : `/storage/${item.file}`}
                       target="_blank"
-                      className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                      className="mt-2 flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       <FileText className="h-4 w-4" />
                       {item.category === 'video' ? 'Lihat Video' : 'Lihat File'}
@@ -198,7 +198,7 @@ export default function Index() {
                   )}
 
                   {/* Date */}
-                  <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                  <p className="mt-3 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                     <CalendarDays className="h-4 w-4" />
                     {new Date(item.created_at).toLocaleDateString('id-ID', {
                       day: 'numeric',
