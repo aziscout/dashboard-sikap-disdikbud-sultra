@@ -33,6 +33,7 @@ class Layanan extends Model
         'document_id',
         'kode_tracking',
         'status',
+        'user_id',
     ];
 
     /**
