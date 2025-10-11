@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 class AgendaController extends Controller
 {
-  public function index()
+    public function index()
 {
     $user = Auth::user();
 
@@ -80,7 +80,6 @@ class AgendaController extends Controller
             'deskripsi'    => $request->deskripsi,
             'coverImage'  => $coverPath,
             'tabel'        => 'agenda',
-             'medias_id'     => $media->id,
             'bidangs_id'    => Auth::id(),
         ]);
 
@@ -106,20 +105,36 @@ class AgendaController extends Controller
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'video_urls'   => 'nullable|array',
             'video_urls.*' => 'url',
+            'deleted_files'=> 'nullable|array',
         ]);
 
-        // update cover image
+        // Update cover
         if ($request->hasFile('coverImage')) {
             if ($agenda->cover_image && Storage::disk('public')->exists($agenda->cover_image)) {
                 Storage::disk('public')->delete($agenda->cover_image);
             }
-            $coverPath = $request->file('cover_image')->store('agenda/cover', 'public');
+            $coverPath = $request->file('coverImage')->store('agenda/cover', 'public');
             $agenda->cover_image = $coverPath;
         }
 
-        // update media
-        $mediaFiles = [];
+        // Ambil media lama
+        $oldMedia = $agenda->medias ? $agenda->medias->file : [];
+        $mediaFiles = $oldMedia ?? [];
 
+        // Hapus media yang dipilih user
+        if ($request->deleted_files) {
+            foreach ($request->deleted_files as $delFile) {
+                if (!preg_match('/^https?:\/\//', $delFile) && Storage::disk('public')->exists($delFile)) {
+                    Storage::disk('public')->delete($delFile);
+                }
+                $mediaFiles = array_filter($mediaFiles, function ($m) use ($delFile) {
+                    return $m['file'] !== $delFile;
+                });
+            }
+            $mediaFiles = array_values($mediaFiles);
+        }
+
+        // Tambah file baru (foto/video upload)
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $path = $file->store('agenda/file', 'public');
@@ -128,14 +143,22 @@ class AgendaController extends Controller
             }
         }
 
+        $mediaFiles = array_filter($mediaFiles, function ($m) {
+            return $m['type'] !== 'video' || !preg_match('/^https?:\/\//', $m['file']);
+        });
+
+        // Masukkan ulang link video dari request
         if ($request->video_urls) {
             foreach ($request->video_urls as $url) {
                 $mediaFiles[] = ['file' => $url, 'type' => 'video'];
             }
         }
 
+        // Simpan media
         if ($agenda->medias) {
-            $agenda->medias->update(['file' => $mediaFiles]);
+            $agenda->medias->update(['file' => array_values($mediaFiles)]);
+        } else {
+            $agenda->medias()->create(['file' => array_values($mediaFiles)]);
         }
 
         $agenda->update([

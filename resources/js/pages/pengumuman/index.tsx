@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { CalendarDays, FileText, ListFilterPlus, MapPin, Megaphone } from 'lucide-react';
+import { CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -21,17 +21,26 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
+interface Media {
+  id?: number;
+  file?: string;
+  type?: string;
+}
+
 interface Pengumuman {
   id: number;
   judul: string;
   deskripsi: string;
-  penyelenggara: string;
-  lokasi: string;
-  instansi: string;
+  coverImage: string | null;
   category: string;
-  tabel?: string; // foto atau video
+  instansi: string;
+  lokasi: string;
+  penyelenggara: string;
   created_at: string;
   updated_at: string;
+  medias?: {
+    file: Media[];
+  } | null;
 }
 
 interface PageProps {
@@ -43,7 +52,7 @@ export default function Index() {
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
   const [searchQuery, setSearchQuery] = useState('');
   const [instansiFilter, setInstansiFilter] = useState<'all' | 'SMA' | 'SLB' | 'SMK'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'foto' | 'video'>('all'); // 🔹 new filter
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'foto' | 'video' | 'dokumen'>('all');
 
   const { pengumuman, flash } = usePage().props as unknown as PageProps;
   const { processing, delete: destroy } = useForm();
@@ -55,6 +64,17 @@ export default function Index() {
 
   const handleEdit = (id: number) => {
     router.visit(route('pengumuman.edit', id));
+  };
+
+  const getCoverUrl = (item: Pengumuman) => {
+    const cover = item.coverImage;
+    if (!cover) return "/images/default-cover.jpg";
+    if (cover.startsWith("http")) return cover;
+    if (cover.includes("/")) {
+      if (cover.startsWith("/storage/")) return cover;
+      return `/storage/${cover}`;
+    }
+    return `/storage/pengumuman/cover/${cover}`;
   };
 
   // Sorting + Filtering + Search
@@ -95,7 +115,9 @@ export default function Index() {
           />
 
           <Link href={route('pengumuman.create')}>
-            <Button>Tambah</Button>
+            <Button>
+              <Plus /> Tambah
+            </Button>
           </Link>
 
           {/* Sort Filter */}
@@ -142,7 +164,7 @@ export default function Index() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* 🔹 Category Filter (Foto / Video) */}
+          {/* Category Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -159,6 +181,9 @@ export default function Index() {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setCategoryFilter('video')}>
                   Video
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCategoryFilter('dokumen')}>
+                  Dokumen
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -184,81 +209,92 @@ export default function Index() {
             {filteredPengumuman.map((item) => (
               <article
                 key={item.id}
-                className="flex flex-col overflow-hidden rounded-2xl bg-white shadow transition hover:shadow-lg"
+                className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
               >
-                {/* Image for foto */}
-                {item.tabel && item.category === 'foto' && (
-                  <a
-                    href={item.tabel.startsWith('http') ? item.tabel : `/storage/${item.tabel}`}
-                    target="_blank"
-                    className="block aspect-video overflow-hidden"
-                  >
-                    <img
-                      src={item.tabel.startsWith('http') ? item.tabel : `/storage/${item.tabel}`}
-                      alt={item.judul}
-                      className="w-full h-full object-cover"
-                    />
-                  </a>
-                )}
+                <a
+                  href={getCoverUrl(item)}
+                  target="_blank"
+                  className="block"
+                >
+                  <img
+                    src={getCoverUrl(item)}
+                    alt={item.judul}
+                    className="w-full h-48 object-cover"
+                  />
+                </a>
 
-                {/* Content */}
-                <div className="flex flex-grow flex-col p-4">
-                  <h2 className="mb-2 line-clamp-2 text-lg font-bold text-gray-800 capitalize">
+                <div className="p-4 flex flex-col flex-grow">
+                  <h2 className="capitalize text-lg font-bold text-gray-800 mb-2 line-clamp-2">
                     {item.judul}
                   </h2>
 
-                  <p className="mb-1 text-sm text-gray-600">
-                    <strong>Penyelenggara:</strong> {item.penyelenggara}
-                  </p>
-                  <p className="mb-1 text-sm text-gray-600">
-                    <MapPin className="mr-1 inline h-4 w-4 text-gray-500" />
-                    {item.instansi} - {item.lokasi}
-                  </p>
-                  {item.category && (
-                    <p className="mb-1 text-sm text-gray-600">
-                      <strong>Kategori:</strong> {item.category}
-                    </p>
-                  )}
-                  <p className="mb-3 text-sm text-gray-700 line-clamp-3">
+                  <p className="text-gray-600 text-sm mb-2 line-clamp-3 min-h-[60px]">
                     {item.deskripsi}
                   </p>
 
-                  {/* File link for video or if no image */}
-                  {item.tabel && (item.category === 'video' || item.category !== 'foto') && (
-                    <a
-                      href={item.tabel.startsWith('http') ? item.tabel : `/storage/${item.tabel}`}
-                      target="_blank"
-                      className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:underline"
-                    >
-                      <FileText className="h-4 w-4" />
-                      {item.category === 'video' ? 'Lihat Video' : 'Lihat File'}
-                    </a>
-                  )}
-
-                  {/* Date */}
-                  <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-                    <CalendarDays className="h-4 w-4" />
-                    {new Date(item.created_at).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
+                  <p className="text-gray-600 text-sm mb-2">
+                    <strong>Penyelenggara:</strong> {item.penyelenggara}
                   </p>
 
-                  {/* Actions */}
-                  <div className="mt-auto flex gap-2 pt-3">
+                  {/* 🔹 Media Files */}
+                  {/* {item.medias?.file && item.medias.file.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {item.medias.file.map((media, idx) => {
+                        if (!media?.file) return null;
+                        const fileUrl = media.file.startsWith("http")
+                          ? media.file
+                          : `/storage/${media.file}`;
+                        const lower = media.file.toLowerCase();
+                        const isVideo = /\.(mp4|mov|avi)$/i.test(lower);
+                        const isImage = /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(lower);
+
+                        return (
+                          <a
+                            key={idx}
+                            href={fileUrl}
+                            target="_blank"
+                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                          >
+                            <FileText className="h-4 w-4" />
+                            {isVideo
+                              ? `Lihat Video ${idx + 1}`
+                              : isImage
+                              ? `Lihat File ${idx + 1}`
+                              : `Unduh File ${idx + 1}`}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )} */}
+
+                  <div className="flex justify-between">
+                    <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
+                      <CalendarDays className="w-4 h-4" />
+                      {new Date(item.created_at).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                    <p className="text-gray-600 text-sm mb-2">
+                      <MapPin className="inline h-4 w-4 mr-1 text-gray-500" />
+                      {item.instansi} - {item.lokasi}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto flex gap-2">
                     <Button
                       onClick={() => handleEdit(item.id)}
-                      className="flex-1 bg-blue-950 hover:bg-blue-900"
+                      className="bg-blue-950 hover:bg-blue-900 flex-1"
                     >
-                      Ubah
+                      <SquarePen />Edit
                     </Button>
                     <Button
                       disabled={processing}
                       onClick={() => handleDelete(item.id, item.judul)}
-                      className="flex-1 bg-red-600 hover:bg-red-500"
+                      className="bg-red-600 hover:bg-red-500 flex-1"
                     >
-                      Hapus
+                      <Trash2 />Hapus
                     </Button>
                   </div>
                 </div>

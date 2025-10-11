@@ -18,12 +18,12 @@ class Media extends Model
     {
         return $this->hasMany(Berita::class);
     }
-    public function laporan_kegiatan()
+    public function layanans()
     {
-        return $this->hasMany(LaporanKegiatan::class);
+        return $this->hasMany(Layanan::class);
     }
-    public function agenda()
+    public function inovasis()
     {
-        return $this->hasMany(Agenda::class);
+        return $this->hasMany(Inovasi::class);
     }
 }

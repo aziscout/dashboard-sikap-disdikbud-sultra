@@ -30,7 +30,7 @@ class Layanan extends Model
         'nama_pengirim',
         'email_pengirim',
         'media_id',
-        'document_id',
+        'dokumens_id',
         'kode_tracking',
         'status',
         'user_id',
