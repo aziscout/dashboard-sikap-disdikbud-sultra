@@ -12,7 +12,15 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { CalendarDays, ListFilterPlus, Megaphone, Plus, SquarePen, Trash2 } from 'lucide-react';
+import {
+  CalendarDays,
+  FileText,
+  ListFilterPlus,
+  Megaphone,
+  Plus,
+  SquarePen,
+  Trash2,
+} from 'lucide-react';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -24,20 +32,22 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Media {
   id?: number;
-  url?: string;
   file?: string;
+  type?: string;
 }
 
 interface Inovasi {
   id: number;
   judul: string;
   deskripsi: string;
-  cover_image: string;
-  medias?: Media | null;
+  cover_image: string | null;
   category: string;
   instansi: string;
   lokasi: string;
   created_at: string;
+  medias?: {
+    file: Media[];
+  } | null;
 }
 
 interface CustomPageProps {
@@ -51,7 +61,6 @@ export default function Index() {
   const { inovasi, flash } = usePage<PageProps>().props;
   const { processing, delete: destroy } = useForm();
 
-  // 🔹 State untuk filter dan search
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
   const [searchQuery, setSearchQuery] = useState('');
   const [instansiFilter, setInstansiFilter] = useState<'all' | 'SMA' | 'SLB' | 'SMK'>('all');
@@ -65,7 +74,7 @@ export default function Index() {
   const getCoverUrl = (item: Inovasi) => {
     const cover = item.cover_image;
     if (!cover) return '/images/default-cover.jpg';
-    if (cover.startsWith('http') || cover.startsWith('https')) return cover;
+    if (cover.startsWith('http')) return cover;
     if (cover.includes('/')) {
       if (cover.startsWith('/storage/')) return cover;
       return `/storage/${cover}`;
@@ -73,24 +82,22 @@ export default function Index() {
     return `/storage/inovasi/cover/${cover}`;
   };
 
-  // 🔹 Ambil semua kategori unik dari data inovasi
+  // Ambil semua kategori unik
   const availableCategories = useMemo(() => {
     const categories = new Set(inovasi.map(item => item.category).filter(Boolean));
     return Array.from(categories);
   }, [inovasi]);
 
-  // 🔹 Apply filters and sorting
+  // Filter dan sorting
   const filteredInovasi = useMemo(() => {
     return [...inovasi]
-      .filter((item) =>
-        item.judul.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .filter((item) =>
+      .filter(item => item.judul.toLowerCase().includes(searchQuery.toLowerCase()))
+      .filter(item =>
         instansiFilter === 'all'
           ? true
           : item.instansi?.trim().toLowerCase() === instansiFilter.toLowerCase()
       )
-      .filter((item) =>
+      .filter(item =>
         categoryFilter === 'all'
           ? true
           : item.category?.toLowerCase() === categoryFilter.toLowerCase()
@@ -111,7 +118,6 @@ export default function Index() {
         <h1 className="text-2xl font-semibold">Daftar Inovasi</h1>
 
         <div className="flex flex-col gap-2 md:flex-row md:items-center">
-          {/* Search Bar */}
           <Input
             placeholder="Cari judul inovasi..."
             value={searchQuery}
@@ -125,58 +131,47 @@ export default function Index() {
             </Button>
           </Link>
 
-          {/* Sort Dropdown */}
+          {/* Sort */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <ListFilterPlus /> 
-                {sortOrder === 'terbaru' ? 'Terbaru' : 'Terlama'}
+                <ListFilterPlus /> {sortOrder}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40">
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setSortOrder('terbaru')}>
-                  Terbaru
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortOrder('terlama')}>
-                  Terlama
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder('terbaru')}>Terbaru</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder('terlama')}>Terlama</DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Instansi Filter */}
+          {/* Instansi */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <ListFilterPlus /> 
-                {instansiFilter === 'all' ? 'Semua Instansi' : instansiFilter}
+                <ListFilterPlus /> {instansiFilter === 'all' ? 'Semua Instansi' : instansiFilter}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40">
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setInstansiFilter('all')}>
-                  Semua Instansi
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setInstansiFilter('SMA')}>
-                  SMA
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setInstansiFilter('SLB')}>
-                  SLB
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setInstansiFilter('SMK')}>
-                  SMK
-                </DropdownMenuItem>
+                {['all', 'SMA', 'SLB', 'SMK'].map((instansi) => (
+                  <DropdownMenuItem
+                    key={instansi}
+                    onClick={() => setInstansiFilter(instansi as any)}
+                  >
+                    {instansi === 'all' ? 'Semua Instansi' : instansi}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Category Filter */}
+          {/* Category */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <ListFilterPlus /> 
-                {categoryFilter === 'all' ? 'Semua Kategori' : categoryFilter}
+                <ListFilterPlus /> {categoryFilter === 'all' ? 'Semua Kategori' : categoryFilter}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40">
@@ -184,11 +179,8 @@ export default function Index() {
                 <DropdownMenuItem onClick={() => setCategoryFilter('all')}>
                   Semua Kategori
                 </DropdownMenuItem>
-                {availableCategories.map((category) => (
-                  <DropdownMenuItem 
-                    key={category} 
-                    onClick={() => setCategoryFilter(category)}
-                  >
+                {availableCategories.map(category => (
+                  <DropdownMenuItem key={category} onClick={() => setCategoryFilter(category)}>
                     {category}
                   </DropdownMenuItem>
                 ))}
@@ -211,42 +203,60 @@ export default function Index() {
 
       {/* Grid Card */}
       <div className="m-4">
-        {filteredInovasi && filteredInovasi.length > 0 ? (
+        {filteredInovasi.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredInovasi.map((item) => (
               <article
                 key={item.id}
                 className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
               >
-                {/* Gambar */}
-                <img
-                  src={getCoverUrl(item)}
-                  alt={item.judul}
-                  className="w-full h-48 object-cover"
-                />
+                {/* Cover bisa diklik */}
+                <a href={getCoverUrl(item)} target="_blank" className="block">
+                  <img
+                    src={getCoverUrl(item)}
+                    alt={item.judul}
+                    className="w-full h-48 object-cover"
+                  />
+                </a>
 
-                {/* Isi */}
                 <div className="p-4 flex flex-col flex-grow">
                   <h2 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
                     {item.judul}
                   </h2>
-
                   <p className="text-gray-600 text-sm mb-2 line-clamp-3 min-h-[60px]">
                     {item.deskripsi}
                   </p>
 
-                  {/* Info tambahan */}
-                  <div className="space-y-1 mb-2">
-                    <p className="text-gray-600 text-sm">
-                      <strong>Kategori:</strong> {item.category}
-                    </p>
-                    <p className="text-gray-600 text-sm">
-                      <strong>Instansi:</strong> {item.instansi}
-                    </p>
-                    <p className="text-gray-600 text-sm">
-                      <strong>Lokasi:</strong> {item.lokasi}
-                    </p>
-                  </div>
+                  {/* 🔸 Tampilkan Media */}
+                  {item.medias?.file && item.medias.file.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {item.medias.file.map((media, idx) => {
+                        if (!media?.file) return null;
+                        const fileUrl = media.file.startsWith('http')
+                          ? media.file
+                          : `/storage/${media.file}`;
+                        const lower = media.file.toLowerCase();
+                        const isVideo = /\.(mp4|mov|avi)$/i.test(lower);
+                        const isImage = /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(lower);
+
+                        return (
+                          <a
+                            key={idx}
+                            href={fileUrl}
+                            target="_blank"
+                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                          >
+                            <FileText className="h-4 w-4" />
+                            {isVideo
+                              ? `Lihat Video ${idx + 1}`
+                              : isImage
+                              ? `Lihat File ${idx + 1}`
+                              : `Unduh File ${idx + 1}`}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
                     <CalendarDays className="w-4 h-4" />
@@ -257,7 +267,6 @@ export default function Index() {
                     })}
                   </p>
 
-                  {/* Aksi */}
                   <div className="mt-auto flex gap-2">
                     <Link href={route('inovasi.edit', item.id)} className="flex-1">
                       <Button className="bg-blue-950 hover:bg-blue-900 w-full">
@@ -278,12 +287,7 @@ export default function Index() {
           </div>
         ) : (
           <div className="text-center text-gray-500 mt-10">
-            <p className="mb-4">
-              {inovasi && inovasi.length > 0 
-                ? 'Tidak ada inovasi yang sesuai dengan filter' 
-                : 'Belum ada inovasi'
-              }
-            </p>
+            <p>Belum ada inovasi</p>
           </div>
         )}
       </div>
