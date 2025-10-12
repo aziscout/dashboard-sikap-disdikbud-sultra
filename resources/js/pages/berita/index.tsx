@@ -222,7 +222,7 @@ export default function Index() {
                 {filteredBerita.map((item) => (
                 <article
                     key={item.id}
-                    className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
+                    className="bg-white dark:bg-background rounded-2xl shadow-sm hover:shadow-lg dark:hover:bg-sidebar transition flex flex-col overflow-hidden"
                 >
                     {/* Gambar */}
                     <img
@@ -233,16 +233,16 @@ export default function Index() {
 
                     {/* Isi */}
                     <div className="p-4 flex flex-col flex-grow">
-                    <h2 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">
                         {item.judul}
                     </h2>
 
-                    <p className="text-gray-600 text-sm mb-2 line-clamp-3 min-h-[60px]">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
                         {item.deskripsi}
                     </p>
 
                     <div className="flex justify-between">
-                    <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
                         <CalendarDays className="w-4 h-4" />
                         {new Date(item.updated_at ?? item.created_at).toLocaleDateString("id-ID", {
                             day: "numeric",
@@ -250,7 +250,7 @@ export default function Index() {
                             year: "numeric",
                         })}
                     </p>
-                        <p className="text-gray-600 text-sm mb-2 line-clamp-3 flex items-center">
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
                         <MapPin className="w-4 h-4 m-1"/>{item.lokasi}
                         </p>
                         </div>

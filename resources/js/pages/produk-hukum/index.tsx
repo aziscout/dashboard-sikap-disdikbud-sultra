@@ -75,16 +75,16 @@ export default function Index() {
                     {produk_hukum.map((produk) => (
                         <div
                             key={produk.id}
-                            className="bg-white rounded-2xl shadow p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                            className="bg-white dark:bg-background rounded-2xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between dark:hover:bg-sidebar transition"
                         >
                             {/* Info Produk */}
                             <div className="space-y-2 flex-1">
-                                <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
                                     <Scale />
                                     {produk.judul}
                                 </h2>
-                                <p className="text-gray-600">{produk.deskripsi}</p>
-                                <p className="text-gray-500 text-sm flex items-center gap-2">
+                                <p className="text-gray-600 dark:text-gray-300">{produk.deskripsi}</p>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
                                     <CalendarDays />
                                     {new Date(produk.created_at).toLocaleDateString("id-ID", {
                                         day: "numeric",

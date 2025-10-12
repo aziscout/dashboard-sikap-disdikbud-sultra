@@ -38,6 +38,8 @@ interface PageProps {
 export default function EditInovasi() {
   const { inovasi } = usePage().props as unknown as PageProps;
 
+  const existingPhotos = (inovasi.medias?.file || []).filter((m) => m.type === 'foto');
+
   const { data, setData, post, errors, processing } = useForm({
     judul: inovasi.judul || '',
     deskripsi: inovasi.deskripsi || '',
@@ -49,16 +51,17 @@ export default function EditInovasi() {
     video_urls: (inovasi.medias?.file || [])
       .filter((m) => m.type === 'video' && m.file.startsWith('http'))
       .map((m) => m.file),
+    deleted_files: [] as string[],
     _method: 'PUT',
   });
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(
     inovasi.coverImage ? `/storage/${inovasi.coverImage}` : null,
   );
+  const [existingFiles, setExistingFiles] = useState<MediaItem[]>(existingPhotos);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
-    (inovasi.medias?.file || [])
-      .filter((m) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http')))
-      .map((m) => `/storage/${m.file}`),
+    [...existingFiles.map((m) => `/storage/${m.file}`), ...newFiles.map((f) => URL.createObjectURL(f))],
   );
   const [videoUrlInput, setVideoUrlInput] = useState('');
 
@@ -88,30 +91,41 @@ export default function EditInovasi() {
     if (file) {
       setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
-      showNotif('Cover berhasil diubah', 'success');
     }
   };
 
   const handleFilesChange = (files: FileList | null) => {
     if (files) {
       const incoming = Array.from(files);
-      if (data.files.length + incoming.length > MAX_FILES) {
+      if (existingFiles.length + newFiles.length + incoming.length > MAX_FILES) {
         showNotif(`Maksimal ${MAX_FILES} foto yang dapat diupload.`, 'error');
         return;
       }
-      const newFiles = [...data.files, ...incoming];
-      setData('files', newFiles);
-      setPreviewFileUrls([...previewFileUrls, ...incoming.map((f) => URL.createObjectURL(f))]);
-      showNotif('Foto berhasil ditambahkan', 'success');
+      const updatedNewFiles = [...newFiles, ...incoming];
+      setNewFiles(updatedNewFiles);
+      setData('files', updatedNewFiles);
+      setPreviewFileUrls([...existingFiles.map((m) => `/storage/${m.file}`), ...updatedNewFiles.map((f) => URL.createObjectURL(f))]);
     }
   };
 
   const handleRemovePhoto = (i: number) => {
-    const newFiles = data.files.filter((_, idx) => idx !== i);
-    const newPreview = previewFileUrls.filter((_, idx) => idx !== i);
-    setData('files', newFiles);
-    setPreviewFileUrls(newPreview);
-    showNotif('Foto berhasil dihapus', 'success');
+    if (i < existingFiles.length) {
+      // existing
+      const fileToDelete = existingFiles[i].file;
+      setData('deleted_files', [...data.deleted_files, fileToDelete]);
+      // update preview
+      const updatedPreview = previewFileUrls.filter((_, idx) => idx !== i);
+      setPreviewFileUrls(updatedPreview);
+    } else {
+      // new
+      const newIndex = i - existingFiles.length;
+      const updatedNewFiles = newFiles.filter((_, idx) => idx !== newIndex);
+      setNewFiles(updatedNewFiles);
+      setData('files', updatedNewFiles);
+      // update preview
+      const updatedPreview = previewFileUrls.filter((_, idx) => idx !== i);
+      setPreviewFileUrls(updatedPreview);
+    }
   };
 
   const handleReplacePhoto = (i: number) => {
@@ -121,15 +135,30 @@ export default function EditInovasi() {
     input.onchange = (e: Event) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        const newFiles = [...data.files];
-        newFiles[i] = file;
-        setData('files', newFiles);
-
-        const newPreview = [...previewFileUrls];
-        newPreview[i] = URL.createObjectURL(file);
-        setPreviewFileUrls(newPreview);
-
-        showNotif('Foto berhasil diganti', 'success');
+        if (i < existingFiles.length) {
+          // existing
+          const fileToDelete = existingFiles[i].file;
+          setData('deleted_files', [...data.deleted_files, fileToDelete]);
+          // add new
+          const updatedNewFiles = [...newFiles, file];
+          setNewFiles(updatedNewFiles);
+          setData('files', updatedNewFiles);
+          // update preview
+          const updatedPreview = [...previewFileUrls];
+          updatedPreview[i] = URL.createObjectURL(file);
+          setPreviewFileUrls(updatedPreview);
+        } else {
+          // new
+          const newIndex = i - existingFiles.length;
+          const updatedNewFiles = [...newFiles];
+          updatedNewFiles[newIndex] = file;
+          setNewFiles(updatedNewFiles);
+          setData('files', updatedNewFiles);
+          // update preview
+          const updatedPreview = [...previewFileUrls];
+          updatedPreview[i] = URL.createObjectURL(file);
+          setPreviewFileUrls(updatedPreview);
+        }
       }
     };
     input.click();
@@ -139,7 +168,6 @@ export default function EditInovasi() {
     if (videoUrlInput.trim() !== '') {
       setData('video_urls', [...data.video_urls, videoUrlInput.trim()]);
       setVideoUrlInput('');
-      showNotif('Link video berhasil ditambahkan', 'success');
     }
   };
 
