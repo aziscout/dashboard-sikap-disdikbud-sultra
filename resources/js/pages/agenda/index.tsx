@@ -230,7 +230,7 @@ export default function Index() {
             {filteredAgenda.map((item) => (
               <article
                 key={item.id}
-                className="bg-white rounded-2xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
+                className="bg-white dark:bg-background rounded-2xl shadow-sm hover:shadow-lg dark:hover:bg-sidebar transition flex flex-col overflow-hidden"
               >
                 <a
                   href={getCoverUrl(item)}
@@ -245,15 +245,15 @@ export default function Index() {
                 </a>
 
                 <div className="p-4 flex flex-col flex-grow">
-                  <h2 className="capitalize text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+                  <h2 className="capitalize text-lg font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">
                     {item.judul}
                   </h2>
 
-                  <p className="text-gray-600 text-sm mb-2 line-clamp-3 min-h-[60px]">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
                     {item.deskripsi}
                   </p>
 
-                  <p className="text-gray-600 text-sm mb-2">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
                     <strong>Penyelenggara:</strong> {item.penyelenggara}
                   </p>
                   
@@ -275,7 +275,7 @@ export default function Index() {
                             key={idx}
                             href={fileUrl}
                             target="_blank"
-                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                            className="text-blue-600 dark:text-blue-400 hover:underline text-sm flex items-center gap-1"
                           >
                             <FileText className="h-4 w-4" />
                             {isVideo
@@ -290,7 +290,7 @@ export default function Index() {
                   )}
 
                   <div className="flex justify-between">
-                    <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
                       <CalendarDays className="w-4 h-4" />
                       {new Date(item.created_at).toLocaleDateString("id-ID", {
                         day: "numeric",
@@ -298,8 +298,8 @@ export default function Index() {
                         year: "numeric",
                       })}
                     </p>
-                    <p className="text-gray-600 text-sm mb-2">
-                      <MapPin className="inline h-4 w-4 mr-1 text-gray-500" />
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                      <MapPin className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" />
                       {item.instansi} - {item.lokasi}
                     </p>
                   </div>
