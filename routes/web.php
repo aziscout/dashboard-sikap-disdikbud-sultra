@@ -1,13 +1,10 @@
 <?php
 
 use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Bidang\DashboardController as BidangDashboardController;
-use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProdukHukumController;
-use App\Models\Berita;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\InovasiController;
 use App\Http\Controllers\LaporanKegiatanController;
@@ -15,8 +12,6 @@ use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PengumumanController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', function () {
     if (Auth::check()) {

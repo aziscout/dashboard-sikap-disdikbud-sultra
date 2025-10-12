@@ -1,20 +1,13 @@
 <?php
 
-use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\BeritaApiController;
 use App\Http\Controllers\Api\InovasiApiController;
 use App\Http\Controllers\Api\LaporanApiController;
-use App\Http\Controllers\Api\LaporanKegiatanApiController;
 use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
-use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\InovasiController;
-use App\Http\Controllers\LaporanKegiatanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LayananController;
-use App\Http\Controllers\PengumumanController;
-use App\Http\Controllers\ProdukHukumController;
 
 // pengumuman
     Route::get('/pengumuman',[PengumumanApiController::class,'index']);
