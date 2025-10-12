@@ -15,12 +15,15 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('judul');
-            $table->string('deskripsi');
-            $table->string('lokasi');
+            $table->string('coverImage');
+            $table->enum('category',['foto','video'])->default('foto');
+            $table->enum('instansi',['umum','slb','smk','sma'])->default('umum');
             $table->string('penyelenggara');
-            $table->string('file')->nullable();
+            $table->string('lokasi');
+            $table->string('tabel');
+            $table->string('deskripsi');
+            $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
             $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('medias_id')->nullable()->constrained('medias')->onDelete('cascade');
         });
     }
 
