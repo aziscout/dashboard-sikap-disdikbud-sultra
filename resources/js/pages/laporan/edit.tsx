@@ -11,8 +11,8 @@ import { CircleAlert, Plus, Save, SquarePen, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Laporan Kegiatan', href: '/laporan-kegiatan' },
-  { title: 'Ubah Laporan Kegiatan', href: '/laporan-kegiatan/edit' },
+  { title: 'Laporan Kegiatan', href: '/laporan' },
+  { title: 'Ubah Laporan Kegiatan', href: '/laporan/edit' },
 ];
 
 interface MediaItem {
@@ -20,7 +20,7 @@ interface MediaItem {
   type: string; // 'foto' | 'video'
 }
 
-interface LaporanKegiatan {
+interface Laporan {
   id: number;
   judul: string;
   deskripsi: string;
@@ -37,23 +37,23 @@ interface LaporanKegiatan {
 }
 
 interface PageProps {
-  laporanKegiatan: LaporanKegiatan;
+  laporan: Laporan;
 }
 
 export default function Edit() {
-  const { laporanKegiatan } = usePage().props as unknown as PageProps;
+  const { laporan } = usePage().props as unknown as PageProps;
 
   const { data, setData, post, errors, processing } = useForm({
-    judul: laporanKegiatan.judul || '',
-    penyelenggara: laporanKegiatan.penyelenggara || '',
-    lokasi: laporanKegiatan.lokasi || '',
-    instansi: laporanKegiatan.instansi || '',
-    deskripsi: laporanKegiatan.deskripsi || '',
-    tabel: laporanKegiatan.tabel || '',
-    category: laporanKegiatan.category || '',
+    judul: laporan.judul || '',
+    penyelenggara: laporan.penyelenggara || '',
+    lokasi: laporan.lokasi || '',
+    instansi: laporan.instansi || '',
+    deskripsi: laporan.deskripsi || '',
+    tabel: laporan.tabel || '',
+    category: laporan.category || '',
     coverImage: null as File | null,
     files: [] as File[],
-    video_urls: (laporanKegiatan.medias?.file || [])
+    video_urls: (laporan.medias?.file || [])
       .filter((m) => m.type === 'video' && m.file.startsWith('http'))
       .map((m) => m.file),
     deleted_files: [] as string[],
@@ -61,16 +61,16 @@ export default function Edit() {
   });
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(
-    laporanKegiatan.coverImage ? `/storage/${laporanKegiatan.coverImage}` : null,
+    laporan.coverImage ? `/storage/${laporan.coverImage}` : null,
   );
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
-    (laporanKegiatan.medias?.file || [])
+    (laporan.medias?.file || [])
       .filter((m) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http')))
       .map((m) => `/storage/${m.file}`),
   );
   const localMediaIndices = useMemo(() => {
-    return (laporanKegiatan.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
-  }, [laporanKegiatan.medias]);
+    return (laporan.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
+  }, [laporan.medias]);
   
   const [videoUrlInput, setVideoUrlInput] = useState('');
 
@@ -78,7 +78,7 @@ export default function Edit() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('laporan-kegiatan.update', laporanKegiatan.id), {
+    post(route('laporan.update', laporan.id), {
       preserveScroll: true,
       forceFormData: true,
     });
@@ -112,7 +112,7 @@ export default function Edit() {
 
   const handleChangePhoto = (index: number, file: File) => {
     const originalIndex = localMediaIndices[index];
-    const removedFile = laporanKegiatan.medias?.file[originalIndex]?.file;
+    const removedFile = laporan.medias?.file[originalIndex]?.file;
     if (removedFile) {
       setData("deleted_files", [...data.deleted_files, removedFile]);
     }
@@ -137,7 +137,7 @@ export default function Edit() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Edit Agenda" />
+      <Head title="Edit Laporan" />
       <div className="flex flex-col gap-6 p-4 md:flex-row">
         {/* FORM KIRI */}
         <div className="w-full md:w-1/2">
@@ -250,7 +250,7 @@ export default function Edit() {
               <Button type="submit" disabled={processing}>
                 {processing ? 'Updating...' : <><Save /> Simpan</>}
               </Button>
-              <Button type="button" variant="outline" onClick={() => router.get(route('laporan-kegiatan.index'))}>
+              <Button type="button" variant="outline" onClick={() => router.get(route('laporan.index'))}>
                 Batal
               </Button>
             </div>
@@ -307,7 +307,7 @@ export default function Edit() {
                         className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500"
                         onClick={() => {
                           const originalIndex = localMediaIndices[i];
-                          const removedFile = laporanKegiatan.medias?.file[originalIndex]?.file;
+                          const removedFile = laporan.medias?.file[originalIndex]?.file;
                           if (removedFile) {
                             setData("deleted_files", [...data.deleted_files, removedFile]);
                           }

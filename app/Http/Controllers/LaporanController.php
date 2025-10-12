@@ -2,31 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LaporanKegiatan;
+use App\Models\laporan;
 use App\Models\Media;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
-class LaporanKegiatanController extends Controller
+class LaporanController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
 
         if ($user->role === 'admin') {
-            $laporan_kegiatan = LaporanKegiatan::latest()->get();
+            $laporan = Laporan::latest()->get();
         } else {
-            $laporan_kegiatan = LaporanKegiatan::where('bidangs_id', $user->id)->latest()->get();
+            $laporan = Laporan::where('bidangs_id', $user->id)->latest()->get();
         }
 
-        return Inertia::render("laporan-kegiatan/index", compact("laporan_kegiatan"));
+        return Inertia::render("laporan/index", compact("laporan"));
     }
 
     public function create()
     {
-        return Inertia::render("laporan-kegiatan/create", []);
+        return Inertia::render("laporan/create", []);
     }
 
     public function store(Request $request)
@@ -44,14 +44,14 @@ class LaporanKegiatanController extends Controller
         ]);
 
         // Upload cover image
-        $coverPath = $request->file('coverImage')->store('laporan-kegiatan/cover', 'public');
+        $coverPath = $request->file('coverImage')->store('laporan/cover', 'public');
 
         // Collect media files
         $mediaFiles = [];
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $path = $file->store('laporan-kegiatan/file', 'public');
+                $path = $file->store('laporan/file', 'public');
                 $type = in_array($file->extension(), ['mp4','mov','avi']) ? 'video' : 'foto';
                 $mediaFiles[] = ['file' => $path, 'type' => $type];
             }
@@ -69,7 +69,7 @@ class LaporanKegiatanController extends Controller
         ]);
 
         // Save laporan kegiatan
-        LaporanKegiatan::create([
+        Laporan::create([
             'medias_id'     => $media->id,
             'judul'         => $request->judul,
             'penyelenggara' => $request->penyelenggara,
@@ -77,24 +77,24 @@ class LaporanKegiatanController extends Controller
             'instansi'      => $request->instansi,
             'deskripsi'     => $request->deskripsi,
             'coverImage'    => $coverPath,
-            'tabel'         => 'laporan_kegiatan',
+            'tabel'         => 'laporan',
             'bidangs_id'    => Auth::id(),
         ]);
 
-        return redirect()->route('laporan-kegiatan.index')
+        return redirect()->route('laporan.index')
             ->with('message', 'Laporan kegiatan berhasil ditambahkan');
     }
 
     public function edit($id)
     {
         $user = Auth::user();
-        $laporan_kegiatan = LaporanKegiatan::with('medias')->findOrFail($id);
+        $laporan = Laporan::with('medias')->findOrFail($id);
 
-        if ($user->role !== 'admin' && $laporan_kegiatan->bidangs_id !== $user->id) {
+        if ($user->role !== 'admin' && $laporan->bidangs_id !== $user->id) {
             abort(403, 'Unauthorized to edit this laporan kegiatan.');
         }
 
-        return Inertia::render("laporan-kegiatan/edit", ['laporanKegiatan' => $laporan_kegiatan]);
+        return Inertia::render("laporan/edit", ['laporan' => $laporan]);
     }
 
     // public function update(Request $request, LaporanKegiatan $laporan_kegiatan)
@@ -183,11 +183,11 @@ class LaporanKegiatanController extends Controller
     //         ->with('message', 'Laporan kegiatan berhasil diperbarui');
     // }
 
-    public function update(Request $request, LaporanKegiatan $laporan_kegiatan)
+    public function update(Request $request, Laporan $laporan)
 {
     $user = Auth::user();
 
-    if ($user->role !== 'admin' && $laporan_kegiatan->bidangs_id !== $user->id) {
+    if ($user->role !== 'admin' && $laporan->bidangs_id !== $user->id) {
         abort(403, 'Unauthorized to update this laporan kegiatan.');
     }
 
@@ -206,15 +206,15 @@ class LaporanKegiatanController extends Controller
 
     // --- 1. Update cover image ---
     if ($request->hasFile('coverImage')) {
-        if ($laporan_kegiatan->coverImage && Storage::disk('public')->exists($laporan_kegiatan->coverImage)) {
-            Storage::disk('public')->delete($laporan_kegiatan->coverImage);
+        if ($laporan->coverImage && Storage::disk('public')->exists($laporan->coverImage)) {
+            Storage::disk('public')->delete($laporan->coverImage);
         }
-        $coverPath = $request->file('coverImage')->store('laporan-kegiatan/cover', 'public');
-        $laporan_kegiatan->coverImage = $coverPath;
+        $coverPath = $request->file('coverImage')->store('laporan/cover', 'public');
+        $laporan->coverImage = $coverPath;
     }
 
     // --- 2. Ambil media lama ---
-    $oldMedia = $laporan_kegiatan->medias ? $laporan_kegiatan->medias->file : [];
+    $oldMedia = $laporan->medias ? $laporan->medias->file : [];
     $mediaFiles = $oldMedia ?? [];
 
     // --- 3. Hapus media yang dipilih user ---
@@ -231,7 +231,7 @@ class LaporanKegiatanController extends Controller
     // --- 4. Tambah file baru ---
     if ($request->hasFile('files')) {
         foreach ($request->file('files') as $file) {
-            $path = $file->store('laporan-kegiatan/file', 'public');
+            $path = $file->store('laporan/file', 'public');
             $type = in_array($file->extension(), ['mp4','mov','avi']) ? 'video' : 'foto';
             $mediaFiles[] = ['file' => $path, 'type' => $type];
         }
@@ -247,50 +247,50 @@ class LaporanKegiatanController extends Controller
     }
 
     // --- 6. Update media ---
-    if ($laporan_kegiatan->medias) {
-        $laporan_kegiatan->medias->update(['file' => array_values($mediaFiles)]);
+    if ($laporan->medias) {
+        $laporan->medias->update(['file' => array_values($mediaFiles)]);
     } else {
-        $laporan_kegiatan->medias()->create(['file' => array_values($mediaFiles)]);
+        $laporan->medias()->create(['file' => array_values($mediaFiles)]);
     }
 
     // --- 7. Update field utama laporan kegiatan ---
-    $laporan_kegiatan->update([
+    $laporan->update([
         'judul'         => $request->judul,
         'penyelenggara' => $request->penyelenggara,
         'lokasi'        => $request->lokasi,
         'instansi'      => $request->instansi,
         'deskripsi'     => $request->deskripsi,
-        'coverImage'    => $laporan_kegiatan->coverImage, // penting!
+        'coverImage'    => $laporan->coverImage, // penting!
     ]);
 
-    return redirect()->route('laporan-kegiatan.index')
-        ->with('message', 'Laporan kegiatan berhasil diperbarui');
+    return redirect()->route('laporan.index')
+        ->with('message', 'Laporan berhasil diperbarui');
 }
 
     public function destroy($id)
     {
-        $laporan_kegiatan = LaporanKegiatan::with('medias')->findOrFail($id);
+        $laporan = Laporan::with('medias')->findOrFail($id);
 
         // Delete cover image
-        if ($laporan_kegiatan->coverImage && Storage::disk('public')->exists($laporan_kegiatan->coverImage)) {
-            Storage::disk('public')->delete($laporan_kegiatan->coverImage);
+        if ($laporan->coverImage && Storage::disk('public')->exists($laporan->coverImage)) {
+            Storage::disk('public')->delete($laporan->coverImage);
         }
 
         // Delete all media files
-        if ($laporan_kegiatan->medias && is_array($laporan_kegiatan->medias->file)) {
-            foreach ($laporan_kegiatan->medias->file as $media) {
+        if ($laporan->medias && is_array($laporan->medias->file)) {
+            foreach ($laporan->medias->file as $media) {
                 if (isset($media['file']) && !preg_match('/^https?:\/\//', $media['file'])) {
                     if (Storage::disk('public')->exists($media['file'])) {
                         Storage::disk('public')->delete($media['file']);
                     }
                 }
             }
-            $laporan_kegiatan->medias->delete();
+            $laporan->medias->delete();
         }
 
-        $laporan_kegiatan->delete();
+        $laporan->delete();
 
-        return redirect()->route('laporan-kegiatan.index')
+        return redirect()->route('laporan.index')
             ->with('message', 'Laporan kegiatan berhasil dihapus beserta media terkait');
     }
 }
