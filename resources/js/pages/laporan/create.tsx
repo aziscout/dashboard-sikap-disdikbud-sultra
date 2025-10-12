@@ -12,12 +12,16 @@ import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
+    title: 'Laporan Kegiatan',
+    href: '/laporan',
+  },
+  {
     title: 'Tambah Laporan Kegiatan',
-    href: '/laporan-kegiatan/create',
+    href: '/laporan/create',
   },
 ];
 
-export default function CreateLaporanKegiatan() {
+export default function CreateLaporan() {
   const { url } = usePage();
   const currentTable = url.split('/')[1];
 
@@ -39,7 +43,7 @@ export default function CreateLaporanKegiatan() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('laporan-kegiatan.store'), {
+    post(route('laporan.store'), {
       forceFormData: true,
       onSuccess: () => reset(),
     });
@@ -78,7 +82,7 @@ export default function CreateLaporanKegiatan() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Tambah Laporan Kegiatan" />
+      <Head title="Tambah Laporan" />
       <div className="flex flex-col gap-6 p-4 md:flex-row">
         {/* FORM KIRI */}
         <div className="w-full md:w-1/2">
@@ -122,7 +126,7 @@ export default function CreateLaporanKegiatan() {
               <Label htmlFor="deskripsi">Deskripsi</Label>
               <Textarea
                 id="deskripsi"
-                placeholder="Tuliskan deskripsi kegiatan"
+                placeholder="Tuliskan deskripsi"
                 value={data.deskripsi}
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
@@ -169,7 +173,7 @@ export default function CreateLaporanKegiatan() {
               <Label htmlFor="lokasi">Lokasi</Label>
               <Input
                 id="lokasi"
-                placeholder="Masukkan lokasi kegiatan"
+                placeholder="Masukkan lokasi"
                 value={data.lokasi}
                 onChange={(e) => setData('lokasi', e.target.value)}
               />

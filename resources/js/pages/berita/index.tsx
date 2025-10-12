@@ -26,7 +26,7 @@ interface Berita {
     id: number;
     judul: string;
     deskripsi: string;
-    cover_image: string;
+    coverImage: string;
     medias?: Media | null;
     category: string;
     instansi: string;
@@ -60,7 +60,7 @@ export default function Index() {
     };
 
     const getCoverUrl = (item: Berita) => {
-        const cover = item.cover_image;
+        const cover = item.coverImage;
         if (!cover) return "/images/default-cover.jpg";
         if (cover.startsWith("http") || cover.startsWith("https")) return cover;
         if (cover.includes("/")) {

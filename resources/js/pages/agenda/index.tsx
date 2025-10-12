@@ -309,7 +309,7 @@ export default function Index() {
                       onClick={() => handleEdit(item.id)}
                       className="bg-blue-950 hover:bg-blue-900 flex-1"
                     >
-                      <SquarePen />Edit
+                      <SquarePen />Ubah
                     </Button>
                     <Button
                       disabled={processing}

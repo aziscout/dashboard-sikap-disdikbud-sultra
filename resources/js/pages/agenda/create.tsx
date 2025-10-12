@@ -12,6 +12,10 @@ import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
+        title: 'Agenda',
+        href: '/agenda',
+    },
+    {
         title: 'Tambah Agenda',
         href: '/agenda/create',
     },

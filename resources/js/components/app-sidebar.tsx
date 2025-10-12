@@ -111,10 +111,10 @@ const { auth } = usePage<PageProps>().props;
             icon: Megaphone,
         });
     }
-    if (userPermissions.includes('Laporan Kegiatan')) {
+    if (userPermissions.includes('Laporan')) {
         mainNavItems.push({
             title: 'Laporan Kegiatan',
-            href: '/laporan-kegiatan',
+            href: '/laporan',
             icon: BookOpen,
         });
     }

@@ -30,7 +30,7 @@ interface Berita {
   id: number;
   judul: string;
   deskripsi: string;
-  cover_image: string | null;
+  coverImage: string | null;
   medias: { file: MediaItem[] } | null;
   category: string;
   instansi: string;
@@ -46,7 +46,7 @@ export default function Edit({ berita }: Props) {
   const { data, setData, post, errors, processing } = useForm({
     judul: berita.judul || '',
     deskripsi: berita.deskripsi || '',
-    cover_image: null as File | null,
+    coverImage: null as File | null,
     files: [] as File[],            // untuk foto baru
     replace_files: [] as { index: number; file: File }[], // untuk foto yang diubah
     video_urls: (berita.medias?.file || [])
@@ -61,7 +61,7 @@ export default function Edit({ berita }: Props) {
 
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(
-    berita.cover_image ? `/storage/${berita.cover_image}` : null,
+    berita.coverImage ? `/storage/${berita.coverImage}` : null,
   );
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
     (berita.medias?.file || [])
@@ -81,7 +81,7 @@ export default function Edit({ berita }: Props) {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setData('cover_image', file);
+      setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
     }
   };

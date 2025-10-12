@@ -71,6 +71,7 @@ export default function Edit() {
   const localMediaIndices = useMemo(() => {
     return (agenda.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
   }, [agenda.medias]);
+  
   const [videoUrlInput, setVideoUrlInput] = useState('');
 
   const MAX_FILES = 5;

@@ -26,4 +26,8 @@ class Media extends Model
     {
         return $this->hasMany(Inovasi::class);
     }
+    public function laporans()
+    {
+        return $this->hasMany(Laporan::class);
+    }
 }

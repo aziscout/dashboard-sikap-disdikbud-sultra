@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Bidang\DashboardController as BidangDashboardController;
 use App\Http\Controllers\GaleriController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProdukHukumController;
 use App\Models\Berita;
 use App\Http\Controllers\AgendaController;
@@ -73,13 +74,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/agenda/{agenda}',[AgendaController::class,'destroy'])->name('agenda.destroy');
     });
     // laporan kegiatan
-    Route::middleware(['permission:Laporan Kegiatan'])->group(function(){
-        Route::get('/laporan-kegiatan',[LaporanKegiatanController::class,'index'])->name('laporan-kegiatan.index');
-        Route::get('/laporan-kegiatan/create',[LaporanKegiatanController::class,'create'])->name('laporan-kegiatan.create');
-        Route::post('/laporan-kegiatan',[LaporanKegiatanController::class,'store'])->name('laporan-kegiatan.store');
-        Route::get('/laporan-kegiatan/{laporanKegiatan}/edit',[LaporanKegiatanController::class,'edit'])->name('laporan-kegiatan.edit');
-        Route::put('/laporan-kegiatan/{laporanKegiatan}',[LaporanKegiatanController::class,'update'])->name('laporan-kegiatan.update');
-        Route::delete('/laporan-kegiatan/{laporanKegiatan}',[LaporanKegiatanController::class,'destroy'])->name('laporan-kegiatan.destroy');
+
+    Route::middleware(['permission:Laporan'])->group(function(){
+        Route::get('/laporan',[LaporanController::class,'index'])->name('laporan.index');
+        Route::get('/laporan/create',[LaporanController::class,'create'])->name('laporan.create');
+        Route::post('/laporan',[LaporanController::class,'store'])->name('laporan.store');
+        Route::get('/laporan/{laporan}/edit',[LaporanController::class,'edit'])->name('laporan.edit');
+        Route::put('/laporan/{laporan}',[LaporanController::class,'update'])->name('laporan.update');
+        Route::delete('/laporan/{laporan}',[LaporanController::class,'destroy'])->name('laporan.destroy');
     });
 
     // produk hukum

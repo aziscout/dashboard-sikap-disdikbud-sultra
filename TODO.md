@@ -1,41 +1,26 @@
-# Fix Cards Dark Mode on Index Pages
+# Update LaporanKegiatan to Match Agenda and Pengumuman Functionality
 
-## Inovasi (Done)
-- [x] Update card background to match app layout in dark mode (dark:bg-black -> dark:bg-background)
-- [x] Add hover effect in dark mode (dark:hover:bg-sidebar)
-- [x] Update text colors for dark mode (text-gray-800 -> dark:text-gray-100, etc.)
-- [x] Fix typos in text classes (text-black-600 -> text-gray-600, text-blcak-600 -> text-gray-600)
-- [ ] Add thin border for card boundaries (border border-gray-200 dark:border-gray-700)
-- [ ] Test the changes in dark mode
+## Backend Changes
+- [x] Update LaporanKegiatanController.php:
+  - Add 'deleted_files' to update validation
+  - Implement media merging logic like AgendaController
+  - Add with('medias') to index method
 
-## Agenda
-- [x] Update card background to match app layout in dark mode (bg-white -> bg-white dark:bg-background)
-- [x] Add hover effect in dark mode (dark:hover:bg-sidebar)
-- [x] Update text colors for dark mode
-- [x] Fix any typos
-- [ ] Add thin border for card boundaries (border border-gray-200 dark:border-gray-700)
+## Frontend Changes
+- [x] Update resources/js/pages/laporan-kegiatan/index.tsx:
+  - Update layout to grid with cover image
+  - Add media files display below description
+  - Update filters to include instansi
+- [x] Update resources/js/pages/laporan-kegiatan/edit.tsx:
+  - Add 'deleted_files' to form data
+  - Add useMemo for localMediaIndices
+  - Add handleChangePhoto, handleVideoUrlChange, handleVideoUrlRemove
+  - Update video URL section to editable inputs
+  - Update photo buttons to use handleChangePhoto and add to deleted_files
 
-## Berita
-- [x] Update card background to match app layout in dark mode (bg-white -> bg-white dark:bg-background)
-- [x] Add hover effect in dark mode (dark:hover:bg-sidebar)
-- [x] Update text colors for dark mode
-- [x] Fix any typos
-- [ ] Add thin border for card boundaries (border border-gray-200 dark:border-gray-700)
-
-## Pengumuman
-- [x] Update card background to match app layout in dark mode (bg-white -> bg-white dark:bg-background)
-- [x] Add hover effect in dark mode (dark:hover:bg-sidebar)
-- [x] Update text colors for dark mode
-- [x] Fix any typos
-
-## Laporan Kegiatan
-- [x] Update card background to match app layout in dark mode (bg-white -> bg-white dark:bg-background)
-- [x] Add hover effect in dark mode (dark:hover:bg-sidebar)
-- [x] Update text colors for dark mode
-- [x] Fix any typos
-
-## Produk Hukum
-- [x] Update card background to match app layout in dark mode (bg-white -> bg-white dark:bg-background)
-- [x] Add hover effect in dark mode (dark:hover:bg-sidebar)
-- [x] Update text colors for dark mode
-- [x] Fix any typos
+## Testing
+- [x] Test photo change/delete functionality
+- [x] Test video URL editing/removal
+- [x] Verify cover image updates
+- [x] Test instansi filter and display
+- [x] Modify app/Http/Controllers/Bidang/DashboardController.php to filter counts by user data for bidang role

@@ -28,6 +28,6 @@ class LaporanKegiatan extends Model
 
     public function medias()
     {
-        return $this->belongsTo(Media::class);
+        return $this->belongsTo(Media::class, 'medias_id',);
     }
 }
