@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('judul');
-            $table->string('coverImage');
+            $table->string('peserta')->nullable();
             $table->enum('instansi',['umum','slb','smk','sma'])->default('umum');
             $table->string('penyelenggara');
             $table->string('lokasi');
             $table->string('tabel');
-            $table->string('deskripsi');
-            $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
+            $table->text('deskripsi');
+            $table->foreignId('dokumens_id')->constrained('dokumens')->onDelete('cascade');
             $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');
         });
     }
