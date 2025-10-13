@@ -17,16 +17,16 @@ class laporan extends Model
         'judul',
         'deskripsi',
         'lokasi',
-        'coverImage',
+        'peserta',
         'penyelenggara',
         'instansi',
         'tabel',
-        'medias_id',
+        'dokumens_id',
         'bidangs_id'
     ];
 
-    public function medias()
+    public function dokumens()
     {
-        return $this->belongsTo(Media::class, 'medias_id',);
+        return $this->belongsTo(Dokumen::class, 'dokumens_id');
     }
 }

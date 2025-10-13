@@ -10,8 +10,8 @@ import {
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2 } from 'lucide-react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { BookOpen, CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,11 +25,15 @@ interface Laporan {
   id: number;
   judul: string;
   deskripsi: string;
-  coverImage: string | null;
+  peserta: number | null;
   category: string;
   instansi: string;
   lokasi: string;
   penyelenggara: string;
+  dokumens: {
+    id: number;
+    dokumen: string;
+  } | null;
   created_at: string;
   updated_at: string;
 }
@@ -43,7 +47,7 @@ export default function Index() {
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
   const [searchQuery, setSearchQuery] = useState('');
   const [instansiFilter, setInstansiFilter] = useState<'all' | 'SMA' | 'SLB' | 'SMK'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'foto' | 'video' | 'dokumen'>('all');
+  const [categoryFilter] = useState<'all' | 'foto' | 'video' | 'dokumen'>('all');
 
   const { laporan, flash } = usePage().props as unknown as PageProps;
   const { processing, delete: destroy } = useForm();
@@ -51,21 +55,6 @@ export default function Index() {
   const handleDelete = (id: number, judul: string) => {
     if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
     destroy(route('laporan.destroy', id));
-  };
-
-  const handleEdit = (id: number) => {
-    router.visit(route('laporan.edit', id));
-  };
-
-  const getCoverUrl = (item: Laporan) => {
-    const cover = item.coverImage;
-    if (!cover) return "/images/default-cover.jpg";
-    if (cover.startsWith("http")) return cover;
-    if (cover.includes("/")) {
-      if (cover.startsWith("/storage/")) return cover;
-      return `/storage/${cover}`;
-    }
-    return `/storage/laporan/cover/${cover}`;
   };
 
   const filteredLaporan = useMemo(() => {
@@ -85,6 +74,7 @@ export default function Index() {
         return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
       });
   }, [laporan, sortOrder, searchQuery, instansiFilter, categoryFilter]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Laporan Kegiatan" />
@@ -153,7 +143,7 @@ export default function Index() {
           </DropdownMenu>
 
           {/* 📷 Category Filter (Foto/Video/Dokumen) */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
                 <ListFilterPlus /> {categoryFilter}
@@ -175,7 +165,7 @@ export default function Index() {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </div>
 
@@ -190,111 +180,62 @@ export default function Index() {
         )}
       </div>
 
-      {/* Card Grid */}
-      <div className="m-4">
-        {filteredLaporan.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredLaporan.map((item) => (
-              <article
-                key={item.id}
-                className="bg-white dark:bg-background rounded-2xl shadow-sm hover:shadow-lg dark:hover:bg-sidebar transition flex flex-col overflow-hidden"
-              >
-                <a
-                  href={getCoverUrl(item)}
-                  target="_blank"
-                  className="block"
-                >
-                  <img
-                    src={getCoverUrl(item)}
-                    alt={item.judul}
-                    className="w-full h-48 object-cover"
-                  />
-                </a>
+      {filteredLaporan.length > 0 && (
+                <div className="m-4 space-y-4">
+                    {filteredLaporan.map((laporan) => (
+                        <div
+                            key={laporan.id}
+                            className="bg-white dark:bg-background rounded-2xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between dark:hover:bg-sidebar transition"
+                        >
+                            {/* Info Laporan */}
+                            <div className="space-y-2 flex-1">
+                                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                                    <BookOpen />
+                                    {laporan.judul}
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-300 mb-5">{laporan.deskripsi}</p>
+                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 items-center font-bold">
+                                    Penyelenggara: {laporan.penyelenggara}
+                                  </p>
+                                <div className="flex items-center gap-4">
+                                  <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
+                                    <CalendarDays className="w-4 h-4" />
+                                    {new Date(laporan.created_at).toLocaleDateString("id-ID", {
+                                      day: "numeric",
+                                      month: "long",
+                                      year: "numeric",
+                                    })}
+                                  </p>
+                                  <p className="text-gray-600 dark:text-gray-300 text-sm flex items-center gap-2">
+                                    <MapPin className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                    {laporan.instansi} - {laporan.lokasi}
+                                  </p>
+                                  <p className="text-gray-600 dark:text-gray-300 flex gap-2 text-sm items-center">
+                                    <Users className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                    {laporan.peserta} Peserta
+                                  </p>
+                                </div>
+                            </div>
 
-                <div className="p-4 flex flex-col flex-grow">
-                  <h2 className="capitalize text-lg font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">
-                    {item.judul}
-                  </h2>
-
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
-                    {item.deskripsi}
-                  </p>
-
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                    <strong>Penyelenggara:</strong> {item.penyelenggara}
-                  </p>
-
-                  {/* 🔹 Media Files */}
-                  {/* {item.medias?.file && item.medias.file.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {item.medias.file.map((media, idx) => {
-                        if (!media?.file) return null;
-                        const fileUrl = media.file.startsWith("http")
-                          ? media.file
-                          : `/storage/${media.file}`;
-                        const lower = media.file.toLowerCase();
-                        const isVideo = /\.(mp4|mov|avi)$/i.test(lower);
-                        const isImage = /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(lower);
-
-                        return (
-                          <a
-                            key={idx}
-                            href={fileUrl}
-                            target="_blank"
-                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-                          >
-                            <FileText className="h-4 w-4" />
-                            {isVideo
-                              ? `Lihat Video ${idx + 1}`
-                              : isImage
-                              ? `Lihat File ${idx + 1}`
-                              : `Unduh File ${idx + 1}`}
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )} */}
-
-                  <div className="flex justify-between">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
-                      <CalendarDays className="w-4 h-4" />
-                      {new Date(item.created_at).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                      <MapPin className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" />
-                      {item.instansi} - {item.lokasi}
-                    </p>
-                  </div>
-
-                  <div className="mt-auto flex gap-2">
-                    <Button
-                      onClick={() => handleEdit(item.id)}
-                      className="bg-blue-950 hover:bg-blue-900 flex-1"
-                    >
-                      <SquarePen />Ubah
-                    </Button>
-                    <Button
-                      disabled={processing}
-                      onClick={() => handleDelete(item.id, item.judul)}
-                      className="bg-red-600 hover:bg-red-500 flex-1"
-                    >
-                      <Trash2 />Hapus
-                    </Button>
-                  </div>
+                            {/* Aksi */}
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                <Link href={route("laporan.edit", laporan.id)}>
+                                    <Button className="bg-blue-950 hover:bg-blue-900 w-full sm:w-auto">
+                                        <SquarePen /> Ubah
+                                    </Button>
+                                </Link>
+                                <Button
+                                    disabled={processing}
+                                    onClick={() => handleDelete(laporan.id, laporan.judul)}
+                                    className="bg-red-600 hover:bg-red-500 w-full sm:w-auto"
+                                >
+                                    <Trash2 /> Hapus
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-10 text-center text-gray-500">
-            <p className="mb-4 capitalize">Belum ada laporan</p>
-          </div>
-        )}
-      </div>
+            )}
     </AppLayout>
   );
 }

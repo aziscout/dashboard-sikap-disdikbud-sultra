@@ -16,10 +16,10 @@ return new class extends Migration
             $table->timestamps();
             $table->string('judul');
             $table->string('peserta')->nullable();
-            $table->enum('instansi',['umum','slb','smk','sma'])->default('umum');
+            $table->enum('instansi',['Umum','SMA','SMK','SLB'])->default('Umum');
             $table->string('penyelenggara');
             $table->string('lokasi');
-            $table->string('tabel');
+            $table->string('tabel')->default('laporan');
             $table->text('deskripsi');
             $table->foreignId('dokumens_id')->constrained('dokumens')->onDelete('cascade');
             $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');

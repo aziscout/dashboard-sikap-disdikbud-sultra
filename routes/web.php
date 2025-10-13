@@ -7,7 +7,6 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProdukHukumController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\InovasiController;
-use App\Http\Controllers\LaporanKegiatanController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PengumumanController;
 use Illuminate\Support\Facades\Route;

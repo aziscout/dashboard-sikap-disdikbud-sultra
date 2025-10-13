@@ -54,7 +54,7 @@ export default function Index() {
                         {Object.keys(errors).length > 0 && (
                             <Alert>
                                 <CircleAlert className="h-4 w-4" />
-                                <AlertTitle>Errors!</AlertTitle>
+                                <AlertTitle>Terjadi Kesalahan!</AlertTitle>
                                 <AlertDescription>
                                     <ul>
                                         {Object.entries(errors).map(([key, message]) => (
