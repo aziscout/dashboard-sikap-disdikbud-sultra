@@ -11,7 +11,7 @@ use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\InovasiController;
 use App\Http\Controllers\LaporanKegiatanController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LayananController;
+use App\Http\Controllers\Api\LayananApiController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\ProdukHukumController;
 
@@ -28,5 +28,5 @@ use App\Http\Controllers\ProdukHukumController;
 // invoasi
    Route::get('/inovasi', [InovasiApiController::class, 'index']);
 // layanan
-   Route::post('/layanan', [LayananController::class, 'store']);
-   Route::get('/layanan/status/{kode_tracking}', [LayananController::class, 'status']);
+   Route::post('/layanan', [LayananApiController::class, 'store']);
+   Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);

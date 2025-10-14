@@ -467,8 +467,4 @@ export default function Show() {
       </div>
     </AppLayout>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> a707275e849181f6390ceb4c53e853ab29259380
