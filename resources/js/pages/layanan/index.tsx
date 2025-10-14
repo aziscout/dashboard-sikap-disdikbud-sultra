@@ -73,13 +73,13 @@ export default function Index() {
                 <Badge className="border-blue-200 bg-blue-100 text-xs text-blue-800 p-2">
                   Diterima: {layanans.filter((l) => l.status === 'Diterima').length}
                 </Badge>
-                <Badge className="border-yellow-200 bg-yellow-100 text-xs text-yellow-800">
+                <Badge className="border-yellow-200 bg-yellow-100 text-xs text-yellow-800 p-2">
                   Diproses: {layanans.filter((l) => l.status === 'Diproses').length}
                 </Badge>
-                <Badge className="border-green-200 bg-green-100 text-xs text-green-800">
+                <Badge className="border-green-200 bg-green-100 text-xs text-green-800 p-2">
                   Selesai: {layanans.filter((l) => l.status === 'Selesai').length}
                 </Badge>
-                <Badge className="border-red-200 bg-red-100 text-xs text-red-800">
+                <Badge className="border-red-200 bg-red-100 text-xs text-red-800 p-2">
                   Ditolak: {layanans.filter((l) => l.status === 'Ditolak').length}
                 </Badge>
               </div>

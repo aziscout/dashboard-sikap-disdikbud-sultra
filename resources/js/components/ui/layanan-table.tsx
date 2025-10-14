@@ -30,15 +30,15 @@ export default function LayananTable({ data, onDetail }: Props) {
   const getStatusVariant = (status: string) => {
     switch (status) {
       case 'Diterima':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-blue-100 text-blue-800 border-blue-200 p-2';
       case 'Diproses':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200 p-2';
       case 'Selesai':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-100 text-green-800 border-green-200 p-2';
       case 'Ditolak':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red-100 text-red-800 border-red-200 p-2';
       default:
-        return 'bg-black-100 text-black-800 border-black-200';
+        return 'bg-black-100 text-black-800 border-black-200 p-2';
     }
   };
 
