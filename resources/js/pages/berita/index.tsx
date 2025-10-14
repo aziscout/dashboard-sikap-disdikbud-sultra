@@ -242,18 +242,18 @@ export default function Index() {
                     </p>
 
                     <div className="flex justify-between">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
-                        <CalendarDays className="w-4 h-4" />
-                        {new Date(item.updated_at ?? item.created_at).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                        })}
-                    </p>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
+                            <CalendarDays className="w-4 h-4" />
+                            {new Date(item.updated_at ?? item.created_at).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            })}
+                        </p>
                         <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
                         <MapPin className="w-4 h-4 m-1"/>{item.lokasi}
                         </p>
-                        </div>
+                    </div>
                     {/* Aksi */}
                     <div className="mt-auto flex gap-2">
                         <Link href={route("berita.edit", item.id)} className="flex-1">

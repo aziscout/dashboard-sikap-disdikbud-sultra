@@ -15,6 +15,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import {
   CalendarDays,
   ListFilterPlus,
+  MapPin,
   Megaphone,
   Plus,
   SquarePen,
@@ -225,16 +226,19 @@ export default function Index() {
                   </p>
 
                   {/* 📅 Tanggal + Kategori + Lokasi */}
-                  <p className="text-gray-500 dark:text-gray-400 text-sm  flex items-center gap-2 mb-2 flex-wrap">
-                    <CalendarDays className="w-4 h-4" />
-                    {new Date(item.created_at).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                    <span className="text-gray-600 dark:text-gray-200 font-medium">• {item.category}</span>
-                    <span className="text-gray-600 dark:text-gray-200 font-medium">• {item.lokasi}</span>
-                  </p>
+                  <div className="flex justify-between">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
+                            <CalendarDays className="w-4 h-4" />
+                            {new Date(item.created_at).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            })}
+                        </p>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
+                        <MapPin className="w-4 h-4 m-1"/>{item.lokasi}
+                        </p>
+                    </div>
 
                   <div className="mt-auto flex gap-2">
                     <Link href={route('inovasi.edit', item.id)} className="flex-1">
