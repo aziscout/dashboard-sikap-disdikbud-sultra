@@ -257,14 +257,14 @@ export default function Index() {
                     {/* Aksi */}
                     <div className="mt-auto flex gap-2">
                         <Link href={route("berita.edit", item.id)} className="flex-1">
-                        <Button className="bg-blue-950 hover:bg-blue-900 w-full">
+                        <Button className="bg-blue-950 text-white hover:bg-blue-900 w-full">
                             <SquarePen /> Ubah
                         </Button>
                         </Link>
                         <Button
                         disabled={processing}
                         onClick={() => handleDelete(item.id, item.judul)}
-                        className="bg-red-600 hover:bg-red-500 flex-1"
+                        className="bg-red-600 text-white hover:bg-red-500 flex-1"
                         >
                         <Trash2 /> Hapus
                         </Button>

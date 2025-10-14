@@ -158,14 +158,21 @@ export default function Edit() {
 
             <div>
               <Label htmlFor="judul">Judul</Label>
-              <Input value={data.judul} onChange={(e) => setData('judul', e.target.value)} />
+              <Input defaultValue={data.judul} onChange={(e) => setData('judul', e.target.value)} />
             </div>
 
             <div>
               <Label htmlFor="penyelenggara">Penyelenggara</Label>
               <Input
-                value={data.penyelenggara}
+                defaultValue={data.penyelenggara}
                 onChange={(e) => setData('penyelenggara', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="kategori">Kategori</Label>
+              <Input
+                defaultValue={data.category}
+                onChange={(e) => setData('category', e.target.value)}
               />
             </div>
 
@@ -173,7 +180,7 @@ export default function Edit() {
               <Label htmlFor="deskripsi">Deskripsi</Label>
               <Textarea
                 className="h-34"
-                value={data.deskripsi}
+                defaultValue={data.deskripsi}
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
             </div>
@@ -183,7 +190,7 @@ export default function Edit() {
               <div className="space-y-2">
                 {data.video_urls.map((url, idx) => (
                   <div key={idx} className="flex items-center gap-2">
-                    <Input type="url" value={url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} />
+                    <Input type="url" defaultValue={url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} />
                     <Button
                       type="button"
                       onClick={() => handleVideoUrlRemove(idx)}
@@ -198,7 +205,7 @@ export default function Edit() {
                   <Input
                     type="url"
                     placeholder="https://youtube.com/..."
-                    value={videoUrlInput}
+                    defaultValue={videoUrlInput}
                     onChange={(e) => setVideoUrlInput(e.target.value)}
                   />
                   <Button type="button" onClick={() => {

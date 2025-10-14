@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
@@ -20,6 +21,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const categories = [
+    { value: "perda", label: "Peraturan Daerah" },
+    { value: "keputusan", label: "Keputusan" },
+    { value: "surat-edaran", label: "Surat Edaran" },
+    { value: "instruksi", label: "Instruksi" },
+    { value: "pedoman", label: "Pedoman" },
+    { value: "peraturan", label: "Peraturan Kepala Dinas" },
+];
+
 interface Dokumen {
     id: number;
     dokumen: string;
@@ -29,6 +39,7 @@ interface ProdukHukum {
     id: number;
     judul: string;
     deskripsi: string;
+    category: string;
     dokumens: Dokumen | null;
     created_at: string;
 }
@@ -41,11 +52,13 @@ export default function Edit({ produkHukum }: Props) {
     const { data, setData, post, errors, progress } = useForm<{
         judul: string;
         deskripsi: string;
+        category: string;
         dokumen?: File | null;
         _method?: string;
     }>({
         judul: produkHukum.judul || '',
         deskripsi: produkHukum.deskripsi || '',
+        category: produkHukum.category || '',
         dokumen: undefined,
     });
 
@@ -109,6 +122,25 @@ export default function Edit({ produkHukum }: Props) {
                                 value={data.deskripsi}
                                 onChange={(e) => setData("deskripsi", e.target.value)}
                             />
+                        </div>
+
+                        <div>
+                            <Label htmlFor="category">Kategori</Label>
+                            <Select 
+                                value={data.category}
+                                onValueChange={(value) => setData('category', value)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Pilih kategori" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((category) => (
+                                        <SelectItem key={category.value} value={category.value}>
+                                            {category.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div>

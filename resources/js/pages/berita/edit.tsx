@@ -29,6 +29,7 @@ interface MediaItem {
 interface Berita {
   id: number;
   judul: string;
+  penyelenggara: string;
   deskripsi: string;
   coverImage: string | null;
   medias: { file: MediaItem[] } | null;
@@ -47,6 +48,7 @@ export default function Edit({ berita }: Props) {
     judul: berita.judul || '',
     deskripsi: berita.deskripsi || '',
     coverImage: null as File | null,
+    penyelenggara: berita.penyelenggara || '',
     files: [] as File[],            // untuk foto baru
     replace_files: [] as { index: number; file: File }[], // untuk foto yang diubah
     video_urls: (berita.medias?.file || [])
@@ -158,14 +160,22 @@ const handleChangePhoto = (index: number, file: File) => {
 
             <div>
               <Label>Judul</Label>
-              <Input value={data.judul} onChange={(e) => setData('judul', e.target.value)} />
+              <Input defaultValue={data.judul} onChange={(e) => setData('judul', e.target.value)} />
+            </div>
+            <div>
+              <Label>Penyelenggara</Label>
+              <Input defaultValue={data.penyelenggara} onChange={(e) => setData('penyelenggara', e.target.value)} />
+            </div>
+            <div>
+              <Label>Kategori</Label>
+              <Input defaultValue={data.category}  onChange={(e) => setData('category', e.target.value)} />
             </div>
 
             <div>
               <Label>Deskripsi</Label>
               <Textarea
                 className="h-34"
-                value={data.deskripsi}
+                defaultValue={data.deskripsi}
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
             </div>

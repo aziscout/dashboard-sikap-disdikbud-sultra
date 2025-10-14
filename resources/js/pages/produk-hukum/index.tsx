@@ -1,11 +1,20 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { CalendarDays, Megaphone, Plus, Scale, SquarePen, Trash2 } from 'lucide-react';
+import { CalendarDays, ListFilterPlus, Megaphone, Plus, Scale, SquarePen, Trash2 } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
-import { PageProps as InertiaPageProps } from '@inertiajs/core'
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
+import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,14 +23,23 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface ProdukHukum {
-    id:number,
-    judul:string,
-    deskripsi:string,
-    dokumen:string,
-    created_at:string,
-}
+const categories = [
+    { value: "perda", label: "Peraturan Daerah" },
+    { value: "keputusan", label: "Keputusan" },
+    { value: "surat-edaran", label: "Surat Edaran" },
+    { value: "instruksi", label: "Instruksi" },
+    { value: "pedoman", label: "Pedoman" },
+    { value: "peraturan", label: "Peraturan Kepala Dinas" },
+];
 
+interface ProdukHukum {
+    id: number;
+    judul: string;
+    deskripsi: string;
+    category?: string;
+    dokumen: string;
+    created_at: string;
+}
 
 interface CustomPageProps {
     flash: {
@@ -33,6 +51,9 @@ interface CustomPageProps {
 type PageProps = InertiaPageProps & CustomPageProps;
 
 export default function Index() {
+    const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
     const { produk_hukum, flash } = usePage<PageProps>().props;
 
@@ -40,27 +61,101 @@ export default function Index() {
 
     const handleDelete = (id: number, judul: string) => {
         if (confirm(`Apakah anda yakin ingin menghapus - ${id}. ${judul}`)) {
-        destroy(`/produk-hukum/${id}`);
+            destroy(`/produk-hukum/${id}`);
         }
     };
+
+    // 🔹 Search + Filter + Sort Logic
+    const filteredData = useMemo(() => {
+        return [...produk_hukum]
+            .filter((item) =>
+                item.judul?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .filter((item) => {
+                if (categoryFilter === 'all') return true;
+                return item.category === categoryFilter;
+            })
+            .sort((a, b) => {
+                const dateA = new Date(a.created_at).getTime();
+                const dateB = new Date(b.created_at).getTime();
+                return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
+            });
+    }, [produk_hukum, sortOrder, searchQuery, categoryFilter]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Produk Hukum" />
 
-            {/* Tombol Tambah */}
-            <div className="m-4 flex justify-between items-center">
+            {/* Header Section */}
+            <div className="m-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <h1 className="text-2xl font-semibold">Daftar Produk Hukum</h1>
-                <Link href={route('produk-hukum.create')}>
-                    <Button>
-                        <Plus /> Tambah
-                    </Button>
-                </Link>
+                <div className="flex flex-col gap-2 md:flex-row md:items-center">
+                    {/* 🔍 Search */}
+                    <Input
+                        placeholder="Cari judul produk hukum..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full md:w-64"
+                    />
+
+                    {/* ➕ Tambah */}
+                    <Link href={route('produk-hukum.create')}>
+                        <Button>
+                            <Plus /> Tambah
+                        </Button>
+                    </Link>
+
+                    {/* 🔽 Sort */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                <ListFilterPlus /> {sortOrder}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-40 capitalize">
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={() => setSortOrder('terbaru')}>
+                                    Terbaru
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSortOrder('terlama')}>
+                                    Terlama
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* 📚 Category Filter */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                <ListFilterPlus /> 
+                                {categoryFilter === 'all' 
+                                    ? 'Semua Kategori' 
+                                    : categories.find(c => c.value === categoryFilter)?.label}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={() => setCategoryFilter('all')}>
+                                    Semua Kategori
+                                </DropdownMenuItem>
+                                {categories.map((category) => (
+                                    <DropdownMenuItem 
+                                        key={category.value}
+                                        onClick={() => setCategoryFilter(category.value)}
+                                    >
+                                        {category.label}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
 
             {/* Flash Message */}
             <div className="w-full md:w-1/2 px-4">
-                {flash.message && (
+                {flash?.message && (
                     <Alert>
                         <Megaphone className="h-4 w-4" />
                         <AlertTitle>Notification!</AlertTitle>
@@ -70,9 +165,9 @@ export default function Index() {
             </div>
 
             {/* Daftar Produk Hukum */}
-            {produk_hukum.length > 0 && (
+            {filteredData.length > 0 ? (
                 <div className="m-4 space-y-4">
-                    {produk_hukum.map((produk) => (
+                    {filteredData.map((produk) => (
                         <div
                             key={produk.id}
                             className="bg-white dark:bg-background rounded-2xl shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between dark:hover:bg-sidebar transition"
@@ -83,9 +178,14 @@ export default function Index() {
                                     <Scale />
                                     {produk.judul}
                                 </h2>
+                                {produk.category && (
+                                    <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                                        {categories.find(c => c.value === produk.category)?.label}
+                                    </p>
+                                )}
                                 <p className="text-gray-600 dark:text-gray-300">{produk.deskripsi}</p>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
-                                    <CalendarDays />
+                                    <CalendarDays className='w-4 h-4'/>
                                     {new Date(produk.created_at).toLocaleDateString("id-ID", {
                                         day: "numeric",
                                         month: "long",
@@ -97,20 +197,28 @@ export default function Index() {
                             {/* Aksi */}
                             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                 <Link href={route("produk-hukum.edit", produk.id)}>
-                                    <Button className="bg-blue-950 hover:bg-blue-900 w-full sm:w-auto">
+                                    <Button className="bg-blue-950 text-white  hover:bg-blue-900 w-full sm:w-auto">
                                         <SquarePen /> Ubah
                                     </Button>
                                 </Link>
                                 <Button
                                     disabled={processing}
                                     onClick={() => handleDelete(produk.id, produk.judul)}
-                                    className="bg-red-600 hover:bg-red-500 w-full sm:w-auto"
+                                    className="bg-red-600 text-white hover:bg-red-500 w-full sm:w-auto"
                                 >
                                     <Trash2 /> Hapus
                                 </Button>
                             </div>
                         </div>
                     ))}
+                </div>
+            ) : (
+                <div className="m-4 text-center text-gray-500">
+                    <p className="mb-4">
+                        {searchQuery || categoryFilter !== 'all' 
+                            ? 'Tidak ada produk hukum yang sesuai dengan pencarian'
+                            : 'Belum ada produk hukum'}
+                    </p>
                 </div>
             )}
         </AppLayout>

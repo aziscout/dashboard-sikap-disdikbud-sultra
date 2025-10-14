@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('judul');
             $table->text('deskripsi');
             $table->string('coverImage');
+            $table->text('penyelenggara');
             $table->string('lokasi');
             $table->string('tabel')->default('beritas');
-            $table->enum('category',['foto','video'])->nullable();
+            $table->string('category');
             $table->enum('instansi',['umum','sma','smk','slb']);
             $table->timestamps();
         });

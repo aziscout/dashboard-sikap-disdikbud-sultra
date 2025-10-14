@@ -25,10 +25,11 @@ class BeritaController extends Controller
     {
         $request->validate([
             'judul'       => 'required|string|max:255',
+            'penyelenggara'       => 'required|string|max:255',
             'deskripsi'   => 'required|string',
             'coverImage' => 'required|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'     => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'category'    => 'nullable|in:foto,video',
+            'category'    => 'nullable|string|max:255',
             'instansi'    => 'required|in:umum,sma,smk,slb',
             'lokasi'      => 'required|string|max:200',
             'video_urls'  => 'nullable|array',
@@ -72,6 +73,7 @@ class BeritaController extends Controller
         Berita::create([
             'medias_id'   => $media->id,
             'judul'       => $request->judul,
+            'penyelenggara' => $request->penyelenggara,
             'deskripsi'   => $request->deskripsi,
             'coverImage' => $coverPath,
             'category'    => $request->category,
@@ -96,8 +98,9 @@ class BeritaController extends Controller
             'judul'        => 'required|string|max:255',
             'deskripsi'    => 'required|string',
             'coverImage'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
+            'penyelenggara'   => 'required|string',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'category'     => 'nullable|in:foto,video',
+            'category'     => 'nullable|string|max:255',
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'lokasi'       => 'required|string|max:200',
             'video_urls'   => 'nullable|array',
