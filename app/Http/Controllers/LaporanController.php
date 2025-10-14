@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dokumen;
-use App\Models\laporan;
-use App\Models\Media;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;

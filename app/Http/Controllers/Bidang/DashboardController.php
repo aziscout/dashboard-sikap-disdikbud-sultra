@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Bidang;
 
 use App\Http\Controllers\Controller;
-use App\Models\laporan;
+use App\Models\Laporan;
 use App\Models\Layanan;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         $layananQuery = Layanan::query();
-        $laporanQuery = laporan::query();
+        $laporanQuery = Laporan::query();
 
         if ($user && $user->role === 'bidang') {
             $bidangFilter = $user->name ?? explode('@', $user->email)[0];
