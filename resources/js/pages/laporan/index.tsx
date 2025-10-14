@@ -220,14 +220,14 @@ export default function Index() {
                             {/* Aksi */}
                             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                 <Link href={route("laporan.edit", laporan.id)}>
-                                    <Button className="bg-blue-950 hover:bg-blue-900 w-full sm:w-auto">
+                                    <Button className="bg-blue-950 hover:bg-blue-900 text-white w-full sm:w-auto">
                                         <SquarePen /> Ubah
                                     </Button>
                                 </Link>
                                 <Button
                                     disabled={processing}
                                     onClick={() => handleDelete(laporan.id, laporan.judul)}
-                                    className="bg-red-600 hover:bg-red-500 w-full sm:w-auto"
+                                    className="bg-red-600 hover:bg-red-500 w-full sm:w-auto text-white"
                                 >
                                     <Trash2 /> Hapus
                                 </Button>
