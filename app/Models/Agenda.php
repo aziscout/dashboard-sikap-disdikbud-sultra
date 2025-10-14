@@ -19,10 +19,7 @@ class Agenda extends Model
         'coverImage',
         'penyelenggara',
         'instansi',
-<<<<<<< HEAD
-=======
         'category',
->>>>>>> 29a3713a57395c78c49ed3f0bb6a96d213a906a4
         'lokasi',
         'tabel',
         'medias_id',

@@ -25,18 +25,11 @@ class BeritaController extends Controller
     {
         $request->validate([
             'judul'       => 'required|string|max:255',
-<<<<<<< HEAD
-            'deskripsi'   => 'required|string',
-            'cover_image' => 'required|image|mimes:jpg,jpeg,png|max:20048',
-            'files.*'     => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'category'    => 'nullable|in:foto,video',
-=======
             'penyelenggara'       => 'required|string|max:255',
             'deskripsi'   => 'required|string',
             'cover_image' => 'required|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'     => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'    => 'nullable|string|max:255',
->>>>>>> 29a3713a57395c78c49ed3f0bb6a96d213a906a4
             'instansi'    => 'required|in:umum,sma,smk,slb',
             'lokasi'      => 'required|string|max:200',
             'video_urls'  => 'nullable|array',
@@ -80,10 +73,7 @@ class BeritaController extends Controller
         Berita::create([
             'medias_id'   => $media->id,
             'judul'       => $request->judul,
-<<<<<<< HEAD
-=======
             'penyelenggara' => $request->penyelenggara,
->>>>>>> 29a3713a57395c78c49ed3f0bb6a96d213a906a4
             'deskripsi'   => $request->deskripsi,
             'cover_image' => $coverPath,
             'category'    => $request->category,
@@ -107,16 +97,10 @@ class BeritaController extends Controller
         $request->validate([
             'judul'        => 'required|string|max:255',
             'deskripsi'    => 'required|string',
-<<<<<<< HEAD
-            'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
-            'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'category'     => 'nullable|in:foto,video',
-=======
             'penyelenggara'   => 'required|string',
             'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'     => 'nullable|string|max:255',
->>>>>>> 29a3713a57395c78c49ed3f0bb6a96d213a906a4
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'lokasi'       => 'required|string|max:200',
             'video_urls'   => 'nullable|array',
