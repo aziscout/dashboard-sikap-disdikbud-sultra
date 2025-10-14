@@ -224,7 +224,7 @@ const handleChangePhoto = (index: number, file: File) => {
                           <Button type="submit" disabled={processing}>
                             {processing ? 'Updating...' : <><Save /> Simpan</>}
                           </Button>
-                          <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
+                          <Button type="button" variant="outline" onClick={() => router.get(route('berita.index'))}>
                             Batal
                           </Button>
             </div>
