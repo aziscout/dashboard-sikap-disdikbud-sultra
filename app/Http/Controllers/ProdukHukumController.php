@@ -24,6 +24,7 @@ class ProdukHukumController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255', 
             'deskripsi' => 'required|string|max:255', 
+            'category' => 'required|string|max:255', 
             'dokumen' => 'nullable|mimes:pdf|max:2000',
         ]);
 
@@ -45,6 +46,7 @@ class ProdukHukumController extends Controller
         ProdukHukum::create([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
+            'category' => $request->category,
             'dokumens_id' => $dokumenId,
         ]);
 
@@ -80,6 +82,7 @@ class ProdukHukumController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
+            'category' => 'required|string',
             'dokumen' => 'nullable|mimes:pdf|max:20000', // maksimal 20MB
         ]);
 

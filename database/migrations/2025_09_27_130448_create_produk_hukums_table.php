@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('dokumens_id')->constrained('dokumens')->onDelete('cascade');
             $table->string('judul');
+            $table->string('category');
             $table->text('deskripsi');
             $table->timestamps();
         });

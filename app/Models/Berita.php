@@ -9,6 +9,7 @@ class Berita extends Model
     protected $fillable = [
         'medias_id',
         'judul',
+        'penyelenggara',
         'deskripsi',
         'cover_image',
         'category',

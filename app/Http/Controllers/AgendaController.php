@@ -37,6 +37,7 @@ class AgendaController extends Controller
         $request->validate([
             'judul'        => 'required|string|max:255',
             'penyelenggara'=> 'required|string|max:255',
+            'category'=> 'required|string|max:255',
             'lokasi'       => 'required|string|max:255',
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'deskripsi'    => 'required|string|max:1000',
@@ -75,6 +76,8 @@ class AgendaController extends Controller
             'medias_id'    => $media->id,
             'judul'        => $request->judul,
             'penyelenggara'=> $request->penyelenggara,
+            'penyelenggara'=> $request->penyelenggara,
+            'category'=> $request->category,
             'lokasi'       => $request->lokasi,
             'instansi'     => $request->instansi,
             'deskripsi'    => $request->deskripsi,
@@ -98,6 +101,7 @@ class AgendaController extends Controller
         $request->validate([
             'judul'        => 'required|string|max:255',
             'penyelenggara'=> 'required|string|max:255',
+            'category'=> 'required|string|max:255',
             'lokasi'       => 'required|string|max:255',
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'deskripsi'    => 'required|string|max:1000',
@@ -164,6 +168,8 @@ class AgendaController extends Controller
         $agenda->update([
             'judul'        => $request->judul,
             'penyelenggara'=> $request->penyelenggara,
+            'penyelenggara'=> $request->penyelenggara,
+            'category'=> $request->category,
             'lokasi'       => $request->lokasi,
             'instansi'     => $request->instansi,
             'deskripsi'    => $request->deskripsi,
