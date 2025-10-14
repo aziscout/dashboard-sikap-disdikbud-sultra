@@ -29,10 +29,10 @@ class LayananController extends Controller
             'email_pengirim' => 'required|email|max:255',
 
             // file media
-            'files.*'        => 'nullable|mimes:jpg,jpeg,png,|max:50000',
+            'files.*'        => 'nullable|mimes:jpg,jpeg,png,|max:10000',
 
             // file dokumen
-            'dokumen'   => 'nullable|mimes:pdf|max:30000',
+            'dokumen'   => 'nullable|mimes:pdf|max:10000',
         ]);
 
         // Mapping bidang ke singkatan
