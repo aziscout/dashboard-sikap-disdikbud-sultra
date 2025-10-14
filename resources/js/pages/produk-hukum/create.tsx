@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
@@ -20,10 +21,20 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const categories = [
+    { value: "perda", label: "Peraturan Daerah" },
+    { value: "keputusan", label: "Keputusan" },
+    { value: "surat-edaran", label: "Surat Edaran" },
+    { value: "instruksi", label: "Instruksi" },
+    { value: "pedoman", label: "Pedoman" },
+    { value: "peraturan", label: "Peraturan Kepala Dinas" },
+];
+
 export default function Index() {
     const { data, setData, post, errors } = useForm({
         judul: '', 
         deskripsi: '', 
+        category: '', 
         dokumen: null as File | null,
     });
 
@@ -84,6 +95,25 @@ export default function Index() {
                         </div>
 
                         <div>
+                            <Label htmlFor="category">Kategori</Label>
+                            <Select 
+                                value={data.category}
+                                onValueChange={(value) => setData('category', value)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Pilih kategori" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((category) => (
+                                        <SelectItem key={category.value} value={category.value}>
+                                            {category.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div>
                             <Label htmlFor="file">Dokumen</Label>
                             <Input
                                 type="file"
@@ -118,5 +148,5 @@ export default function Index() {
                 </div>
             </div>
         </AppLayout>
-        );
+    );
 }

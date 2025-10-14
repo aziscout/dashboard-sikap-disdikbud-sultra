@@ -9,7 +9,6 @@ use App\Models\Agenda;
 class AgendaApiController extends Controller
 {
     public function index(){
-
         $agenda = Agenda::with("medias")->get();
         return response()->json($agenda);
     }

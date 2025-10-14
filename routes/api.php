@@ -1,22 +1,19 @@
 <?php
 
-use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\BeritaApiController;
+use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\InovasiApiController;
 use App\Http\Controllers\Api\LaporanKegiatanApiController;
 use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
-use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\InovasiController;
-use App\Http\Controllers\LaporanKegiatanController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\LayananApiController;
-use App\Http\Controllers\PengumumanController;
-use App\Http\Controllers\ProdukHukumController;
+use App\Http\Controllers\LayananController;
 
+// logo & hero section
+   Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
-    Route::get('/pengumuman',[PengumumanApiController::class,'index']);
+   Route::get('/pengumuman',[PengumumanApiController::class,'index']);
 // agenda
    Route::get('/agenda',[AgendaApiController::class,'index']);
 // laporan kegiatan 
@@ -28,5 +25,5 @@ use App\Http\Controllers\ProdukHukumController;
 // invoasi
    Route::get('/inovasi', [InovasiApiController::class, 'index']);
 // layanan
-   Route::post('/layanan', [LayananApiController::class, 'store']);
-   Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);
+   Route::post('/layanan', [LayananController::class, 'store']);
+   Route::get('/layanan/status/{kode_tracking}', [LayananController::class, 'status']);

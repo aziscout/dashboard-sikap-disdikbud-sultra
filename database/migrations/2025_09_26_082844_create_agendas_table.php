@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('judul');
             $table->string('coverImage');
-            $table->enum('category',['foto','video'])->default('foto');
+            $table->string('category');
             $table->enum('instansi',['umum','slb','smk','smp'])->default('umum');
             $table->string('penyelenggara');
             $table->string('lokasi');

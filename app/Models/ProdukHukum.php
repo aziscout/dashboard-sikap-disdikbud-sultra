@@ -16,6 +16,10 @@ class ProdukHukum extends Model
         'dokumens_id',
         'judul',
         'deskripsi',
+<<<<<<< HEAD
+=======
+        'category',
+>>>>>>> 29a3713a57395c78c49ed3f0bb6a96d213a906a4
     ];
 
     public function dokumens()
