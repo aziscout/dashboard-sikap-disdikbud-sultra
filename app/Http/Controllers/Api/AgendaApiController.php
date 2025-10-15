@@ -14,10 +14,10 @@ class AgendaApiController extends Controller
     }
     public function show($id)
     {
-        $berita = Agenda::with('medias')->find($id);
-        if (!$berita) {
-            return response()->json(['message' => 'Berita not found'], 404);
+        $agenda = Agenda::with('medias')->find($id);
+        if (!$agenda) {
+            return response()->json(['message' => 'Agenda not found'], 404);
         }
-        return response()->json($berita);
+        return response()->json($agenda);
     }
 }
