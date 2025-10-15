@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { CircleAlert, Plus, Save } from 'lucide-react';
 import { useState } from 'react';
 
@@ -173,10 +173,14 @@ export default function Index() {
                             <Input placeholder="Masukkan Lokasi" value={data.lokasi} onChange={(e) => setData('lokasi', e.target.value)} />
                         </div>
 
-                        <Button type="submit" className="w-full md:w-auto">
-                            <Save />
-                            Simpan
-                        </Button>
+                        <div className=' flex space-x-2'>
+                                    <Button type="submit" className="w-full md:w-auto">
+                                      <Save />Simpan
+                                    </Button>
+                                     <Button type="button" variant="outline" onClick={() => router.get(route('berita.index'))}>
+                                        Batal
+                                    </Button>
+                                    </div>
                     </form>
                 </div>
 

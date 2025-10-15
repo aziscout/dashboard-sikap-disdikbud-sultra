@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { CircleAlert, Plus, Save } from 'lucide-react';
 import { useState } from 'react';
 
@@ -179,9 +179,14 @@ export default function Index() {
               />
             </div>
 
+            <div className=' flex space-x-2'>
             <Button type="submit" className="w-full md:w-auto">
-              <Save /> Simpan
+              <Save />Simpan
             </Button>
+             <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
+                Batal
+            </Button>
+            </div>
           </form>
         </div>
 

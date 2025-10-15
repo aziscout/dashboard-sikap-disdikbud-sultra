@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { CircleAlert, Plus, Save } from 'lucide-react';
 import { useState } from 'react';
 
@@ -175,9 +175,15 @@ export default function CreateLaporanKegiatan() {
               />
             </div>
 
+            <div className=' flex space-x-2'>
             <Button type="submit" disabled={processing}>
               <Save className="mr-2 h-4 w-4" /> {processing ? 'Menyimpan...' : 'Simpan'}
             </Button>
+            
+             <Button type="button" variant="outline" onClick={() => router.get(route('laporan-kegiatan.index'))}>
+                Batal
+            </Button>
+            </div>
           </form>
         </div>
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\LaporanKegiatanApiController;
 use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LayananController;
+use App\Http\Controllers\Api\LayananApiController;
 
 // logo & hero section
    Route::get('/dashboard',[DashboardApiController::class,'index']);
@@ -25,5 +25,5 @@ use App\Http\Controllers\LayananController;
 // invoasi
    Route::get('/inovasi', [InovasiApiController::class, 'index']);
 // layanan
-   Route::post('/layanan', [LayananController::class, 'store']);
-   Route::get('/layanan/status/{kode_tracking}', [LayananController::class, 'status']);
+   Route::post('/layanan', [LayananApiController::class, 'store']);
+   Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);

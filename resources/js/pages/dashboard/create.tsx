@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { CircleAlert, Save, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -145,9 +145,16 @@ return (
             </div>
         </div>
         </div>
+        <div className=' flex space-x-2'>
         <Button type="submit" className="w-full md:w-auto">
             <Save />Simpan
         </Button>
+
+            
+             <Button type="button" variant="outline" onClick={() => router.get(route('inovasi.index'))}>
+                Batal
+            </Button>
+            </div>
     </form>
     </AppLayout>
 );

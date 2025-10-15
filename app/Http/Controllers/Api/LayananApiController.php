@@ -112,15 +112,22 @@ class LayananApiController extends Controller
      * Cek status layanan berdasarkan kode tracking.
      */
     public function status($kode_tracking)
-    {
-        $layanan = Layanan::where('kode_tracking', $kode_tracking)
-            ->with('media', 'dokumen')
-            ->first();
+{
+    $layanan = \App\Models\Layanan::where('kode_tracking', $kode_tracking)->first();
 
-        if (!$layanan) {
-            return response()->json(['message' => 'Laporan tidak ditemukan'], 404);
-        }
-
-        return response()->json($layanan);
+    if (!$layanan) {
+        return response()->json([
+            'message' => 'Laporan tidak ditemukan'
+        ], 404);
     }
+
+    return response()->json([
+        'kode_tracking' => $layanan->kode_tracking,
+        'status'        => $layanan->status,
+        'judul'         => $layanan->judul,
+        'bidang'        => $layanan->bidang,
+        'tanggal'       => $layanan->created_at->format('d-m-Y H:i'),
+    ]);
+}
+
 }
