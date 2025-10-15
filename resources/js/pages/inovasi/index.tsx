@@ -236,7 +236,8 @@ export default function Index() {
                             })}
                         </p>
                         <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
-                        <MapPin className="w-4 h-4 m-1"/>{item.lokasi}
+                        <MapPin className="w-4 h-4 m-1"/>
+                          {item.instansi} - {item.lokasi}
                         </p>
                     </div>
 

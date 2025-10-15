@@ -12,7 +12,7 @@ import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Inovasi', href: '/inovasi' },
-  { title: 'Edit Inovasi', href: '/inovasi/edit' },
+  { title: 'Ubah Inovasi', href: '/inovasi/edit' },
 ];
 
 interface MediaItem {
@@ -254,7 +254,7 @@ export default function EditInovasi() {
 
             <div className="flex space-x-2">
               <Button type="submit" disabled={processing}>
-                {processing ? 'Updating...' : <><Save /> Update</>}
+                {processing ? 'Menyimpan...' : <><Save /> Simpan</>}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.get(route('inovasi.index'))}>
                 Batal
@@ -289,14 +289,14 @@ export default function EditInovasi() {
                     <div className="mt-2 flex gap-2">
                       <Button
                         type="button"
-                        className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900"
+                        className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
                         onClick={() => handleReplacePhoto(i)}
                       >
                         <SquarePen /> Ubah
                       </Button>
                       <Button
                         type="button"
-                        className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500"
+                        className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500 text-white"
                         onClick={() => handleRemovePhoto(i)}
                       >
                         <Trash2 /> Hapus

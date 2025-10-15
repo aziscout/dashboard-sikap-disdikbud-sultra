@@ -192,7 +192,7 @@ export default function Edit() {
                     <Button
                       type="button"
                       onClick={() => handleVideoUrlRemove(idx)}
-                      className="flex-shrink-0 bg-red-600 hover:bg-red-500"
+                      className="flex-shrink-0 bg-red-600 hover:bg-red-500 text-white"
                     >
                       <Trash2 />
                     </Button>
@@ -240,7 +240,7 @@ export default function Edit() {
 
             <div className="flex space-x-2">
               <Button type="submit" disabled={processing}>
-                {processing ? 'Updating...' : (<><Save /> Simpan</>)}
+                {processing ? 'Menyimpan...' : (<><Save /> Simpan</>)}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.get(route('pengumuman.index'))}>
                 Batal
@@ -276,7 +276,7 @@ export default function Edit() {
                       {/* Ubah foto */}
                       <Button
                         type="button"
-                        className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900"
+                        className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
                         onClick={() => {
                           const input = document.createElement('input');
                           input.type = 'file';
@@ -296,7 +296,7 @@ export default function Edit() {
                       {/* Hapus foto */}
                       <Button
                         type="button"
-                        className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500"
+                        className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500 text-white"
                         onClick={() => {
                           const originalIndex = localMediaIndices[i];
                           const removedFile = pengumuman.medias?.file[originalIndex]?.file;

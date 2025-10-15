@@ -1,26 +1,14 @@
-# Update LaporanKegiatan to Match Agenda and Pengumuman Functionality
+# TODO: Perbaiki Edit Berita - Penyelenggara Tidak Tersimpan
 
-## Backend Changes
-- [x] Update LaporanKegiatanController.php:
-  - Add 'deleted_files' to update validation
-  - Implement media merging logic like AgendaController
-  - Add with('medias') to index method
+## Langkah-langkah Perbaikan
 
-## Frontend Changes
-- [x] Update resources/js/pages/laporan-kegiatan/index.tsx:
-  - Update layout to grid with cover image
-  - Add media files display below description
-  - Update filters to include instansi
-- [x] Update resources/js/pages/laporan-kegiatan/edit.tsx:
-  - Add 'deleted_files' to form data
-  - Add useMemo for localMediaIndices
-  - Add handleChangePhoto, handleVideoUrlChange, handleVideoUrlRemove
-  - Update video URL section to editable inputs
-  - Update photo buttons to use handleChangePhoto and add to deleted_files
+- [x] Edit `resources/js/pages/berita/edit.tsx`:
+  - Ubah input `judul` dari `defaultValue` ke `value`
+  - Ubah input `penyelenggara` dari `defaultValue` ke `value`
+  - Ubah textarea `deskripsi` dari `defaultValue` ke `value`
+  - Ubah input `category` dari `defaultValue` ke `value`
 
-## Testing
-- [x] Test photo change/delete functionality
-- [x] Test video URL editing/removal
-- [x] Verify cover image updates
-- [x] Test instansi filter and display
-- [x] Modify app/Http/Controllers/Bidang/DashboardController.php to filter counts by user data for bidang role
+- [x] Edit `app/Http/Controllers/BeritaController.php`:
+  - Tambah `'penyelenggara' => $request->penyelenggara,` dalam array update berita
+
+- [ ] Test edit berita untuk memastikan perubahan tersimpan

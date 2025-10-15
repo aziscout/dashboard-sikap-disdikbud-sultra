@@ -160,22 +160,22 @@ const handleChangePhoto = (index: number, file: File) => {
 
             <div>
               <Label>Judul</Label>
-              <Input defaultValue={data.judul} onChange={(e) => setData('judul', e.target.value)} />
+              <Input value={data.judul} onChange={(e) => setData('judul', e.target.value)} />
             </div>
             <div>
               <Label>Penyelenggara</Label>
-              <Input defaultValue={data.penyelenggara} onChange={(e) => setData('penyelenggara', e.target.value)} />
+              <Input value={data.penyelenggara} onChange={(e) => setData('penyelenggara', e.target.value)} />
             </div>
             <div>
               <Label>Kategori</Label>
-              <Input defaultValue={data.category}  onChange={(e) => setData('category', e.target.value)} />
+              <Input value={data.category}  onChange={(e) => setData('category', e.target.value)} />
             </div>
 
             <div>
               <Label>Deskripsi</Label>
               <Textarea
                 className="h-34"
-                defaultValue={data.deskripsi}
+                value={data.deskripsi}
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
             </div>
@@ -189,7 +189,7 @@ const handleChangePhoto = (index: number, file: File) => {
                     <Button
                       type="button"
                       onClick={() => handleVideoUrlRemove(idx)}
-                      className="flex-shrink-0 bg-red-600 hover:bg-red-500"
+                      className="flex-shrink-0 bg-red-600 hover:bg-red-500 text-white"
                     >
                       <Trash2 />
                     </Button>
@@ -273,7 +273,7 @@ const handleChangePhoto = (index: number, file: File) => {
                         {/* Tombol ubah foto */}
                         <Button
                           type="button"
-                          className="w-24 flex items-center gap-1 bg-blue-950 hover:bg-blue-900"
+                          className="w-24 flex items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
                           onClick={() => {
                             const input = document.createElement('input');
                             input.type = 'file';
@@ -293,7 +293,7 @@ const handleChangePhoto = (index: number, file: File) => {
                         {/* Tombol hapus foto */}
                         <Button
                           type="button"
-                          className="w-24 flex items-center gap-1 bg-red-600 hover:bg-red-500"
+                          className="w-24 flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white"
                           onClick={() => {
                             // simpan path lama ke deleted_files agar backend tahu
                             const removedFile = berita.medias?.file[i]?.file;

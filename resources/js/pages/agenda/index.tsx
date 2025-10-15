@@ -257,8 +257,6 @@ export default function Index() {
                     <strong>Penyelenggara:</strong> {item.penyelenggara}
                   </p>
                   
-
-                  {/* 🔹 Media Files (Adapted from laporan-kegiatan) */}
                   {item.medias?.file && item.medias.file.length > 0 && (
                     <div className="mt-2 space-y-1">
                       {item.medias.file.map((media, idx) => {

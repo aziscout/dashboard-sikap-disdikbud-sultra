@@ -468,7 +468,3 @@ export default function Show() {
     </AppLayout>
   );
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> fa39830dc495d0d4c8e800c5a64e480bb1db6616

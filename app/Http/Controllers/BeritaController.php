@@ -160,11 +160,12 @@ class BeritaController extends Controller
 
         // Update berita utama
         $berita->update([
-            'judul'     => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'category'  => $request->category,
-            'instansi'  => $request->instansi,
-            'lokasi'    => $request->lokasi,
+            'judul'       => $request->judul,
+            'penyelenggara' => $request->penyelenggara,
+            'deskripsi'   => $request->deskripsi,
+            'category'    => $request->category,
+            'instansi'    => $request->instansi,
+            'lokasi'      => $request->lokasi,
         ]);
 
         return redirect()->route('berita.index')->with('message', 'Berita berhasil diperbarui');

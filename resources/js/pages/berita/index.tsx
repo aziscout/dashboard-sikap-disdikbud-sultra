@@ -31,6 +31,7 @@ interface Berita {
     category: string;
     instansi: string;
     lokasi: string;
+    penyelenggara: string;
     created_at: string;
     updated_at: string;
 }
@@ -240,6 +241,10 @@ export default function Index() {
                     <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
                         {item.deskripsi}
                     </p>
+                    
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                        <strong>Penyelenggara:</strong> {item.penyelenggara}
+                    </p>
 
                     <div className="flex justify-between">
                         <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
@@ -251,7 +256,8 @@ export default function Index() {
                             })}
                         </p>
                         <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
-                        <MapPin className="w-4 h-4 m-1"/>{item.lokasi}
+                        <MapPin className="w-4 h-4 m-1"/>
+                            {item.instansi} - {item.lokasi}
                         </p>
                     </div>
                     {/* Aksi */}
