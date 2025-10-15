@@ -200,6 +200,6 @@ class BeritaController extends Controller
         return redirect()->route('berita.index')
             ->with('message', 'Berita berhasil dihapus beserta media terkait');
     }
-
+   
 }
 

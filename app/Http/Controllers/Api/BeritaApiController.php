@@ -13,4 +13,12 @@ class BeritaApiController extends Controller
         $berita = Berita::with("medias")->get();
         return response()->json($berita);
     }
+     public function show($id)
+    {
+        $berita = Berita::with('medias')->find($id);
+        if (!$berita) {
+            return response()->json(['message' => 'Berita not found'], 404);
+        }
+        return response()->json($berita);
+    }
 }
