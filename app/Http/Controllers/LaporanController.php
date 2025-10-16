@@ -38,7 +38,7 @@ class LaporanController extends Controller
             'instansi'      => 'required|in:umum,sma,smk,slb',
             'deskripsi'     => 'required|string|max:1000',
             'peserta'       => 'required|numeric|max:255',
-            'dokumen'       => 'nullable|mimes:pdf|max:2000',
+            'dokumen'       => 'nullable|mimes:pdf|max:20240',
         ]);
 
         $dokumenId = null;
@@ -185,7 +185,7 @@ class LaporanController extends Controller
             'instansi'      => 'required|in:Umum,SMA,SMK,SLB',
             'deskripsi'     => 'required|string|max:1000',
             'peserta'       => 'required|numeric|max:255',
-            'dokumen'       => 'nullable|mimes:pdf|max:2000',
+            'dokumen'       => 'nullable|mimes:pdf|max:20240',
         ]);
 
         // update field biasa

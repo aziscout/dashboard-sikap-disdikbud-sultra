@@ -32,7 +32,7 @@ interface Agenda {
   medias: { file: MediaItem[] } | null;
   coverImage: string | null;
   files: string[];
-  video_urls: string[];
+  video_urls: string | null;
   created_at: string;
 }
 
@@ -55,7 +55,7 @@ export default function Edit() {
     files: [] as File[],
     video_urls: (agenda.medias?.file || [])
       .filter((m) => m.type === 'video' && m.file.startsWith('http'))
-      .map((m) => m.file),
+      .map((m) => m.file)[0] || '',
     deleted_files: [] as string[],
     _method: 'PUT',
   });
@@ -72,7 +72,7 @@ export default function Edit() {
     return (agenda.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
   }, [agenda.medias]);
   
-  const [videoUrlInput, setVideoUrlInput] = useState('');
+
 
   const MAX_FILES = 5;
 
@@ -124,16 +124,7 @@ export default function Edit() {
     setData("files", [...data.files, file]);
   };
 
-  const handleVideoUrlChange = (index: number, value: string) => {
-    const updatedUrls = [...data.video_urls];
-    updatedUrls[index] = value;
-    setData('video_urls', updatedUrls);
-  };
 
-  const handleVideoUrlRemove = (index: number) => {
-    const updatedUrls = data.video_urls.filter((_, i) => i !== index);
-    setData('video_urls', updatedUrls);
-  };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -187,37 +178,12 @@ export default function Edit() {
 
             <div>
               <Label>Link Video</Label>
-              <div className="space-y-2">
-                {data.video_urls.map((url, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <Input type="url" defaultValue={url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} />
-                    <Button
-                      type="button"
-                      onClick={() => handleVideoUrlRemove(idx)}
-                      className="flex-shrink-0 bg-red-600 hover:bg-red-500 text-white"
-                    >
-                      <Trash2 />
-                    </Button>
-                  </div>
-                ))}
-
-                <div className="mt-2 flex gap-2">
-                  <Input
-                    type="url"
-                    placeholder="https://youtube.com/..."
-                    defaultValue={videoUrlInput}
-                    onChange={(e) => setVideoUrlInput(e.target.value)}
-                  />
-                  <Button type="button" onClick={() => {
-                    if (videoUrlInput.trim() !== '') {
-                      setData('video_urls', [...data.video_urls, videoUrlInput.trim()]);
-                      setVideoUrlInput('');
-                    }
-                  }} className="flex-shrink-0">
-                    <Plus />
-                  </Button>
-                </div>
-              </div>
+              <Input
+                type="url"
+                placeholder="https://youtube.com/..."
+                defaultValue={data.video_urls}
+                onChange={(e) => setData('video_urls', e.target.value)}
+              />
             </div>
 
             {/* <div>
