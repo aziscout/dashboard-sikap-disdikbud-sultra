@@ -72,8 +72,6 @@ export default function Edit() {
     return (agenda.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
   }, [agenda.medias]);
   
-
-
   const MAX_FILES = 5;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -123,8 +121,6 @@ export default function Edit() {
 
     setData("files", [...data.files, file]);
   };
-
-
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -221,7 +217,7 @@ export default function Edit() {
 
             <div className="flex space-x-2">
               <Button type="submit" disabled={processing}>
-                {processing ? 'Updating...' : <><Save /> Simpan</>}
+                {processing ? 'Menyimpan...' : <><Save /> Simpan</>}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
                 Batal

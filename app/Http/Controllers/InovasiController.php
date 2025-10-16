@@ -31,8 +31,7 @@ class InovasiController extends Controller
             'category'     => 'nullable|in:foto,video',
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'lokasi'       => 'required|string|max:200',
-            'video_urls'   => 'nullable|array',
-            'video_urls.*' => 'url',
+            'video_urls'   => 'nullable|url',
         ]);
 
         // Simpan cover image
@@ -49,13 +48,13 @@ class InovasiController extends Controller
         }
 
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // Buat media record
-        $media = Media::create(['file' => $mediaFiles]);
+        $media = Media::create([
+            'file' => $mediaFiles
+        ]);
 
         // Buat inovasi baru
         Inovasi::create([
@@ -81,83 +80,80 @@ class InovasiController extends Controller
    
 
     public function update(Request $request, Inovasi $inovasi)
-{
-    $request->validate([
-        'judul'         => 'required|string|max:255',
-        'deskripsi'     => 'required|string',
-        'coverImage'   => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
-        'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-        'category'      => 'nullable|in:foto,video',
-        'instansi'      => 'required|in:umum,sma,smk,slb',
-        'lokasi'        => 'required|string|max:200',
-        'video_urls'    => 'nullable|array',
-        'video_urls.*'  => 'url',
-        'deleted_files' => 'nullable|array',
-    ]);
+    {
+        $request->validate([
+            'judul'         => 'required|string|max:255',
+            'deskripsi'     => 'required|string',
+            'coverImage'   => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'category'      => 'nullable|in:foto,video',
+            'instansi'      => 'required|in:umum,sma,smk,slb',
+            'lokasi'        => 'required|string|max:200',
+            'video_urls'    => 'nullable|url',
+            'deleted_files' => 'nullable|array',
+        ]);
 
-    // ✅ Update cover image jika ada file baru
-    if ($request->hasFile('coverImage')) {
-        if ($inovasi->coverImage && Storage::disk('public')->exists($inovasi->coverImage)) {
-            Storage::disk('public')->delete($inovasi->coverImage);
-        }
-        $coverPath = $request->file('coverImage')->store('inovasi/cover', 'public');
-        $inovasi->coverImage = $coverPath;
-    }
-
-    // ✅ Ambil media lama dari database
-    $mediaFiles = $inovasi->medias ? $inovasi->medias->file : [];
-
-    // 🗑️ Hapus file yang dipilih saja (BUKAN SEMUA)
-    if ($request->deleted_files) {
-        foreach ($request->deleted_files as $delFile) {
-            if (!preg_match('/^https?:\/\//', $delFile) && Storage::disk('public')->exists($delFile)) {
-                Storage::disk('public')->delete($delFile);
+        // ✅ Update cover image jika ada file baru
+        if ($request->hasFile('coverImage')) {
+            if ($inovasi->coverImage && Storage::disk('public')->exists($inovasi->coverImage)) {
+                Storage::disk('public')->delete($inovasi->coverImage);
             }
-
-            $mediaFiles = array_filter($mediaFiles, function ($m) use ($delFile) {
-                return $m['file'] !== $delFile;
-            });
+            $coverPath = $request->file('coverImage')->store('inovasi/cover', 'public');
+            $inovasi->coverImage = $coverPath;
         }
-        $mediaFiles = array_values($mediaFiles);
-    }
 
-    // 📥 Tambah file baru jika ada
-    if ($request->hasFile('files')) {
-        foreach ($request->file('files') as $file) {
-            $path = $file->store('inovasi/file', 'public');
-            $type = in_array($file->extension(), ['mp4', 'mov', 'avi']) ? 'video' : 'foto';
-            $mediaFiles[] = ['file' => $path, 'type' => $type];
+        $oldMedia = $inovasi->medias ? $inovasi->medias->file : [];
+        $mediaFiles = $oldMedia ?? [];
+
+        // 🗑️ Hapus file yang dipilih saja (BUKAN SEMUA)
+        if ($request->deleted_files) {
+            foreach ($request->deleted_files as $delFile) {
+                if (!preg_match('/^https?:\/\//', $delFile) && Storage::disk('public')->exists($delFile)) {
+                    Storage::disk('public')->delete($delFile);
+                }
+
+                $mediaFiles = array_filter($mediaFiles, function ($m) use ($delFile) {
+                    return $m['file'] !== $delFile;
+                });
+            }
+            $mediaFiles = array_values($mediaFiles);
         }
-    }
 
-    $mediaFiles = array_filter($mediaFiles, function ($m) {
-        return $m['type'] !== 'video' || !preg_match('/^https?:\/\//', $m['file']);
-    });
-
-    if ($request->video_urls) {
-        foreach ($request->video_urls as $url) {
-            $mediaFiles[] = ['file' => $url, 'type' => 'video'];
+        // 📥 Tambah file baru jika ada
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('inovasi/file', 'public');
+                $type = in_array($file->extension(), ['mp4', 'mov', 'avi']) ? 'video' : 'foto';
+                $mediaFiles[] = ['file' => $path, 'type' => $type];
+            }
         }
+
+        $mediaFiles = array_filter($mediaFiles, function ($m) {
+            return $m['type'] !== 'video' || !preg_match('/^https?:\/\//', $m['file']);
+        });
+
+        if ($request->video_urls) {
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
+        }
+
+        // 💾 Update media di database
+        if ($inovasi->medias) {
+            $inovasi->medias->update(['file' => array_values($mediaFiles)]);
+        } else {
+            $inovasi->medias()->create(['file' => array_values($mediaFiles)]);
+        }
+
+        // 📝 Update data inovasi
+        $inovasi->update([
+            'judul'     => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'category'  => $request->category,
+            'instansi'  => $request->instansi,
+            'lokasi'    => $request->lokasi,
+        ]);
+
+        return redirect()->route('inovasi.index')->with('message', 'Inovasi berhasil diperbarui');
     }
-
-    // 💾 Update media di database
-    if ($inovasi->medias) {
-        $inovasi->medias->update(['file' => array_values($mediaFiles)]);
-    } else {
-        $inovasi->medias()->create(['file' => array_values($mediaFiles)]);
-    }
-
-    // 📝 Update data inovasi
-    $inovasi->update([
-        'judul'     => $request->judul,
-        'deskripsi' => $request->deskripsi,
-        'category'  => $request->category,
-        'instansi'  => $request->instansi,
-        'lokasi'    => $request->lokasi,
-    ]);
-
-    return redirect()->route('inovasi.index')->with('message', 'Inovasi berhasil diperbarui');
-}
 
 
 

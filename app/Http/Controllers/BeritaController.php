@@ -32,8 +32,7 @@ class BeritaController extends Controller
             'category'    => 'nullable|string|max:255',
             'instansi'    => 'required|in:umum,sma,smk,slb',
             'lokasi'      => 'required|string|max:200',
-            'video_urls'  => 'nullable|array',
-            'video_urls.*'=> 'url',
+            'video_urls'  => 'nullable|url',
         ]);
 
         // cover image
@@ -56,12 +55,7 @@ class BeritaController extends Controller
 
         // simpan link video
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = [
-                    'file' => $url,
-                    'type' => 'video'
-                ];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // buat media
@@ -103,8 +97,7 @@ class BeritaController extends Controller
             'category'     => 'nullable|string|max:255',
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'lokasi'       => 'required|string|max:200',
-            'video_urls'   => 'nullable|array',
-            'video_urls.*' => 'url',
+            'video_urls'   => 'nullable|url',
             'deleted_files'=> 'nullable|array',
         ]);
 
@@ -146,9 +139,7 @@ class BeritaController extends Controller
 
         // Masukkan ulang link video dari request
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // Simpan media
@@ -201,6 +192,5 @@ class BeritaController extends Controller
         return redirect()->route('berita.index')
             ->with('message', 'Berita berhasil dihapus beserta media terkait');
     }
-   
 }
 

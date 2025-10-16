@@ -20,6 +20,7 @@ import {
   Plus,
   SquarePen,
   Trash2,
+  Video,
 } from 'lucide-react';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 
@@ -224,6 +225,26 @@ export default function Index() {
                   <p className="text-gray-600 dark:text-white-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
                     {item.deskripsi}
                   </p>
+
+                  {item.medias?.file && (() => {
+                      const video = item.medias.file.find(
+                        (m) => m.type === "video" && m.file
+                      );
+                      return video ? (
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
+                          <Video className="w-4 h-4" />
+                          <a
+                            href={video.file}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            {/* {video.file} */}
+                            Tonton video terkait
+                          </a>
+                        </p>
+                      ) : null;
+                    })()}
 
                   {/* 📅 Tanggal + Kategori + Lokasi */}
                   <div className="flex justify-between">

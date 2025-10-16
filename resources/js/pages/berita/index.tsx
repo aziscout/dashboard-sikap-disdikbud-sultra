@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import AppLayout from "@/layouts/app-layout";
 import { type BreadcrumbItem } from "@/types";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
-import {CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2} from "lucide-react";
+import {CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2, Video} from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -18,8 +18,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Media {
     id?: number;
-    url?: string;
     file?: string;
+    type?: string;
 }
 
 interface Berita {
@@ -27,7 +27,9 @@ interface Berita {
     judul: string;
     deskripsi: string;
     coverImage: string;
-    medias?: Media | null;
+    medias?: {
+        file: Media[];
+    } | null;
     category: string;
     instansi: string;
     lokasi: string;
@@ -245,6 +247,26 @@ export default function Index() {
                     <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
                         <strong>Penyelenggara:</strong> {item.penyelenggara}
                     </p>
+
+                    {item.medias?.file && (() => {
+                        const video = item.medias.file.find(
+                            (m) => m.type === "video" && m.file
+                        );
+                        return video ? (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
+                            <Video className="w-4 h-4" />
+                            <a
+                                href={video.file}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                            >
+                                {/* {video.file} */}
+                                Tonton video terkait
+                            </a>
+                            </p>
+                        ) : null;
+                        })()}
 
                     <div className="flex justify-between">
                         <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">

@@ -21,6 +21,9 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
+const MAX_FILES = 5;
+
+
 export default function CreatePengumuman() {
   const { url } = usePage();
   const currentTable = url.split('/')[1];
@@ -31,7 +34,7 @@ export default function CreatePengumuman() {
     lokasi: '',
     tabel: currentTable,
     files: [] as File[],
-    video_urls: [] as string[],
+    video_urls: '' as string,
     deskripsi: '',
     instansi: '',
     coverImage: null as File | null,
@@ -39,7 +42,6 @@ export default function CreatePengumuman() {
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
-  const [videoUrlInput, setVideoUrlInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,24 +61,16 @@ export default function CreatePengumuman() {
   const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-
       const totalFiles = data.files.length + newFiles.length;
-      if (totalFiles > 5) {
-        alert('Maksimal 5 foto yang dapat diupload.');
+
+      if (totalFiles > MAX_FILES) {
+        alert(`Maksimal hanya bisa upload ${MAX_FILES} foto`);
         return;
       }
 
       const updatedFiles = [...data.files, ...newFiles];
       setData('files', updatedFiles);
       setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
-    }
-  };
-
-  const handleAddVideoUrl = () => {
-    if (videoUrlInput.trim() !== '') {
-      const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
-      setData('video_urls', updatedUrls);
-      setVideoUrlInput('');
     }
   };
 
@@ -126,25 +120,13 @@ export default function CreatePengumuman() {
             </div>
 
             <div>
-              <Label>Tambah Link Video</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="url"
-                  placeholder="https://youtube.com/..."
-                  value={videoUrlInput}
-                  onChange={(e) => setVideoUrlInput(e.target.value)}
-                />
-                <Button type="button" onClick={handleAddVideoUrl}>
-                  <Plus />
-                </Button>
-              </div>
-              {data.video_urls.length > 0 && (
-                <ul className="mt-2 list-disc pl-4 text-sm text-gray-600">
-                  {data.video_urls.map((url, idx) => (
-                    <li key={idx}>{url}</li>
-                  ))}
-                </ul>
-              )}
+              <Label>Link Video</Label>
+              <Input
+                type="url"
+                placeholder="https://youtube.com/..."
+                defaultValue={data.video_urls}
+                onChange={(e) => setData('video_urls', e.target.value)}
+              />
             </div>
 
             <div>

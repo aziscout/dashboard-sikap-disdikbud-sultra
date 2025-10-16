@@ -40,8 +40,7 @@ class PengumumanController extends Controller
             // 'category'      => 'required|in:foto,video,dokumen',
             'coverImage'    => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
             'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'video_urls'    => 'nullable|array',
-            'video_urls.*'  => 'url',
+            'video_urls'    => 'nullable|url',
         ]);
 
         // Simpan cover image
@@ -59,9 +58,7 @@ class PengumumanController extends Controller
         }
 
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // Simpan media
@@ -76,7 +73,7 @@ class PengumumanController extends Controller
             'penyelenggara' => $request->penyelenggara,
             'lokasi'        => $request->lokasi,
             'instansi'      => $request->instansi,
-            'category'      => $request->category,
+            // 'category'      => $request->category,
             'coverImage'    => $coverPath,
             'tabel'         => 'pengumuman',
             'medias_id'     => $media->id,
@@ -104,8 +101,7 @@ class PengumumanController extends Controller
             // 'category'      => 'required|in:foto,video,dokumen',
             'coverImage'    => 'nullable|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
             'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'video_urls'    => 'nullable|array',
-            'video_urls.*'  => 'url',
+            'video_urls'    => 'nullable|url',
             'deleted_files' => 'nullable|array',
         ]);
 
@@ -150,9 +146,7 @@ class PengumumanController extends Controller
 
         // Masukkan ulang link video dari request
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // Simpan media

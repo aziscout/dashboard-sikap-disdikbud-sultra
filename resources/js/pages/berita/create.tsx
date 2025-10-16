@@ -30,7 +30,7 @@ export default function Index() {
         coverImage: null as File | null,
         penyelenggara: '',
         files: [] as File[],
-        video_urls: [] as string[],
+        video_urls: '' as string,
         category: '',
         instansi: '',
         lokasi: '',
@@ -38,7 +38,7 @@ export default function Index() {
 
     const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
     const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
-    const [videoUrlInput, setVideoUrlInput] = useState('');
+    // const [videoUrlInput, setVideoUrlInput] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -71,13 +71,13 @@ export default function Index() {
         }
     };
 
-    const handleAddVideoUrl = () => {
-        if (videoUrlInput.trim() !== '') {
-            const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
-            setData('video_urls', updatedUrls);
-            setVideoUrlInput('');
-        }
-    };
+    // const handleAddVideoUrl = () => {
+    //     if (videoUrlInput.trim() !== '') {
+    //         const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
+    //         setData('video_urls', updatedUrls);
+    //         setVideoUrlInput('');
+    //     }
+    // };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -132,25 +132,13 @@ export default function Index() {
                         </div>
 
                         <div>
-                            <Label>Tambah Link Video</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="url"
-                                    placeholder="https://youtube.com/..."
-                                    value={videoUrlInput}
-                                    onChange={(e) => setVideoUrlInput(e.target.value)}
-                                />
-                                <Button type="button" onClick={handleAddVideoUrl}>
-                                    <Plus />
-                                </Button>
-                            </div>
-                            {data.video_urls.length > 0 && (
-                                <ul className="mt-2 list-disc pl-4 text-sm text-gray-600">
-                                    {data.video_urls.map((url, idx) => (
-                                        <li key={idx}>{url}</li>
-                                    ))}
-                                </ul>
-                            )}
+                            <Label>Link Video</Label>
+                            <Input
+                                type="url"
+                                placeholder="https://youtube.com/..."
+                                defaultValue={data.video_urls}
+                                onChange={(e) => setData('video_urls', e.target.value)}
+                            />
                         </div>
 
                         <div>
