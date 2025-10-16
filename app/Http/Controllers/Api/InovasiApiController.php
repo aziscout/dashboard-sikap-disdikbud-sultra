@@ -15,11 +15,11 @@ class InovasiApiController extends Controller
     }
     public function show($id)
     {
-        $berita = Inovasi::with('medias')->find($id);
-        if (!$berita) {
+        $inovasi = Inovasi::with('medias')->find($id);
+        if (!$inovasi) {
             return response()->json(['message' => 'Inovasi not found'], 404);
         }
-        return response()->json($berita);
+        return response()->json($inovasi);
     }
 
 }
