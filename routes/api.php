@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AgendaApiController;
+use App\Http\Controllers\Api\AllGalleryApiController;
 use App\Http\Controllers\Api\BeritaApiController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\InovasiApiController;
@@ -14,16 +15,25 @@ use App\Http\Controllers\Api\LayananApiController;
    Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
    Route::get('/pengumuman',[PengumumanApiController::class,'index']);
-// agenda
+// agenda 
    Route::get('/agenda',[AgendaApiController::class,'index']);
-// laporan kegiatan 
+   // agenda detail
+   Route::get('/agenda/{id}', [AgendaApiController::class, 'show']);
+   // laporan kegiatan 
    Route::get('/laporan-kegiatan',[LaporanKegiatanApiController::class,'index']);
-// produk hukum
+   // produk hukum
    Route::get('/produk-hukum', [ProdukHukumApiController::class, 'index']);
-// berita
+   // berita
    Route::get('/berita', [BeritaApiController::class, 'index']);
-// invoasi
+   // berita detail
+   Route::get('/berita/{id}', [BeritaApiController::class, 'show']);
+
+   // invoasi
    Route::get('/inovasi', [InovasiApiController::class, 'index']);
-// layanan
+   // invoasi detail
+   Route::get('/inovasi/{id}', [InovasiApiController::class, 'show']);
+   // gallery
+   Route::get('/gallery', [AllGalleryApiController::class, 'index']);
+   // layanan
    Route::post('/layanan', [LayananApiController::class, 'store']);
    Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);

@@ -12,4 +12,12 @@ class AgendaApiController extends Controller
         $agenda = Agenda::with("medias")->get();
         return response()->json($agenda);
     }
+    public function show($id)
+    {
+        $agenda = Agenda::with('medias')->find($id);
+        if (!$agenda) {
+            return response()->json(['message' => 'Agenda not found'], 404);
+        }
+        return response()->json($agenda);
+    }
 }
