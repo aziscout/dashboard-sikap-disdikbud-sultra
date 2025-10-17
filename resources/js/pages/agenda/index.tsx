@@ -20,6 +20,7 @@ import {
   Plus,
   SquarePen,
   Trash2,
+  Users,
   Video,
 } from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
@@ -282,29 +283,13 @@ export default function Index() {
                   </p>
 
                   <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                    <strong>Penyelenggara:</strong> {item.penyelenggara}
+                    <Users className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400"/> {item.penyelenggara}
                   </p>
 
-                  {/* 🔹 Link Video (jika ada) */}
-                  {item.medias?.file && (() => {
-                    const video = item.medias.file.find(
-                      (m) => m.type === "video" && m.file
-                    );
-                    return video ? (
-                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
-                        <Video className="w-4 h-4" />
-                        <a
-                          href={video.file}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
-                        >
-                          {/* {video.file} */}
-                          Tonton video terkait
-                        </a>
-                      </p>
-                    ) : null;
-                  })()}
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                      <MapPin className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" />
+                      {item.instansi} - {item.lokasi}
+                  </p>
 
                   <div className="flex justify-between">
                     <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
@@ -315,10 +300,26 @@ export default function Index() {
                         year: "numeric",
                       })}
                     </p>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                      <MapPin className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" />
-                      {item.instansi} - {item.lokasi}
-                    </p>
+                    {/* 🔹 Link Video (jika ada) */}
+                    {item.medias?.file && (() => {
+                      const video = item.medias.file.find(
+                        (m) => m.type === "video" && m.file
+                      );
+                      return video ? (
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
+                          <Video className="w-4 h-4" />
+                          <a
+                            href={video.file}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            {/* {video.file} */}
+                            Tonton video terkait
+                          </a>
+                        </p>
+                      ) : null;
+                    })()}
                   </div>
 
                   <div className="mt-auto flex gap-2">
