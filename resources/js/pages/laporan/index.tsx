@@ -56,7 +56,7 @@ interface PageProps {
 export default function Index() {
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
   const [searchQuery, setSearchQuery] = useState('');
-  const [instansiFilter, setInstansiFilter] = useState<'all' | 'SMA' | 'SLB' | 'SMK'>('all');
+  const [instansiFilter, setInstansiFilter] = useState<'semua instansi' | 'SMA' | 'SLB' | 'SMK' | 'Umum'>('semua instansi');
   const [categoryFilter] = useState<'all' | 'foto' | 'video' | 'dokumen'>('all');
 
   const { laporan, flash } = usePage().props as unknown as PageProps;
@@ -71,7 +71,7 @@ export default function Index() {
     return [...laporan]
       .filter((item) => item.judul.toLowerCase().includes(searchQuery.toLowerCase()))
       .filter((item) =>
-        instansiFilter === 'all'
+        instansiFilter === 'semua instansi'
           ? true
           : item.instansi?.trim().toLowerCase().includes(instansiFilter.toLowerCase())
       )
@@ -151,17 +151,20 @@ export default function Index() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40 capitalize">
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setInstansiFilter('all')}>
-                  Semua
+                <DropdownMenuItem onClick={() => setInstansiFilter('semua instansi')}>
+                  Semua Instansi
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setInstansiFilter('Umum')}>
+                  Umum
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setInstansiFilter('SMA')}>
                   SMA
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setInstansiFilter('SLB')}>
-                  SLB
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setInstansiFilter('SMK')}>
                   SMK
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setInstansiFilter('SLB')}>
+                  SLB
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

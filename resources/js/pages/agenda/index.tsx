@@ -78,9 +78,9 @@ export default function Index() {
   const [sortOrder, setSortOrder] = useState<"terbaru" | "terlama">("terbaru");
   const [searchQuery, setSearchQuery] = useState("");
   const [instansiFilter, setInstansiFilter] = useState<
-    "all" | "SMA" | "SLB" | "SMK"
-  >("all");
-  const [categoryFilter, setCategoryFilter] = useState<
+    "semua instansi" | "SMA" | "SMK" | "SLB" | "Umum"
+  >("semua instansi");
+  const [categoryFilter] = useState<
     "all" | "foto" | "video" | "dokumen"
   >("all");
 
@@ -111,7 +111,7 @@ export default function Index() {
         item.judul.toLowerCase().includes(searchQuery.toLowerCase())
       )
       .filter((item) =>
-        instansiFilter === "all"
+        instansiFilter === "semua instansi"
           ? true
           : item.instansi?.trim().toLowerCase() ===
             instansiFilter.toLowerCase()
@@ -194,24 +194,27 @@ export default function Index() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40 capitalize">
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setInstansiFilter("all")}>
+                <DropdownMenuItem onClick={() => setInstansiFilter("semua instansi")}>
                   Semua Instansi
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setInstansiFilter("Umum")}>
+                  Umum
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setInstansiFilter("SMA")}>
                   SMA
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setInstansiFilter("SLB")}>
-                  SLB
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setInstansiFilter("SMK")}>
                   SMK
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setInstansiFilter("SLB")}>
+                  SLB
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
 
           {/* Category Filter */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
                 <ListFilterPlus /> {categoryFilter}
@@ -233,7 +236,7 @@ export default function Index() {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </div>
 

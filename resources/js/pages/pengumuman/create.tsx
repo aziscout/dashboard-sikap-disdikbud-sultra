@@ -137,9 +137,9 @@ export default function CreatePengumuman() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="umum">Umum</SelectItem>
-                  <SelectItem value="slb">SLB</SelectItem>
-                  <SelectItem value="smk">SMK</SelectItem>
                   <SelectItem value="sma">SMA</SelectItem>
+                  <SelectItem value="smk">SMK</SelectItem>
+                  <SelectItem value="slb">SLB</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -137,9 +137,9 @@ export default function Edit({ laporan }: Props) {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Umum">Umum</SelectItem>
-                                    <SelectItem value="SLB">SLB</SelectItem>
-                                    <SelectItem value="SMK">SMK</SelectItem>
                                     <SelectItem value="SMA">SMA</SelectItem>
+                                    <SelectItem value="SMK">SMK</SelectItem>
+                                    <SelectItem value="SLB">SLB</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

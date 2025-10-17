@@ -9,14 +9,14 @@ import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import {CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2, Video} from "lucide-react";
 import { PageProps as InertiaPageProps, router } from "@inertiajs/core";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -63,7 +63,7 @@ export default function Index() {
     // 🔹 State untuk search dan filter
     const [sortOrder, setSortOrder] = useState<"terbaru" | "terlama">("terbaru");
     const [searchQuery, setSearchQuery] = useState("");
-    const [instansiFilter, setInstansiFilter] = useState<"all" | "SMA" | "SLB" | "SMK">("all");
+    const [instansiFilter, setInstansiFilter] = useState<"semua instansi" | "SMA" | "SLB" | "SMK" | "Umum">("semua instansi");
     const [categoryFilter] = useState<"all" | "foto" | "video">("all");
     // const [categoryFilter, setCategoryFilter] = useState<"all" | "foto" | "video">("all");
     
@@ -117,7 +117,7 @@ export default function Index() {
         })
 
         .filter((item) =>
-            instansiFilter === "all"
+            instansiFilter === "semua instansi"
             ? true
             : item.instansi?.trim().toLowerCase().includes(instansiFilter.toLowerCase())
         )
@@ -132,19 +132,19 @@ export default function Index() {
     }, [berita, sortOrder, searchQuery, instansiFilter, categoryFilter]);
 
     const [openDialog, setOpenDialog] = useState(false);
-      const [selectedBerita, setSelectedBerita] = useState<{ id: number; judul: string } | null>(null);
-    
-      const handleOpenDialog = (id: number, judul: string) => {
-        setSelectedBerita({ id, judul });
-        setOpenDialog(true);
-      };
-    
-      const handleConfirmDelete = () => {
-        if (selectedBerita) {
-          destroy(route("berita.destroy", selectedBerita.id));
-        }
-        setOpenDialog(false);
-      };
+    const [selectedBerita, setSelectedBerita] = useState<{ id: number; judul: string } | null>(null);
+
+    const handleOpenDialog = (id: number, judul: string) => {
+    setSelectedBerita({ id, judul });
+    setOpenDialog(true);
+    };
+
+    const handleConfirmDelete = () => {
+    if (selectedBerita) {
+        destroy(route("berita.destroy", selectedBerita.id));
+    }
+    setOpenDialog(false);
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -196,17 +196,20 @@ export default function Index() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-40 capitalize">
                 <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => setInstansiFilter("all")}>
+                    <DropdownMenuItem onClick={() => setInstansiFilter("semua instansi")}>
                     Semua Instansi
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setInstansiFilter("Umum")}>
+                    Umum
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setInstansiFilter("SMA")}>
                     SMA
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setInstansiFilter("SLB")}>
-                    SLB
-                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setInstansiFilter("SMK")}>
                     SMK
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setInstansiFilter("SLB")}>
+                    SLB
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 </DropdownMenuContent>
