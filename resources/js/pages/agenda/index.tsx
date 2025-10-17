@@ -14,13 +14,13 @@ import { type BreadcrumbItem } from "@/types";
 import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
 import {
   CalendarDays,
-  FileText,
   ListFilterPlus,
   MapPin,
   Megaphone,
   Plus,
   SquarePen,
   Trash2,
+  Video,
 } from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 
@@ -256,38 +256,27 @@ export default function Index() {
                   <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
                     <strong>Penyelenggara:</strong> {item.penyelenggara}
                   </p>
-                  
 
-                  {/* 🔹 Media Files (Adapted from laporan-kegiatan) */}
-                  {item.medias?.file && item.medias.file.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {item.medias.file.map((media, idx) => {
-                        if (!media?.file) return null;
-                        const fileUrl = media.file.startsWith("http")
-                          ? media.file
-                          : `/storage/${media.file}`;
-                        const lower = media.file.toLowerCase();
-                        const isVideo = /\.(mp4|mov|avi)$/i.test(lower);
-                        const isImage = /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(lower);
-
-                        return (
-                          <a
-                            key={idx}
-                            href={fileUrl}
-                            target="_blank"
-                            className="text-blue-600 dark:text-blue-400 hover:underline text-sm flex items-center gap-1"
-                          >
-                            <FileText className="h-4 w-4" />
-                            {isVideo
-                              ? `Lihat Video ${idx + 1}`
-                              : isImage
-                              ? `Lihat File ${idx + 1}`
-                              : `Unduh File ${idx + 1}`}
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
+                  {/* 🔹 Link Video (jika ada) */}
+                  {item.medias?.file && (() => {
+                    const video = item.medias.file.find(
+                      (m) => m.type === "video" && m.file
+                    );
+                    return video ? (
+                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
+                        <Video className="w-4 h-4" />
+                        <a
+                          href={video.file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {/* {video.file} */}
+                          Tonton video terkait
+                        </a>
+                      </p>
+                    ) : null;
+                  })()}
 
                   <div className="flex justify-between">
                     <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
@@ -309,7 +298,7 @@ export default function Index() {
                       onClick={() => handleEdit(item.id)}
                       className="bg-blue-950 hover:bg-blue-900 text-white flex-1"
                     >
-                      <SquarePen />Edit
+                      <SquarePen />Ubah
                     </Button>
                     <Button
                       disabled={processing}

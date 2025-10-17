@@ -11,7 +11,7 @@ class Inovasi extends Model
         'judul',
         'deskripsi',
         'penyelenggara',
-        'cover_image',
+        'coverImage',
         'category',
         'instansi',
         'lokasi',

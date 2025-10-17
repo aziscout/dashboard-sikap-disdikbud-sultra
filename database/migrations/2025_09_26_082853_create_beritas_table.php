@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
             $table->string('judul');
             $table->text('deskripsi');
+            $table->string('coverImage');
             $table->text('penyelenggara');
-            $table->string('cover_image');
             $table->string('lokasi');
             $table->string('tabel')->default('beritas');
             $table->string('category');

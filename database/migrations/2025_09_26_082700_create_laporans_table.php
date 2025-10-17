@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('laporan_kegiatan', function (Blueprint $table) {
+        Schema::create('laporans', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('judul');
-            $table->string('deskripsi');
-            $table->string('lokasi');
+            $table->string('peserta')->nullable();
+            $table->enum('instansi',['Umum','SMA','SMK','SLB'])->default('Umum');
             $table->string('penyelenggara');
-            $table->string('file')->nullable();
+            $table->string('lokasi');
+            $table->string('tabel')->default('laporan');
+            $table->text('deskripsi');
+            $table->foreignId('dokumens_id')->constrained('dokumens')->onDelete('cascade');
             $table->foreignId('bidangs_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('medias_id')->nullable()->constrained('medias')->onDelete('cascade');
         });
     }
 
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('laporan_kegiatan');
+        Schema::dropIfExists('laporans');
     }
 };

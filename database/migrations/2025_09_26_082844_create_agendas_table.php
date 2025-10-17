@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('penyelenggara');
             $table->string('lokasi');
             $table->string('tabel');
-            $table->string('deskripsi');
+            $table->text('deskripsi');
             $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
         });
     }

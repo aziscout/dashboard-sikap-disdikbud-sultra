@@ -12,6 +12,10 @@ import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { 
+        title: 'Produk Hukum', 
+        href: '/produk-hukum' 
+    },
+    { 
         title: 'Ubah Produk Hukum', 
         href: '/produk-hukum/edit' 
     },

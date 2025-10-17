@@ -27,10 +27,10 @@ export default function Index() {
     const { data, setData, post, errors } = useForm({
         judul: '',
         deskripsi: '',
+        coverImage: null as File | null,
         penyelenggara: '',
-        cover_image: null as File | null,
         files: [] as File[],
-        video_urls: [] as string[],
+        video_urls: '' as string,
         category: '',
         instansi: '',
         lokasi: '',
@@ -38,7 +38,7 @@ export default function Index() {
 
     const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
     const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
-    const [videoUrlInput, setVideoUrlInput] = useState('');
+    // const [videoUrlInput, setVideoUrlInput] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -50,8 +50,8 @@ export default function Index() {
     const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setData('cover_image', file);
-            setPreviewCoverUrl(URL.createObjectURL(file));
+        setData('coverImage', file);
+        setPreviewCoverUrl(URL.createObjectURL(file));
         }
     };
 
@@ -71,13 +71,13 @@ export default function Index() {
         }
     };
 
-    const handleAddVideoUrl = () => {
-        if (videoUrlInput.trim() !== '') {
-            const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
-            setData('video_urls', updatedUrls);
-            setVideoUrlInput('');
-        }
-    };
+    // const handleAddVideoUrl = () => {
+    //     if (videoUrlInput.trim() !== '') {
+    //         const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
+    //         setData('video_urls', updatedUrls);
+    //         setVideoUrlInput('');
+    //     }
+    // };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -132,25 +132,13 @@ export default function Index() {
                         </div>
 
                         <div>
-                            <Label>Tambah Link Video</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    type="url"
-                                    placeholder="https://youtube.com/..."
-                                    value={videoUrlInput}
-                                    onChange={(e) => setVideoUrlInput(e.target.value)}
-                                />
-                                <Button type="button" onClick={handleAddVideoUrl}>
-                                    <Plus />
-                                </Button>
-                            </div>
-                            {data.video_urls.length > 0 && (
-                                <ul className="mt-2 list-disc pl-4 text-sm text-gray-600">
-                                    {data.video_urls.map((url, idx) => (
-                                        <li key={idx}>{url}</li>
-                                    ))}
-                                </ul>
-                            )}
+                            <Label>Link Video</Label>
+                            <Input
+                                type="url"
+                                placeholder="https://youtube.com/..."
+                                defaultValue={data.video_urls}
+                                onChange={(e) => setData('video_urls', e.target.value)}
+                            />
                         </div>
 
                         <div>
@@ -188,17 +176,17 @@ export default function Index() {
                 <div className="w-full space-y-6 md:w-1/2">
                     {/* COVER IMAGE */}
                     <div className="space-y-2 rounded border p-4">
-                        <Label htmlFor="cover_image">Cover Image</Label>
+                        <Label htmlFor="coverImage">Cover Image</Label>
                         <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
                         {previewCoverUrl ? (
-                            <div>
-                                <img src={previewCoverUrl} alt="Preview Cover" className="mt-2 h-30 w-46 rounded object-cover" />
+                            <div className="mt-2">
+                                <img src={previewCoverUrl} alt="Preview Cover" className="h-30 w-46 rounded object-cover" />
                                 <div className="mt-2 flex justify-center">
                                     <Button
                                         type="button"
                                         className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
                                         onClick={() => {
-                                            setData('cover_image', null);
+                                            setData('coverImage', null);
                                             setPreviewCoverUrl(null);
                                         }}
                                     >

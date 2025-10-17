@@ -25,7 +25,7 @@ class ProdukHukumController extends Controller
             'judul' => 'required|string|max:255', 
             'deskripsi' => 'required|string|max:255', 
             'category' => 'required|string|max:255', 
-            'dokumen' => 'nullable|mimes:pdf|max:2000',
+            'dokumen' => 'nullable|mimes:pdf|max:20240',
         ]);
 
         $dokumenId = null;
@@ -83,7 +83,7 @@ class ProdukHukumController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'category' => 'required|string',
-            'dokumen' => 'nullable|mimes:pdf|max:20000', // maksimal 20MB
+            'dokumen' => 'nullable|mimes:pdf|max:20240',
         ]);
 
         $produkHukum = ProdukHukum::findOrFail($id);

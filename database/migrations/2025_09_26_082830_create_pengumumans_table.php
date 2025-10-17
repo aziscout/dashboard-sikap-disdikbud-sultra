@@ -16,10 +16,11 @@ return new class extends Migration
             $table->foreignId('medias_id')->constrained('medias')->onDelete('cascade');
             $table->string('judul');
             $table->text('deskripsi');
-            $table->string('cover_image');
+            $table->string('coverImage');
             $table->string('lokasi');
+            $table->string('penyelenggara')->nullable();
+            $table->string('category');
             $table->string('tabel')->default('pengumuman');
-            $table->enum('category',['foto','video'])->nullable();
             $table->enum('instansi',['umum','sma','smk','slb']);
             $table->timestamps();
         });

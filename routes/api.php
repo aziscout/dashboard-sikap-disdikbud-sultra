@@ -1,26 +1,27 @@
 <?php
 
 use App\Http\Controllers\Api\AgendaApiController;
+use App\Http\Controllers\Api\AllGaleriApiController;
 use App\Http\Controllers\Api\AllGalleryApiController;
 use App\Http\Controllers\Api\BeritaApiController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\InovasiApiController;
-use App\Http\Controllers\Api\LaporanKegiatanApiController;
+use App\Http\Controllers\Api\LaporanApiController;
 use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LayananApiController;
 
-// logo & hero section
    Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
    Route::get('/pengumuman',[PengumumanApiController::class,'index']);
 // agenda 
    Route::get('/agenda',[AgendaApiController::class,'index']);
+// laporan kegiatan    
+   Route::get('/laporan',[LaporanApiController::class,'index']);
    // agenda detail
    Route::get('/agenda/{id}', [AgendaApiController::class, 'show']);
-   // laporan kegiatan 
-   Route::get('/laporan-kegiatan',[LaporanKegiatanApiController::class,'index']);
+
    // produk hukum
    Route::get('/produk-hukum', [ProdukHukumApiController::class, 'index']);
    // berita
@@ -33,7 +34,7 @@ use App\Http\Controllers\Api\LayananApiController;
    // invoasi detail
    Route::get('/inovasi/{id}', [InovasiApiController::class, 'show']);
    // gallery
-   Route::get('/gallery', [AllGalleryApiController::class, 'index']);
+   Route::get('/galeri', [AllGaleriApiController::class, 'index']);
    // layanan
    Route::post('/layanan', [LayananApiController::class, 'store']);
    Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);

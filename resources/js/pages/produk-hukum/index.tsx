@@ -1,11 +1,11 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
@@ -185,7 +185,7 @@ export default function Index() {
                                 )}
                                 <p className="text-gray-600 dark:text-gray-300">{produk.deskripsi}</p>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
-                                    <CalendarDays />
+                                    <CalendarDays className='w-4 h-4'/>
                                     {new Date(produk.created_at).toLocaleDateString("id-ID", {
                                         day: "numeric",
                                         month: "long",

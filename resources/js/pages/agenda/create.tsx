@@ -11,8 +11,14 @@ import { CircleAlert, Plus, Save, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Agenda', href: '/agenda' },
-  { title: 'Tambah Agenda', href: '/agenda/create' },
+    {
+        title: 'Agenda',
+        href: '/agenda',
+    },
+    {
+        title: 'Tambah Agenda',
+        href: '/agenda/create',
+    },
 ];
 
 const MAX_FILES = 5;
@@ -27,7 +33,7 @@ export default function Index() {
     penyelenggara: '',
     coverImage: null as File | null,
     files: [] as File[],
-    video_urls: [] as string[],
+    video_urls: '' as string,
     category: '',
     instansi: '',
     lokasi: '',
@@ -36,7 +42,6 @@ export default function Index() {
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
-  const [videoUrlInput, setVideoUrlInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,13 +72,13 @@ export default function Index() {
     }
   };
 
-  const handleAddVideoUrl = () => {
-    if (videoUrlInput.trim() !== '') {
-      const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
-      setData('video_urls', updatedUrls);
-      setVideoUrlInput('');
-    }
-  };
+  // const handleAddVideoUrl = () => {
+  //   if (videoUrlInput.trim() !== '') {
+  //     const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
+  //     setData('video_urls', updatedUrls);
+  //     setVideoUrlInput('');
+  //   }
+  // };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -132,27 +137,16 @@ export default function Index() {
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
             </div>
+            
 
             <div>
-              <Label>Tambah Link Video</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="url"
-                  placeholder="https://youtube.com/..."
-                  defaultValue={videoUrlInput}
-                  onChange={(e) => setVideoUrlInput(e.target.value)}
-                />
-                <Button type="button" onClick={handleAddVideoUrl}>
-                  <Plus />
-                </Button>
-              </div>
-              {data.video_urls.length > 0 && (
-                <ul className="mt-2 list-disc pl-4 text-sm text-gray-600">
-                  {data.video_urls.map((url, idx) => (
-                    <li key={idx}>{url}</li>
-                  ))}
-                </ul>
-              )}
+              <Label>Link Video</Label>
+              <Input
+                type="url"
+                placeholder="https://youtube.com/..."
+                defaultValue={data.video_urls}
+                onChange={(e) => setData('video_urls', e.target.value)}
+              />
             </div>
 
             <div>
@@ -197,11 +191,25 @@ export default function Index() {
             <Label htmlFor="coverImage">Cover Image</Label>
             <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
             {previewCoverUrl ? (
-              <img
-                src={previewCoverUrl}
-                alt="Preview Cover"
-                className="mt-2 h-30 w-46 rounded object-cover"
-              />
+              <div className="mt-2">
+                <img
+                  src={previewCoverUrl}
+                  alt="Preview Cover"
+                  className="h-30 w-46 rounded object-cover"
+                />
+                <div className="mt-2 flex justify-center">
+                  <Button
+                    type="button"
+                    className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
+                    onClick={() => {
+                      setData('coverImage', null);
+                      setPreviewCoverUrl(null);
+                    }}
+                  >
+                    <Trash2 /> Hapus
+                  </Button>
+                </div>
+              </div>
             ) : (
               <div className="flex h-30 items-center justify-center rounded border text-gray-500">
                 Belum ada cover dipilih

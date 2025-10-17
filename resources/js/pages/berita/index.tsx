@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import AppLayout from "@/layouts/app-layout";
 import { type BreadcrumbItem } from "@/types";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
-import {CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2} from "lucide-react";
+import {CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2, Video} from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -18,19 +18,22 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Media {
     id?: number;
-    url?: string;
     file?: string;
+    type?: string;
 }
 
 interface Berita {
     id: number;
     judul: string;
     deskripsi: string;
-    cover_image: string;
-    medias?: Media | null;
+    coverImage: string;
+    medias?: {
+        file: Media[];
+    } | null;
     category: string;
     instansi: string;
     lokasi: string;
+    penyelenggara: string;
     created_at: string;
     updated_at: string;
 }
@@ -60,7 +63,7 @@ export default function Index() {
     };
 
     const getCoverUrl = (item: Berita) => {
-        const cover = item.cover_image;
+        const cover = item.coverImage;
         if (!cover) return "/images/default-cover.jpg";
         if (cover.startsWith("http") || cover.startsWith("https")) return cover;
         if (cover.includes("/")) {
@@ -240,33 +243,58 @@ export default function Index() {
                     <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
                         {item.deskripsi}
                     </p>
+                    
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                        <strong>Penyelenggara:</strong> {item.penyelenggara}
+                    </p>
+
+                    {item.medias?.file && (() => {
+                        const video = item.medias.file.find(
+                            (m) => m.type === "video" && m.file
+                        );
+                        return video ? (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
+                            <Video className="w-4 h-4" />
+                            <a
+                                href={video.file}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                            >
+                                {/* {video.file} */}
+                                Tonton video terkait
+                            </a>
+                            </p>
+                        ) : null;
+                        })()}
 
                     <div className="flex justify-between">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
-                        <CalendarDays className="w-4 h-4" />
-                        {new Date(item.updated_at ?? item.created_at).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                        })}
-                    </p>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
-                        <MapPin className="w-4 h-4 m-1"/>{item.lokasi}
+                        <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
+                            <CalendarDays className="w-4 h-4" />
+                            {new Date(item.updated_at ?? item.created_at).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            })}
                         </p>
-                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
+                        <MapPin className="w-4 h-4 m-1"/>
+                            {item.instansi} - {item.lokasi}
+                        </p>
+                    </div>
                     {/* Aksi */}
                     <div className="mt-auto flex gap-2">
                         <Link href={route("berita.edit", item.id)} className="flex-1">
-                        <Button className="bg-blue-950 text-white hover:bg-blue-900 w-full">
-                            <SquarePen /> Ubah
-                        </Button>
+                            <Button className="bg-blue-950 text-white hover:bg-blue-900 w-full">
+                                <SquarePen /> Ubah
+                            </Button>
                         </Link>
                         <Button
-                        disabled={processing}
-                        onClick={() => handleDelete(item.id, item.judul)}
-                        className="bg-red-600 text-white hover:bg-red-500 flex-1"
-                        >
-                        <Trash2 /> Hapus
+                            disabled={processing}
+                            onClick={() => handleDelete(item.id, item.judul)}
+                            className="bg-red-600 text-white hover:bg-red-500 flex-1"
+                            >
+                            <Trash2 /> Hapus
                         </Button>
                     </div>
                     </div>

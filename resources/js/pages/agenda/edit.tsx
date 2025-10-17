@@ -32,7 +32,7 @@ interface Agenda {
   medias: { file: MediaItem[] } | null;
   coverImage: string | null;
   files: string[];
-  video_urls: string[];
+  video_urls: string | null;
   created_at: string;
 }
 
@@ -55,7 +55,7 @@ export default function Edit() {
     files: [] as File[],
     video_urls: (agenda.medias?.file || [])
       .filter((m) => m.type === 'video' && m.file.startsWith('http'))
-      .map((m) => m.file),
+      .map((m) => m.file)[0] || '',
     deleted_files: [] as string[],
     _method: 'PUT',
   });
@@ -71,8 +71,7 @@ export default function Edit() {
   const localMediaIndices = useMemo(() => {
     return (agenda.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
   }, [agenda.medias]);
-  const [videoUrlInput, setVideoUrlInput] = useState('');
-
+  
   const MAX_FILES = 5;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -121,17 +120,6 @@ export default function Edit() {
     setPreviewFileUrls(newPreviews);
 
     setData("files", [...data.files, file]);
-  };
-
-  const handleVideoUrlChange = (index: number, value: string) => {
-    const updatedUrls = [...data.video_urls];
-    updatedUrls[index] = value;
-    setData('video_urls', updatedUrls);
-  };
-
-  const handleVideoUrlRemove = (index: number) => {
-    const updatedUrls = data.video_urls.filter((_, i) => i !== index);
-    setData('video_urls', updatedUrls);
   };
 
   return (
@@ -186,37 +174,12 @@ export default function Edit() {
 
             <div>
               <Label>Link Video</Label>
-              <div className="space-y-2">
-                {data.video_urls.map((url, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <Input type="url" defaultValue={url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} />
-                    <Button
-                      type="button"
-                      onClick={() => handleVideoUrlRemove(idx)}
-                      className="flex-shrink-0 bg-red-600 hover:bg-red-500"
-                    >
-                      <Trash2 />
-                    </Button>
-                  </div>
-                ))}
-
-                <div className="mt-2 flex gap-2">
-                  <Input
-                    type="url"
-                    placeholder="https://youtube.com/..."
-                    defaultValue={videoUrlInput}
-                    onChange={(e) => setVideoUrlInput(e.target.value)}
-                  />
-                  <Button type="button" onClick={() => {
-                    if (videoUrlInput.trim() !== '') {
-                      setData('video_urls', [...data.video_urls, videoUrlInput.trim()]);
-                      setVideoUrlInput('');
-                    }
-                  }} className="flex-shrink-0">
-                    <Plus />
-                  </Button>
-                </div>
-              </div>
+              <Input
+                type="url"
+                placeholder="https://youtube.com/..."
+                defaultValue={data.video_urls}
+                onChange={(e) => setData('video_urls', e.target.value)}
+              />
             </div>
 
             {/* <div>
@@ -254,7 +217,7 @@ export default function Edit() {
 
             <div className="flex space-x-2">
               <Button type="submit" disabled={processing}>
-                {processing ? 'Updating...' : <><Save /> Simpan</>}
+                {processing ? 'Menyimpan...' : <><Save /> Simpan</>}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
                 Batal
@@ -290,7 +253,7 @@ export default function Edit() {
                       {/* Ubah foto */}
                       <Button
                         type="button"
-                        className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900"
+                        className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
                         onClick={() => {
                           const input = document.createElement('input');
                           input.type = 'file';
@@ -310,7 +273,7 @@ export default function Edit() {
                       {/* Hapus foto */}
                       <Button
                         type="button"
-                        className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500"
+                        className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500 text-white  "
                         onClick={() => {
                           const originalIndex = localMediaIndices[i];
                           const removedFile = agenda.medias?.file[originalIndex]?.file;

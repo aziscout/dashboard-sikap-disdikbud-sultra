@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { CircleAlert, Plus, Save, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -18,21 +18,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 const MAX_FILES = 5;
 
 export default function CreateInovasi() {
+  const { url } = usePage();
+  const currentTable = url.split('/')[1];
+
   const { data, setData, post, errors } = useForm({
     judul: '',
     deskripsi: '',
     penyelenggara: '',
     coverImage: null as File | null,
     files: [] as File[],
-    video_urls: [] as string[],
+    video_urls: '',
     category: '',
     instansi: '',
     lokasi: '',
+    tabel: currentTable,
   });
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
-  const [videoUrlInput, setVideoUrlInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,14 +63,6 @@ export default function CreateInovasi() {
       const updatedFiles = [...data.files, ...newFiles];
       setData('files', updatedFiles);
       setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
-    }
-  };
-
-  const handleAddVideoUrl = () => {
-    if (videoUrlInput.trim() !== '') {
-      const updatedUrls = [...data.video_urls, videoUrlInput.trim()];
-      setData('video_urls', updatedUrls);
-      setVideoUrlInput('');
     }
   };
 
@@ -113,7 +108,7 @@ export default function CreateInovasi() {
             <div>
               <Label htmlFor="kategori">Kategori</Label>
               <Input
-                placeholder="Cth: Prestasi, Inovasi, Ujian"
+                placeholder="Cth : Prestasi, Inovasi, Ujian"
                 value={data.category}
                 onChange={(e) => setData('category', e.target.value)}
               />
@@ -130,30 +125,18 @@ export default function CreateInovasi() {
             </div>
 
             <div>
-              <Label>Tambah Link Video</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="url"
-                  placeholder="https://youtube.com/..."
-                  value={videoUrlInput}
-                  onChange={(e) => setVideoUrlInput(e.target.value)}
-                />
-                <Button type="button" onClick={handleAddVideoUrl}>
-                  <Plus />
-                </Button>
-              </div>
-              {data.video_urls.length > 0 && (
-                <ul className="mt-2 list-disc pl-4 text-sm text-gray-600">
-                  {data.video_urls.map((url, idx) => (
-                    <li key={idx}>{url}</li>
-                  ))}
-                </ul>
-              )}
+              <Label>Link Video</Label>
+              <Input
+                type="url"
+                placeholder="https://youtube.com/..."
+                value={data.video_urls}
+                onChange={(e) => setData('video_urls', e.target.value)}
+              />
             </div>
 
             <div>
               <Label htmlFor="instansi">Instansi</Label>
-              <Select onValueChange={(val) => setData('instansi', val)}>
+              <Select value={data.instansi} onValueChange={(val) => setData('instansi', val)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Pilih Instansi" />
                 </SelectTrigger>
@@ -179,11 +162,7 @@ export default function CreateInovasi() {
               <Button type="submit" className="w-full md:w-auto">
                 <Save /> Simpan
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.get(route('inovasi.index'))}
-              >
+              <Button type="button" variant="outline" onClick={() => router.get(route('inovasi.index'))}>
                 Batal
               </Button>
             </div>
@@ -191,17 +170,31 @@ export default function CreateInovasi() {
         </div>
 
         {/* FORM KANAN (Cover + Foto) */}
-        <div className="w-full md:w-1/2 space-y-6">
+        <div className="w-full space-y-6 md:w-1/2">
           {/* COVER IMAGE */}
           <div className="space-y-2 rounded border p-4">
             <Label htmlFor="coverImage">Cover Image</Label>
             <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
             {previewCoverUrl ? (
-              <img
-                src={previewCoverUrl}
-                alt="Preview Cover"
-                className="mt-2 h-30 w-46 rounded object-cover"
-              />
+              <div className="mt-2">
+                <img
+                  src={previewCoverUrl}
+                  alt="Preview Cover"
+                  className="h-30 w-46 rounded object-cover"
+                />
+                <div className="mt-2 flex justify-center">
+                  <Button
+                    type="button"
+                    className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
+                    onClick={() => {
+                      setData('coverImage', null);
+                      setPreviewCoverUrl(null);
+                    }}
+                  >
+                    <Trash2 /> Hapus
+                  </Button>
+                </div>
+              </div>
             ) : (
               <div className="flex h-30 items-center justify-center rounded border text-gray-500">
                 Belum ada cover dipilih
@@ -213,7 +206,7 @@ export default function CreateInovasi() {
           <div className="space-y-2 rounded border p-4">
             <Label className="mr-5">Upload Foto</Label>
             {previewFileUrls.length > 0 ? (
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="mt-2 grid grid-cols-3 gap-2">
                 {previewFileUrls.map((url, i) => (
                   <div key={i}>
                     <img
@@ -238,7 +231,7 @@ export default function CreateInovasi() {
                 ))}
                 {data.files.length < MAX_FILES && (
                   <div
-                    className="flex h-30 w-full items-center justify-center rounded border border-dashed text-gray-500 cursor-pointer hover:bg-gray-100"
+                    className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
                     onClick={() => {
                       const input = document.createElement('input');
                       input.type = 'file';
@@ -256,7 +249,7 @@ export default function CreateInovasi() {
               </div>
             ) : (
               <div
-                className="flex h-40 items-center justify-center rounded border border-dashed text-gray-500 cursor-pointer hover:bg-gray-100"
+                className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
                 onClick={() => {
                   const input = document.createElement('input');
                   input.type = 'file';

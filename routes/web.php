@@ -1,21 +1,16 @@
 <?php
 
 use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Bidang\DashboardController as BidangDashboardController;
-use App\Http\Controllers\GaleriController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProdukHukumController;
-use App\Models\Berita;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\InovasiController;
-use App\Http\Controllers\LaporanKegiatanController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PengumumanController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -73,13 +68,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/agenda/{agenda}',[AgendaController::class,'destroy'])->name('agenda.destroy');
     });
     // laporan kegiatan
-    Route::middleware(['permission:Laporan Kegiatan'])->group(function(){
-        Route::get('/laporan-kegiatan',[LaporanKegiatanController::class,'index'])->name('laporan-kegiatan.index');
-        Route::get('/laporan-kegiatan/create',[LaporanKegiatanController::class,'create'])->name('laporan-kegiatan.create');
-        Route::post('/laporan-kegiatan',[LaporanKegiatanController::class,'store'])->name('laporan-kegiatan.store');
-        Route::get('/laporan-kegiatan/{laporanKegiatan}/edit',[LaporanKegiatanController::class,'edit'])->name('laporan-kegiatan.edit');
-        Route::put('/laporan-kegiatan/{laporanKegiatan}',[LaporanKegiatanController::class,'update'])->name('laporan-kegiatan.update');
-        Route::delete('/laporan-kegiatan/{laporanKegiatan}',[LaporanKegiatanController::class,'destroy'])->name('laporan-kegiatan.destroy');
+
+    Route::middleware(['permission:Laporan'])->group(function(){
+        Route::get('/laporan',[LaporanController::class,'index'])->name('laporan.index');
+        Route::get('/laporan/create',[LaporanController::class,'create'])->name('laporan.create');
+        Route::post('/laporan',[LaporanController::class,'store'])->name('laporan.store');
+        Route::get('/laporan/{laporan}/edit',[LaporanController::class,'edit'])->name('laporan.edit');
+        Route::put('/laporan/{laporan}',[LaporanController::class,'update'])->name('laporan.update');
+        Route::delete('/laporan/{laporan}',[LaporanController::class,'destroy'])->name('laporan.destroy');
     });
 
     // produk hukum
@@ -114,7 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // layanan
     Route::middleware(['permission:Layanan'])->group(function(){
         Route::get('/layanan', [LayananController::class, 'index'])->name('layanan.index'); // list laporan
-        Route::post('/layanan', [LayananController::class, 'store'])->name('inovasi.store');
+        Route::post('/layanan', [LayananController::class, 'store'])->name('layanan.store');
         Route::get('/layanan/{layanan}', [LayananController::class, 'show'])->name('layanan.show'); // detail laporan
         Route::get('/layanan/{layanan}/edit', [LayananController::class, 'edit'])->name('layanan.edit'); // form edit
         Route::put('/layanan/{layanan}', [LayananController::class, 'update'])->name('layanan.update'); // update status

@@ -8,7 +8,7 @@ use App\Models\Berita;
 use App\Models\Inovasi;
 use App\Models\Pengumuman;
 
-class AllGalleryApiController extends Controller{
+class AllGaleriApiController extends Controller{
     public function index(){
         $berita = Berita::with('medias')->get();
         $inovasi = Inovasi::with('medias')->get();

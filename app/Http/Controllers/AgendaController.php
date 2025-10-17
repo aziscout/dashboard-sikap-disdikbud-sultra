@@ -12,19 +12,19 @@ use Inertia\Inertia;
 class AgendaController extends Controller
 {
     public function index()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
+        if ($user->role === 'admin') {
+            $agenda = Agenda::with('medias')->latest()->get();
+        } else {
+            $agenda = Agenda::with('medias')
+                ->where('bidangs_id', $user->id)
+                ->latest()
+                ->get();
+        }
 
-    if ($user->role === 'admin') {
-        // Admin can see all agendas
-        $agenda = Agenda::latest()->get();
-    } else {
-        // Bidang can only see their own agendas
-        $agenda = Agenda::where('bidangs_id', $user->id)->latest()->get();
+        return Inertia::render("agenda/index", compact("agenda"));
     }
-
-    return Inertia::render("agenda/index", compact("agenda"));
-}
 
 
     public function create()
@@ -43,8 +43,7 @@ class AgendaController extends Controller
             'deskripsi'    => 'required|string|max:1000',
             'coverImage'  => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'video_urls'   => 'nullable|array',
-            'video_urls.*' => 'url',
+            'video_urls'   => 'nullable|url',
         ]);
 
         // cover image
@@ -62,9 +61,7 @@ class AgendaController extends Controller
         }
 
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
         // simpan media
         $media = Media::create([
@@ -75,7 +72,6 @@ class AgendaController extends Controller
         Agenda::create([
             'medias_id'    => $media->id,
             'judul'        => $request->judul,
-            'penyelenggara'=> $request->penyelenggara,
             'penyelenggara'=> $request->penyelenggara,
             'category'=> $request->category,
             'lokasi'       => $request->lokasi,
@@ -107,18 +103,17 @@ class AgendaController extends Controller
             'deskripsi'    => 'required|string|max:1000',
             'coverImage'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'video_urls'   => 'nullable|array',
-            'video_urls.*' => 'url',
+            'video_urls'   => 'nullable|url',
             'deleted_files'=> 'nullable|array',
         ]);
 
         // Update cover
         if ($request->hasFile('coverImage')) {
-            if ($agenda->cover_image && Storage::disk('public')->exists($agenda->cover_image)) {
-                Storage::disk('public')->delete($agenda->cover_image);
+            if ($agenda->coverImage && Storage::disk('public')->exists($agenda->coverImage)) {
+                Storage::disk('public')->delete($agenda->coverImage);
             }
             $coverPath = $request->file('coverImage')->store('agenda/cover', 'public');
-            $agenda->cover_image = $coverPath;
+            $agenda->coverImage = $coverPath;
         }
 
         // Ambil media lama
@@ -153,9 +148,7 @@ class AgendaController extends Controller
 
         // Masukkan ulang link video dari request
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // Simpan media
@@ -167,7 +160,6 @@ class AgendaController extends Controller
 
         $agenda->update([
             'judul'        => $request->judul,
-            'penyelenggara'=> $request->penyelenggara,
             'penyelenggara'=> $request->penyelenggara,
             'category'=> $request->category,
             'lokasi'       => $request->lokasi,
@@ -184,8 +176,8 @@ class AgendaController extends Controller
         $agenda = Agenda::with('medias')->findOrFail($id);
 
         // hapus cover
-        if ($agenda->cover_image && Storage::disk('public')->exists($agenda->cover_image)) {
-            Storage::disk('public')->delete($agenda->cover_image);
+        if ($agenda->coverImage && Storage::disk('public')->exists($agenda->coverImage)) {
+            Storage::disk('public')->delete($agenda->coverImage);
         }
 
         // hapus semua file media

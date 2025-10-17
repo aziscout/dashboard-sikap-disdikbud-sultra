@@ -11,7 +11,7 @@ class Berita extends Model
         'judul',
         'penyelenggara',
         'deskripsi',
-        'cover_image',
+        'coverImage',
         'category',
         'instansi',
         'lokasi',

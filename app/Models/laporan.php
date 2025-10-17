@@ -6,28 +6,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class LaporanKegiatan extends Model
+class Laporan extends Model
 {
-
     use HasFactory , Notifiable;
 
-    protected $table = 'laporan_kegiatan';
+    protected $table = 'laporans';
 
 
     protected $fillable = [
         'judul',
         'deskripsi',
         'lokasi',
-        'coverImage',
+        'peserta',
         'penyelenggara',
         'instansi',
         'tabel',
-        'medias_id',
+        'dokumens_id',
         'bidangs_id'
     ];
 
-    public function medias()
+    public function dokumens()
     {
-        return $this->belongsTo(Media::class);
+        return $this->belongsTo(Dokumen::class, 'dokumens_id');
     }
 }

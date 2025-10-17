@@ -27,17 +27,16 @@ class BeritaController extends Controller
             'judul'       => 'required|string|max:255',
             'penyelenggara'       => 'required|string|max:255',
             'deskripsi'   => 'required|string',
-            'cover_image' => 'required|image|mimes:jpg,jpeg,png|max:20048',
+            'coverImage' => 'required|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'     => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'    => 'nullable|string|max:255',
             'instansi'    => 'required|in:umum,sma,smk,slb',
             'lokasi'      => 'required|string|max:200',
-            'video_urls'  => 'nullable|array',
-            'video_urls.*'=> 'url',
+            'video_urls'  => 'nullable|url',
         ]);
 
         // cover image
-        $coverPath = $request->file('cover_image')->store('berita/cover', 'public');
+        $coverPath = $request->file('coverImage')->store('berita/cover', 'public');
 
         // simpan semua media ke array JSON
         $mediaFiles = [];
@@ -56,12 +55,7 @@ class BeritaController extends Controller
 
         // simpan link video
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = [
-                    'file' => $url,
-                    'type' => 'video'
-                ];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // buat media
@@ -75,7 +69,7 @@ class BeritaController extends Controller
             'judul'       => $request->judul,
             'penyelenggara' => $request->penyelenggara,
             'deskripsi'   => $request->deskripsi,
-            'cover_image' => $coverPath,
+            'coverImage' => $coverPath,
             'category'    => $request->category,
             'instansi'    => $request->instansi,
             'lokasi'      => $request->lokasi,
@@ -97,21 +91,20 @@ class BeritaController extends Controller
         $request->validate([
             'judul'        => 'required|string|max:255',
             'deskripsi'    => 'required|string',
+            'coverImage'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
             'penyelenggara'   => 'required|string',
-            'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'     => 'nullable|string|max:255',
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'lokasi'       => 'required|string|max:200',
-            'video_urls'   => 'nullable|array',
-            'video_urls.*' => 'url',
+            'video_urls'   => 'nullable|url',
             'deleted_files'=> 'nullable|array',
         ]);
 
         // Update cover
-        if ($request->hasFile('cover_image')) {
-            $coverPath = $request->file('cover_image')->store('berita/cover', 'public');
-            $berita->cover_image = $coverPath;
+        if ($request->hasFile('coverImage')) {
+            $coverPath = $request->file('coverImage')->store('berita/cover', 'public');
+            $berita->coverImage = $coverPath;
         }
 
         // Ambil media lama
@@ -146,9 +139,7 @@ class BeritaController extends Controller
 
         // Masukkan ulang link video dari request
         if ($request->video_urls) {
-            foreach ($request->video_urls as $url) {
-                $mediaFiles[] = ['file' => $url, 'type' => 'video'];
-            }
+            $mediaFiles[] = ['file' => $request->video_urls, 'type' => 'video'];
         }
 
         // Simpan media
@@ -160,11 +151,12 @@ class BeritaController extends Controller
 
         // Update berita utama
         $berita->update([
-            'judul'     => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'category'  => $request->category,
-            'instansi'  => $request->instansi,
-            'lokasi'    => $request->lokasi,
+            'judul'       => $request->judul,
+            'penyelenggara' => $request->penyelenggara,
+            'deskripsi'   => $request->deskripsi,
+            'category'    => $request->category,
+            'instansi'    => $request->instansi,
+            'lokasi'      => $request->lokasi,
         ]);
 
         return redirect()->route('berita.index')->with('message', 'Berita berhasil diperbarui');
@@ -175,8 +167,8 @@ class BeritaController extends Controller
         $berita = Berita::with('medias')->findOrFail($id);
 
         // Hapus cover image di storage
-        if ($berita->cover_image && Storage::disk('public')->exists($berita->cover_image)) {
-            Storage::disk('public')->delete($berita->cover_image);
+        if ($berita->coverImage && Storage::disk('public')->exists($berita->coverImage)) {
+            Storage::disk('public')->delete($berita->coverImage);
         }
 
         // Hapus semua file media
@@ -200,6 +192,5 @@ class BeritaController extends Controller
         return redirect()->route('berita.index')
             ->with('message', 'Berita berhasil dihapus beserta media terkait');
     }
-   
 }
 

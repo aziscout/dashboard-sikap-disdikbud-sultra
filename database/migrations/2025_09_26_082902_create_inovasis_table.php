@@ -13,9 +13,10 @@ return new class extends Migration
             $table->id();
             $table->string('judul');
             $table->text('deskripsi');
-            $table->string('cover_image');
+            $table->string('coverImage');
             $table->string('lokasi');
             $table->string('category');
+            $table->string('penyelenggara')->nullable();
             $table->string('tabel');
             $table->enum('instansi',['umum','sma','smk','slb'])->default('umum');
             $table->timestamps();

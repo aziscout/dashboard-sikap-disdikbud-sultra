@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,15 +13,16 @@ class Pengumuman extends Model
     protected $table = 'pengumuman';
 
     protected $fillable = [
-    'judul',
-    'deskripsi',
-    'coverImage',
-    'penyelenggara',
-    'instansi',
-    'lokasi',
-    'tabel',
-    'medias_id'
-];
+        'judul',
+        'deskripsi',
+        'coverImage',
+        'penyelenggara',
+        'lokasi',
+        'category',
+        'tabel',
+        'instansi',
+        'medias_id'
+    ];
 
     public function medias()
     {
