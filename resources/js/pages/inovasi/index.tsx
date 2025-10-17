@@ -55,6 +55,7 @@ interface Inovasi {
   coverImage: string;
   category: string;
   instansi: string;
+  penyelenggara: string;
   lokasi: string;
   created_at: string;
   medias?: {
@@ -76,7 +77,7 @@ export default function Index() {
   const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
   const [searchQuery, setSearchQuery] = useState('');
   const [instansiFilter, setInstansiFilter] = useState<'all' | 'SMA' | 'SLB' | 'SMK'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  // const [categoryFilter] = useState<string>('all');
 
   // const handleDelete = (id: number, judul: string) => {
   //   if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
@@ -99,10 +100,10 @@ export default function Index() {
   };
 
   // Ambil semua kategori unik
-  const availableCategories = useMemo(() => {
-    const categories = new Set(inovasi.map(item => item.category).filter(Boolean));
-    return Array.from(categories);
-  }, [inovasi]);
+  // const availableCategories = useMemo(() => {
+  //   const categories = new Set(inovasi.map(item => item.category).filter(Boolean));
+  //   return Array.from(categories);
+  // }, [inovasi]);
 
   // Filter dan sorting
   const filteredInovasi = useMemo(() => {
@@ -119,7 +120,7 @@ export default function Index() {
         const dateB = new Date(b.created_at).getTime();
         return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
       });
-  }, [inovasi, sortOrder, searchQuery, instansiFilter, categoryFilter]);
+  }, [inovasi, sortOrder, searchQuery, instansiFilter]);
 
   const [openDialog, setOpenDialog] = useState(false);
     const [ielectedInovasi, ietSelectedInovasi] = useState<{ id: number; judul: string } | null>(null);
@@ -183,7 +184,7 @@ export default function Index() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40">
               <DropdownMenuGroup>
-                {['all', 'SMA', 'SLB', 'SMK'].map((instansi) => (
+                {['all', 'Umum' ,'SMA', 'SMK', 'SLB'].map((instansi) => (
                   <DropdownMenuItem
                     key={instansi}
                     onClick={() => setInstansiFilter(instansi as any)}
@@ -232,9 +233,9 @@ export default function Index() {
                     {item.deskripsi}
                   </p>
 
-                  {/* <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
                       <Users className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400"/> {item.penyelenggara}
-                  </p> */}
+                  </p>
 
                   <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
                       <MapPin className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" />

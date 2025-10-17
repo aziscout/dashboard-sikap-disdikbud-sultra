@@ -177,7 +177,7 @@ export default function Index() {
             <Button type="submit" className="w-full md:w-auto">
               <Save />Simpan
             </Button>
-             <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
+            <Button type="button" variant="outline" onClick={() => router.get(route('agenda.index'))}>
                 Batal
             </Button>
             </div>
@@ -197,7 +197,7 @@ export default function Index() {
                   alt="Preview Cover"
                   className="h-30 w-46 rounded object-cover"
                 />
-                <div className="mt-2 flex justify-center">
+                {/* <div className="mt-2 flex justify-center">
                   <Button
                     type="button"
                     className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
@@ -208,7 +208,7 @@ export default function Index() {
                   >
                     <Trash2 /> Hapus
                   </Button>
-                </div>
+                </div> */}
               </div>
             ) : (
               <div className="flex h-30 items-center justify-center rounded border text-gray-500">

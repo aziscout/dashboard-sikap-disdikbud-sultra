@@ -17,10 +17,10 @@ class InovasiController extends Controller
 
         if ($user->role === 'admin') {
             // Admin bisa lihat semua inovasi
-            $inovasi = Inovasi::latest()->get();
+            $inovasi = Inovasi::with('medias')->latest()->get();
         } else {
             // Bidang hanya bisa lihat inovasi miliknya
-            $inovasi = Inovasi::where('bidangs_id', $user->id)->latest()->get();
+            $inovasi = Inovasi::with('medias')->where('bidangs_id', $user->id)->latest()->get();
         }
 
         return Inertia::render('inovasi/index', compact('inovasi'));
