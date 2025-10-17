@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('judul');
             $table->string('coverImage');
             $table->string('category');
-            $table->enum('instansi',['umum','slb','smk','smp'])->default('umum');
+            $table->enum('instansi',['umum','slb','smk','sma'])->default('umum');
             $table->string('penyelenggara');
             $table->string('lokasi');
             $table->string('tabel');

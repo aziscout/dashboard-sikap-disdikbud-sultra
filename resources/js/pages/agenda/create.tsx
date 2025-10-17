@@ -197,25 +197,11 @@ export default function Index() {
             <Label htmlFor="coverImage">Cover Image</Label>
             <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
             {previewCoverUrl ? (
-              <div>
-                <img
-                  src={previewCoverUrl}
-                  alt="Preview Cover"
-                  className="mt-2 h-30 w-46 rounded object-cover"
-                />
-                <div className="mt-2 flex justify-center">
-                  <Button
-                    type="button"
-                    className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
-                    onClick={() => {
-                      setData('coverImage', null);
-                      setPreviewCoverUrl(null);
-                    }}
-                  >
-                    <Trash2 /> Hapus
-                  </Button>
-                </div>
-              </div>
+              <img
+                src={previewCoverUrl}
+                alt="Preview Cover"
+                className="mt-2 h-30 w-46 rounded object-cover"
+              />
             ) : (
               <div className="flex h-30 items-center justify-center rounded border text-gray-500">
                 Belum ada cover dipilih
