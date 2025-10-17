@@ -26,6 +26,7 @@ class InovasiController extends Controller
         $request->validate([
             'judul'        => 'required|string|max:255',
             'deskripsi'    => 'required|string',
+            'penyelenggara' => 'nullable|string|max:255',
             'cover_image'  => 'required|image|mimes:jpg,jpeg,png|max:20048',
             'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
             'category'     => 'nullable|in:foto,video',
@@ -62,6 +63,7 @@ class InovasiController extends Controller
             'medias_id'   => $media->id,
             'judul'       => $request->judul,
             'deskripsi'   => $request->deskripsi,
+            'penyelenggara' => $request->penyelenggara,
             'cover_image' => $coverPath,
             'category'    => $request->category,
             'instansi'    => $request->instansi,
@@ -78,13 +80,14 @@ class InovasiController extends Controller
         return Inertia::render('inovasi/edit', compact('inovasi'));
     }
 
-   
+
 
     public function update(Request $request, Inovasi $inovasi)
 {
     $request->validate([
         'judul'         => 'required|string|max:255',
         'deskripsi'     => 'required|string',
+        'penyelenggara' => 'nullable|string|max:255',
         'cover_image'   => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
         'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
         'category'      => 'nullable|in:foto,video',
@@ -151,6 +154,7 @@ class InovasiController extends Controller
     $inovasi->update([
         'judul'     => $request->judul,
         'deskripsi' => $request->deskripsi,
+        'penyelenggara' => $request->penyelenggara,
         'category'  => $request->category,
         'instansi'  => $request->instansi,
         'lokasi'    => $request->lokasi,

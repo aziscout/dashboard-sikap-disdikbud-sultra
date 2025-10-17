@@ -24,6 +24,7 @@ interface Inovasi {
   id: number;
   judul: string;
   deskripsi: string;
+  penyelenggara: string;
   instansi: string;
   lokasi: string;
   category: string;
@@ -43,6 +44,7 @@ export default function EditInovasi() {
   const { data, setData, post, errors, processing } = useForm({
     judul: inovasi.judul || '',
     deskripsi: inovasi.deskripsi || '',
+    penyelenggara: inovasi.penyelenggara || '',
     instansi: inovasi.instansi || '',
     lokasi: inovasi.lokasi || '',
     category: inovasi.category || '',
@@ -203,6 +205,11 @@ export default function EditInovasi() {
             <div>
               <Label>Judul</Label>
               <Input value={data.judul} onChange={(e) => setData('judul', e.target.value)} />
+            </div>
+
+            <div>
+              <Label>Penyelenggara</Label>
+              <Input value={data.penyelenggara} onChange={(e) => setData('penyelenggara', e.target.value)} />
             </div>
 
             <div>
