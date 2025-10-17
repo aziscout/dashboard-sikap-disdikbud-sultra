@@ -10,6 +10,7 @@ class Inovasi extends Model
         'medias_id',
         'judul',
         'deskripsi',
+        'penyelenggara',
         'coverImage',
         'category',
         'instansi',
@@ -21,5 +22,3 @@ class Inovasi extends Model
         return $this->belongsTo(Media::class);
     }
 }
-
-    

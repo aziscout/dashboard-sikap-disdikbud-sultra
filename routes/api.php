@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\LaporanApiController;
 use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LayananController;
+use App\Http\Controllers\Api\LayananApiController;
 
    Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
@@ -36,5 +36,5 @@ use App\Http\Controllers\LayananController;
    // gallery
    Route::get('/galeri', [AllGaleriApiController::class, 'index']);
    // layanan
-   Route::post('/layanan', [LayananController::class, 'store']);
-   Route::get('/layanan/status/{kode_tracking}', [LayananController::class, 'status']);
+   Route::post('/layanan', [LayananApiController::class, 'store']);
+   Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);

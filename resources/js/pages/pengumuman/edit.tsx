@@ -150,6 +150,14 @@ export default function Edit() {
               <Label htmlFor="penyelenggara">Penyelenggara</Label>
               <Input value={data.penyelenggara} onChange={(e) => setData('penyelenggara', e.target.value)} />
             </div>
+            <div>
+              <Label htmlFor="category">Kategori</Label>
+              <Input
+                placeholder="Cth : Prestasi, Inovasi, Ujian"
+                value={data.category}
+                onChange={(e) => setData('category', e.target.value)}
+              />
+            </div>
 
             <div>
               <Label htmlFor="deskripsi">Deskripsi</Label>
@@ -159,20 +167,6 @@ export default function Edit() {
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
             </div>
-
-            {/* <div>
-              <Label htmlFor="category">Kategori</Label>
-              <Select value={data.category} onValueChange={(value) => setData('category', value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih Kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="foto">Foto</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="dokumen">Dokumen</SelectItem>
-                </SelectContent>
-              </Select>
-            </div> */}
 
             <div>
               <Label>Link Video</Label>
@@ -203,6 +197,8 @@ export default function Edit() {
               <Label htmlFor="lokasi">Lokasi</Label>
               <Input value={data.lokasi} onChange={(e) => setData('lokasi', e.target.value)} />
             </div>
+
+            
 
             <div className="flex space-x-2">
               <Button type="submit" disabled={processing}>

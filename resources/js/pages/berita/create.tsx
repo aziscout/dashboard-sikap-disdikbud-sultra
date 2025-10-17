@@ -6,8 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
-import { CircleAlert, Plus, Save } from 'lucide-react';
+import { Head, useForm, router } from '@inertiajs/react';
+import { CircleAlert, Plus, Save, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -161,10 +161,14 @@ export default function Index() {
                             <Input placeholder="Masukkan Lokasi" value={data.lokasi} onChange={(e) => setData('lokasi', e.target.value)} />
                         </div>
 
-                        <Button type="submit" className="w-full md:w-auto">
-                            <Save />
-                            Simpan
-                        </Button>
+                        <div className=' flex space-x-2'>
+                                    <Button type="submit" className="w-full md:w-auto">
+                                      <Save />Simpan
+                                    </Button>
+                                     <Button type="button" variant="outline" onClick={() => router.get(route('berita.index'))}>
+                                        Batal
+                                    </Button>
+                                    </div>
                     </form>
                 </div>
 
@@ -175,7 +179,21 @@ export default function Index() {
                         <Label htmlFor="coverImage">Cover Image</Label>
                         <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
                         {previewCoverUrl ? (
-                            <img src={previewCoverUrl} alt="Preview Cover" className="mt-2 h-30 w-46 rounded object-cover" />
+                            <div className="mt-2">
+                                <img src={previewCoverUrl} alt="Preview Cover" className="h-30 w-46 rounded object-cover" />
+                                <div className="mt-2 flex justify-center">
+                                    <Button
+                                        type="button"
+                                        className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
+                                        onClick={() => {
+                                            setData('coverImage', null);
+                                            setPreviewCoverUrl(null);
+                                        }}
+                                    >
+                                        <Trash2 /> Hapus
+                                    </Button>
+                                </div>
+                            </div>
                         ) : (
                             <div className="flex h-30 items-center justify-center rounded border text-gray-500">Belum ada cover dipilih</div>
                         )}
@@ -188,7 +206,22 @@ export default function Index() {
                         {previewFileUrls.length > 0 ? (
                             <div className="mt-2 grid grid-cols-3 gap-2">
                                 {previewFileUrls.map((url, i) => (
-                                    <img key={i} src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
+                                    <div key={i}>
+                                        <img src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
+                                        <div className="mt-2 flex justify-center">
+                                            <Button
+                                                type="button"
+                                                className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
+                                                onClick={() => {
+                                                    const updatedFiles = data.files.filter((_, idx) => idx !== i);
+                                                    setData('files', updatedFiles);
+                                                    setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
+                                                }}
+                                            >
+                                                <Trash2 /> Hapus
+                                            </Button>
+                                        </div>
+                                    </div>
                                 ))}
 
                                 {/* Card tambah foto muncul kalau < MAX_FILES */}

@@ -113,11 +113,7 @@ export default function Index() {
           ? true
           : item.instansi?.trim().toLowerCase() === instansiFilter.toLowerCase()
       )
-      .filter(item =>
-        categoryFilter === 'all'
-          ? true
-          : item.category?.toLowerCase() === categoryFilter.toLowerCase()
-      )
+      
       .sort((a, b) => {
         const dateA = new Date(a.created_at).getTime();
         const dateB = new Date(b.created_at).getTime();
@@ -193,27 +189,6 @@ export default function Index() {
                     onClick={() => setInstansiFilter(instansi as any)}
                   >
                     {instansi === 'all' ? 'Semua Instansi' : instansi}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Category */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <ListFilterPlus /> {categoryFilter === 'all' ? 'Semua Kategori' : categoryFilter}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40">
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setCategoryFilter('all')}>
-                  Semua Kategori
-                </DropdownMenuItem>
-                {availableCategories.map(category => (
-                  <DropdownMenuItem key={category} onClick={() => setCategoryFilter(category)}>
-                    {category}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuGroup>

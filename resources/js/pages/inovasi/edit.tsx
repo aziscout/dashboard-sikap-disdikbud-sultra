@@ -24,6 +24,7 @@ interface Inovasi {
   id: number;
   judul: string;
   deskripsi: string;
+  penyelenggara: string;
   instansi: string;
   lokasi: string;
   category: string;
@@ -43,6 +44,7 @@ export default function EditInovasi() {
   const { data, setData, post, errors, processing } = useForm({
     judul: inovasi.judul || '',
     deskripsi: inovasi.deskripsi || '',
+    penyelenggara: inovasi.penyelenggara || '',
     instansi: inovasi.instansi || '',
     lokasi: inovasi.lokasi || '',
     category: inovasi.category || '',
@@ -190,13 +192,40 @@ export default function EditInovasi() {
 
           <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
             <div>
-              <Label>Judul</Label>
-              <Input value={data.judul} onChange={(e) => setData('judul', e.target.value)} />
+              <Label htmlFor="judul">Judul</Label>
+              <Input
+                placeholder="Masukkan Judul"
+                value={data.judul}
+                onChange={(e) => setData('judul', e.target.value)}
+              />
             </div>
 
             <div>
-              <Label>Deskripsi</Label>
-              <Textarea value={data.deskripsi} onChange={(e) => setData('deskripsi', e.target.value)} />
+              <Label htmlFor="penyelenggara">Penyelenggara</Label>
+              <Input
+                placeholder="Masukkan Penyelenggara"
+                value={data.penyelenggara}
+                onChange={(e) => setData('penyelenggara', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="kategori">Kategori</Label>
+              <Input
+                placeholder="Cth : Prestasi, Inovasi, Ujian"
+                value={data.category}
+                onChange={(e) => setData('category', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="deskripsi">Deskripsi</Label>
+              <Textarea
+                className="h-34"
+                placeholder="Deskripsi"
+                value={data.deskripsi}
+                onChange={(e) => setData('deskripsi', e.target.value)}
+              />
             </div>
 
             <div>
@@ -204,29 +233,33 @@ export default function EditInovasi() {
               <Input
                 type="url"
                 placeholder="https://youtube.com/..."
-                defaultValue={data.video_urls}
+                value={data.video_urls}
                 onChange={(e) => setData('video_urls', e.target.value)}
               />
             </div>
 
             <div>
-              <Label>Instansi</Label>
+              <Label htmlFor="instansi">Instansi</Label>
               <Select value={data.instansi} onValueChange={(value) => setData('instansi', value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih Instansi" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="umum">Umum</SelectItem>
-                  <SelectItem value="slb">SLB</SelectItem>
-                  <SelectItem value="smk">SMK</SelectItem>
                   <SelectItem value="sma">SMA</SelectItem>
+                  <SelectItem value="smk">SMK</SelectItem>
+                  <SelectItem value="slb">SLB</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label>Lokasi</Label>
-              <Input value={data.lokasi} onChange={(e) => setData('lokasi', e.target.value)} />
+              <Label htmlFor="lokasi">Lokasi</Label>
+              <Input
+                placeholder="Masukkan Lokasi"
+                value={data.lokasi}
+                onChange={(e) => setData('lokasi', e.target.value)}
+              />
             </div>
 
             <div className="flex space-x-2">

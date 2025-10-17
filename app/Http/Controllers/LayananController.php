@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\LayananReceived;
-use App\Models\Document;
+use App\Models\Dokumen;
 use App\Models\Layanan;
 use App\Models\Media;
 use Illuminate\Http\Request;
@@ -47,14 +47,14 @@ class LayananController extends Controller
 
         $singkatanBidang = $mapBidang[$validated['bidang']] ?? 'UMUM';
         $tanggal = now()->format('Ymd');
-
-        $jumlahHariIni = Layanan::where('bidang', $validated['bidang'])
-            ->whereDate('created_at', now()->toDateString())
-            ->count() + 1;
-
-        $increment = str_pad($jumlahHariIni, 4, '0', STR_PAD_LEFT);
-        $validated['kode_tracking'] = "{$singkatanBidang}{$tanggal}{$increment}";
+        
+        // Buat kode unik acak (6 karakter)
+        $random = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+        
+        // Buat kode tracking: SMA20251015-1A2B3C
+        $validated['kode_tracking'] = "{$singkatanBidang}{$tanggal}{$random}";
         $validated['status'] = 'Diterima';
+
 
         DB::beginTransaction();
         try {
@@ -81,7 +81,7 @@ class LayananController extends Controller
                 $docFile = $request->file('dokumen');
                 if ($docFile->getSize() <= 30000 * 1024) {
                     $docPath = $docFile->store('layanan/documents', 'public');
-                    $documents = Document::create(['dokumen' => $docPath]);
+                    $documents = Dokumen    ::create(['dokumen' => $docPath]);
                     $validated['dokumens_id'] = $documents->id;
                 } else {
                     Log::warning('Dokumen file terlalu besar untuk layanan submission.');
@@ -124,17 +124,23 @@ class LayananController extends Controller
      * Cek status layanan berdasarkan kode tracking.
      */
     public function status($kode_tracking)
-    {
-        $layanan = Layanan::where('kode_tracking', $kode_tracking)
-            ->with('media', 'dokumen')
-            ->first();
+{
+    $layanan = \App\Models\Layanan::where('kode_tracking', $kode_tracking)->first();
 
-        if (!$layanan) {
-            return response()->json(['message' => 'Laporan tidak ditemukan'], 404);
-        }
-
-        return response()->json($layanan);
+    if (!$layanan) {
+        return response()->json([
+            'message' => 'Laporan tidak ditemukan'
+        ], 404);
     }
+
+    return response()->json([
+        'kode_tracking' => $layanan->kode_tracking,
+        'status'        => $layanan->status,
+        'judul'         => $layanan->judul,
+        'bidang'        => $layanan->bidang,
+        'tanggal'       => $layanan->created_at->format('d-m-Y H:i'),
+    ]);
+}
 
     /**
      * List layanan untuk Inertia.

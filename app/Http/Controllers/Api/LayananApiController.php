@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 
 class LayananApiController extends Controller
 {
@@ -26,8 +25,12 @@ class LayananApiController extends Controller
             'bidang'         => 'required|string|max:255',
             'nama_pengirim'  => 'required|string|max:255',
             'email_pengirim' => 'required|email|max:255',
-            'file.*'        => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
-            'dokumen'        => 'nullable|mimes:pdf|max:30000',
+
+            // file media
+            'files.*'        => 'nullable|mimes:jpg,jpeg,png,|max:50000',
+
+            // file dokumen
+            'dokumen'   => 'nullable|mimes:pdf|max:30000',
         ]);
 
         // Mapping bidang ke singkatan
@@ -42,22 +45,22 @@ class LayananApiController extends Controller
 
         $singkatanBidang = $mapBidang[$validated['bidang']] ?? 'UMUM';
         $tanggal = now()->format('Ymd');
-
-        // Buat kode tracking unik
-        $jumlahHariIni = Layanan::where('bidang', $validated['bidang'])
-            ->whereDate('created_at', now()->toDateString())
-            ->count() + 1;
-
-        $increment = str_pad($jumlahHariIni, 4, '0', STR_PAD_LEFT);
-        $validated['kode_tracking'] = "{$singkatanBidang}{$tanggal}{$increment}";
+        
+        // Buat kode unik acak (6 karakter)
+        $random = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+        
+        // Buat kode tracking: SMA20251015-1A2B3C
+        $validated['kode_tracking'] = "{$singkatanBidang}{$tanggal}{$random}";
         $validated['status'] = 'Diterima';
+
 
         DB::beginTransaction();
         try {
-            // Upload media (foto/video)
+            // Upload media (foto/video file)
             $mediaFiles = [];
-            if ($request->hasFile('file')) {
-                foreach ($request->file('file') as $file) {
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    if ($file->getSize() > 50000 * 1024) continue;
                     $path = $file->store('layanan/file', 'public');
                     $type = in_array($file->extension(), ['mp4', 'mov', 'avi']) ? 'video' : 'foto';
                     $mediaFiles[] = ['file' => $path, 'type' => $type];
@@ -73,24 +76,30 @@ class LayananApiController extends Controller
 
             // Upload dokumen
             if ($request->hasFile('dokumen')) {
-                $docPath = $request->file('dokumen')->store('layanan/documents', 'public');
-                $doc = Document::create(['dokumen' => $docPath]);
-                $validated['dokumens_id'] = $doc->id;
+                $docFile = $request->file('dokumen');
+                if ($docFile->getSize() <= 30000 * 1024) {
+                    $docPath = $docFile->store('layanan/documents', 'public');
+                    $documents = Document::create(['dokumen' => $docPath]);
+                    $validated['dokumens_id'] = $documents->id;
+                } else {
+                    Log::warning('Dokumen file terlalu besar untuk layanan submission.');
+                    $validated['dokumens_id'] = null;
+                }
             } else {
                 $validated['dokumens_id'] = null;
             }
 
             unset($validated['dokumen']);
 
-            // Simpan layanan
+            // Simpan data layanan
             $layanan = Layanan::create($validated);
 
-            // Kirim email ke pengirim (jika ada)
+            // Kirim email konfirmasi
             if (!empty($layanan->email_pengirim)) {
                 try {
                     Mail::to($layanan->email_pengirim)->send(new LayananReceived($layanan));
                 } catch (\Exception $e) {
-                    Log::error('Gagal kirim email tracking: ' . $e->getMessage());
+                    Log::error('Gagal mengirim email untuk layanan: ' . $layanan->kode_tracking . ' - ' . $e->getMessage());
                 }
             }
 
@@ -101,9 +110,10 @@ class LayananApiController extends Controller
                 'kode_tracking' => $layanan->kode_tracking,
                 'data'          => $layanan->load('media', 'dokumen'),
             ], 201);
+
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Gagal simpan layanan API: ' . $e->getMessage());
+            Log::error('Gagal menyimpan layanan: ' . $e->getMessage());
             return response()->json(['message' => 'Gagal mengirim laporan.'], 500);
         }
     }
@@ -112,15 +122,22 @@ class LayananApiController extends Controller
      * Cek status layanan berdasarkan kode tracking.
      */
     public function status($kode_tracking)
-    {
-        $layanan = Layanan::where('kode_tracking', $kode_tracking)
-            ->with('media', 'dokumen')
-            ->first();
+{
+    $layanan = \App\Models\Layanan::where('kode_tracking', $kode_tracking)->first();
 
-        if (!$layanan) {
-            return response()->json(['message' => 'Laporan tidak ditemukan'], 404);
-        }
-
-        return response()->json($layanan);
+    if (!$layanan) {
+        return response()->json([
+            'message' => 'Laporan tidak ditemukan'
+        ], 404);
     }
+
+    return response()->json([
+        'kode_tracking' => $layanan->kode_tracking,
+        'status'        => $layanan->status,
+        'judul'         => $layanan->judul,
+        'bidang'        => $layanan->bidang,
+        'tanggal'       => $layanan->created_at->format('d-m-Y H:i'),
+    ]);
+}
+
 }
