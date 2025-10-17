@@ -15,6 +15,16 @@ import { CalendarDays, ListFilterPlus, Megaphone, Plus, Scale, SquarePen, Trash2
 import { usePage } from '@inertiajs/react';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { useMemo, useState } from 'react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -59,11 +69,11 @@ export default function Index() {
 
     const { processing, delete: destroy } = useForm();
 
-    const handleDelete = (id: number, judul: string) => {
-        if (confirm(`Apakah anda yakin ingin menghapus - ${id}. ${judul}`)) {
-            destroy(`/produk-hukum/${id}`);
-        }
-    };
+    // const handleDelete = (id: number, judul: string) => {
+    //     if (confirm(`Apakah anda yakin ingin menghapus - ${id}. ${judul}`)) {
+    //         destroy(`/produk-hukum/${id}`);
+    //     }
+    // };
 
     // 🔹 Search + Filter + Sort Logic
     const filteredData = useMemo(() => {
@@ -81,6 +91,21 @@ export default function Index() {
                 return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
             });
     }, [produk_hukum, sortOrder, searchQuery, categoryFilter]);
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedProdukHukum, setSelectedProdukHukum] = useState<{ id: number; judul: string } | null>(null);
+
+    const handleOpenDialog = (id: number, judul: string) => {
+    setSelectedProdukHukum({ id, judul });
+    setOpenDialog(true);
+    };
+
+    const handleConfirmDelete = () => {
+    if (selectedProdukHukum) {
+        destroy(route("produk-hukum.destroy", selectedProdukHukum.id));
+    }
+    setOpenDialog(false);
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -202,11 +227,11 @@ export default function Index() {
                                     </Button>
                                 </Link>
                                 <Button
-                                    disabled={processing}
-                                    onClick={() => handleDelete(produk.id, produk.judul)}
-                                    className="bg-red-600 text-white hover:bg-red-500 w-full sm:w-auto"
+                                  disabled={processing}
+                                  onClick={() => handleOpenDialog(produk.id, produk.judul)}
+                                  className="bg-red-600 hover:bg-red-500 text-white flex-1"
                                 >
-                                    <Trash2 /> Hapus
+                                  <Trash2 />Hapus
                                 </Button>
                             </div>
                         </div>
@@ -221,6 +246,27 @@ export default function Index() {
                     </p>
                 </div>
             )}
+            <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+                <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                    <AlertDialogDescription>
+                    Apakah Anda yakin ingin menghapus{" "}
+                    data ini ? Tindakan ini tidak dapat dibatalkan.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                    onClick={handleConfirmDelete}
+                    className="bg-red-600 hover:bg-red-500 text-white"
+                    >
+                    Ya, Hapus
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

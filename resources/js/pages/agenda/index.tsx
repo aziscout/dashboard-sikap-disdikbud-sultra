@@ -23,6 +23,16 @@ import {
   Video,
 } from "lucide-react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -74,10 +84,10 @@ export default function Index() {
     "all" | "foto" | "video" | "dokumen"
   >("all");
 
-  const handleDelete = (id: number, judul: string) => {
-    if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
-    destroy(route("agenda.destroy", id));
-  };
+  // const handleDelete = (id: number, judul: string) => {
+  //   if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
+  //   destroy(route("agenda.destroy", id));
+  // };
 
   const handleEdit = (id: number) => {
     router.visit(route("agenda.edit", id));
@@ -117,6 +127,21 @@ export default function Index() {
         return sortOrder === "terbaru" ? dateB - dateA : dateA - dateB;
       });
   }, [agenda, sortOrder, searchQuery, instansiFilter, categoryFilter]);
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedAgenda, setSelectedAgenda] = useState<{ id: number; judul: string } | null>(null);
+
+  const handleOpenDialog = (id: number, judul: string) => {
+    setSelectedAgenda({ id, judul });
+    setOpenDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedAgenda) {
+      destroy(route("agenda.destroy", selectedAgenda.id));
+    }
+    setOpenDialog(false);
+  };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -302,11 +327,12 @@ export default function Index() {
                     </Button>
                     <Button
                       disabled={processing}
-                      onClick={() => handleDelete(item.id, item.judul)}
+                      onClick={() => handleOpenDialog(item.id, item.judul)}
                       className="bg-red-600 hover:bg-red-500 text-white flex-1"
                     >
                       <Trash2 />Hapus
                     </Button>
+
                   </div>
                 </div>
               </article>
@@ -318,6 +344,27 @@ export default function Index() {
           </div>
         )}
       </div>
+      <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus{" "}
+              data ini ? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-500 text-white"
+            >
+              Ya, Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }

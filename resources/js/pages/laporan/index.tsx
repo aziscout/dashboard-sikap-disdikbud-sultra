@@ -13,6 +13,16 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { BookOpen, CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -52,10 +62,10 @@ export default function Index() {
   const { laporan, flash } = usePage().props as unknown as PageProps;
   const { processing, delete: destroy } = useForm();
 
-  const handleDelete = (id: number, judul: string) => {
-    if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
-    destroy(route('laporan.destroy', id));
-  };
+  // const handleDelete = (id: number, judul: string) => {
+  //   if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
+  //   destroy(route('laporan.destroy', id));
+  // };
 
   const filteredLaporan = useMemo(() => {
     return [...laporan]
@@ -74,6 +84,21 @@ export default function Index() {
         return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
       });
   }, [laporan, sortOrder, searchQuery, instansiFilter, categoryFilter]);
+
+  const [openDialog, setOpenDialog] = useState(false);
+    const [selectedLaporan, setSelectedLaporan] = useState<{ id: number; judul: string } | null>(null);
+  
+    const handleOpenDialog = (id: number, judul: string) => {
+      setSelectedLaporan({ id, judul });
+      setOpenDialog(true);
+    };
+  
+    const handleConfirmDelete = () => {
+      if (selectedLaporan) {
+        destroy(route("laporan.destroy", selectedLaporan.id));
+      }
+      setOpenDialog(false);
+    };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -225,17 +250,38 @@ export default function Index() {
                                     </Button>
                                 </Link>
                                 <Button
-                                    disabled={processing}
-                                    onClick={() => handleDelete(laporan.id, laporan.judul)}
-                                    className="bg-red-600 hover:bg-red-500 w-full sm:w-auto text-white"
+                                  disabled={processing}
+                                  onClick={() => handleOpenDialog(laporan.id, laporan.judul)}
+                                  className="bg-red-600 hover:bg-red-500 text-white flex-1"
                                 >
-                                    <Trash2 /> Hapus
+                                  <Trash2 />Hapus
                                 </Button>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+            <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Apakah Anda yakin ingin menghapus{" "}
+                    data ini ? Tindakan ini tidak dapat dibatalkan.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+      
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleConfirmDelete}
+                    className="bg-red-600 hover:bg-red-500 text-white"
+                  >
+                    Ya, Hapus
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
     </AppLayout>
   );
 }

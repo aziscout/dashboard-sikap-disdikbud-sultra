@@ -22,7 +22,17 @@ import {
   Trash2,
   Video,
 } from 'lucide-react';
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
+import { PageProps as InertiaPageProps, router } from '@inertiajs/core';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -67,9 +77,13 @@ export default function Index() {
   const [instansiFilter, setInstansiFilter] = useState<'all' | 'SMA' | 'SLB' | 'SMK'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  const handleDelete = (id: number, judul: string) => {
-    if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
-    destroy(route('inovasi.destroy', id));
+  // const handleDelete = (id: number, judul: string) => {
+  //   if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
+  //   destroy(route('inovasi.destroy', id));
+  // };
+
+  const handleEdit = (id: number) => {
+      router.visit(route("inovasi.edit", id));
   };
 
   const getCoverUrl = (item: Inovasi) => {
@@ -109,6 +123,22 @@ export default function Index() {
         return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
       });
   }, [inovasi, sortOrder, searchQuery, instansiFilter, categoryFilter]);
+
+  const [openDialog, setOpenDialog] = useState(false);
+    const [ielectedInovasi, ietSelectedInovasi] = useState<{ id: number; judul: string } | null>(null);
+  
+    const handleOpenDialog = (id: number, judul: string) => {
+      ietSelectedInovasi({ id, judul });
+      setOpenDialog(true);
+    };
+  
+    const handleConfirmDelete = () => {
+      if (ielectedInovasi) {
+        destroy(route("inovasi.destroy", ielectedInovasi.id));
+      }
+      setOpenDialog(false);
+    };
+  
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -256,24 +286,25 @@ export default function Index() {
                                 year: "numeric",
                             })}
                         </p>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
-                        <MapPin className="w-4 h-4 m-1"/>
-                          {item.instansi} - {item.lokasi}
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                            <MapPin className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" />
+                            {item.instansi} - {item.lokasi}
                         </p>
                     </div>
 
                   <div className="mt-auto flex gap-2">
-                    <Link href={route('inovasi.edit', item.id)} className="flex-1">
-                      <Button className="text-white bg-blue-950 hover:bg-blue-900 w-full">
-                        <SquarePen /> Ubah
-                      </Button>
-                    </Link>
+                    <Button
+                      onClick={() => handleEdit(item.id)}
+                      className="bg-blue-950 hover:bg-blue-900 text-white flex-1"
+                    >
+                      <SquarePen />Ubah
+                    </Button>
                     <Button
                       disabled={processing}
-                      onClick={() => handleDelete(item.id, item.judul)}
-                      className="text-white bg-red-600 hover:bg-red-500 flex-1"
+                      onClick={() => handleOpenDialog(item.id, item.judul)}
+                      className="bg-red-600 hover:bg-red-500 text-white flex-1"
                     >
-                      <Trash2 /> Hapus
+                      <Trash2 />Hapus
                     </Button>
                   </div>
                 </div>
@@ -286,6 +317,27 @@ export default function Index() {
           </div>
         )}
       </div>
+      <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus{" "}
+              data ini ? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-500 text-white"
+            >
+              Ya, Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }

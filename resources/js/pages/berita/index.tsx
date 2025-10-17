@@ -7,7 +7,17 @@ import AppLayout from "@/layouts/app-layout";
 import { type BreadcrumbItem } from "@/types";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import {CalendarDays, ListFilterPlus, MapPin, Megaphone, Plus, SquarePen, Trash2, Video} from "lucide-react";
-import { PageProps as InertiaPageProps } from "@inertiajs/core";
+import { PageProps as InertiaPageProps, router } from "@inertiajs/core";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
     { 
@@ -57,9 +67,13 @@ export default function Index() {
     const [categoryFilter] = useState<"all" | "foto" | "video">("all");
     // const [categoryFilter, setCategoryFilter] = useState<"all" | "foto" | "video">("all");
     
-    const handleDelete = (id: number, judul: string) => {
-        if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
-        destroy(route("berita.destroy", id));
+    // const handleDelete = (id: number, judul: string) => {
+    //     if (!confirm(`Apakah anda yakin ingin menghapus "${judul}"?`)) return;
+    //     destroy(route("berita.destroy", id));
+    // };
+
+    const handleEdit = (id: number) => {
+        router.visit(route("berita.edit", id));
     };
 
     const getCoverUrl = (item: Berita) => {
@@ -116,6 +130,21 @@ export default function Index() {
             return sortOrder === "terbaru" ? dateB - dateA : dateA - dateB;
         });
     }, [berita, sortOrder, searchQuery, instansiFilter, categoryFilter]);
+
+    const [openDialog, setOpenDialog] = useState(false);
+      const [selectedBerita, setSelectedBerita] = useState<{ id: number; judul: string } | null>(null);
+    
+      const handleOpenDialog = (id: number, judul: string) => {
+        setSelectedBerita({ id, judul });
+        setOpenDialog(true);
+      };
+    
+      const handleConfirmDelete = () => {
+        if (selectedBerita) {
+          destroy(route("berita.destroy", selectedBerita.id));
+        }
+        setOpenDialog(false);
+      };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -228,75 +257,82 @@ export default function Index() {
                     className="bg-white dark:bg-background rounded-2xl shadow-sm hover:shadow-lg dark:hover:bg-sidebar transition flex flex-col overflow-hidden"
                 >
                     {/* Gambar */}
-                    <img
-                    src={getCoverUrl(item)}
-                    alt={item.judul}
-                    className="w-full h-48 object-cover"
-                    />
+                    <a
+                        href={getCoverUrl(item)}
+                        target="_blank"
+                        className="block"
+                        >
+                        <img
+                            src={getCoverUrl(item)}
+                            alt={item.judul}
+                            className="w-full h-48 object-cover"
+                        />
+                    </a>
 
                     {/* Isi */}
                     <div className="p-4 flex flex-col flex-grow">
-                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">
-                        {item.judul}
-                    </h2>
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">
+                            {item.judul}
+                        </h2>
 
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
-                        {item.deskripsi}
-                    </p>
-                    
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                        <strong>Penyelenggara:</strong> {item.penyelenggara}
-                    </p>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 min-h-[60px]">
+                            {item.deskripsi}
+                        </p>
+                        
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                            <strong>Penyelenggara:</strong> {item.penyelenggara}
+                        </p>
 
-                    {item.medias?.file && (() => {
-                        const video = item.medias.file.find(
-                            (m) => m.type === "video" && m.file
-                        );
-                        return video ? (
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
-                            <Video className="w-4 h-4" />
-                            <a
-                                href={video.file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline"
-                            >
-                                {/* {video.file} */}
-                                Tonton video terkait
-                            </a>
+                        {item.medias?.file && (() => {
+                            const video = item.medias.file.find(
+                                (m) => m.type === "video" && m.file
+                            );
+                            return video ? (
+                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 flex items-center gap-2">
+                                <Video className="w-4 h-4" />
+                                <a
+                                    href={video.file}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    {/* {video.file} */}
+                                    Tonton video terkait
+                                </a>
+                                </p>
+                            ) : null;
+                            })()}
+
+                        <div className="flex justify-between">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
+                                <CalendarDays className="w-4 h-4" />
+                                {new Date(item.updated_at ?? item.created_at).toLocaleDateString("id-ID", {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                })}
                             </p>
-                        ) : null;
-                        })()}
-
-                    <div className="flex justify-between">
-                        <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mb-2">
-                            <CalendarDays className="w-4 h-4" />
-                            {new Date(item.updated_at ?? item.created_at).toLocaleDateString("id-ID", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                            })}
-                        </p>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-3 flex items-center">
-                        <MapPin className="w-4 h-4 m-1"/>
-                            {item.instansi} - {item.lokasi}
-                        </p>
-                    </div>
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+                                <MapPin className="inline h-4 w-4 mr-1 text-gray-500 dark:text-gray-400" />
+                                {item.instansi} - {item.lokasi}
+                            </p>
+                        </div>
                     {/* Aksi */}
-                    <div className="mt-auto flex gap-2">
-                        <Link href={route("berita.edit", item.id)} className="flex-1">
-                            <Button className="bg-blue-950 text-white hover:bg-blue-900 w-full">
-                                <SquarePen /> Ubah
-                            </Button>
-                        </Link>
-                        <Button
-                            disabled={processing}
-                            onClick={() => handleDelete(item.id, item.judul)}
-                            className="bg-red-600 text-white hover:bg-red-500 flex-1"
+                        <div className="mt-auto flex gap-2">
+                            <Button
+                                onClick={() => handleEdit(item.id)}
+                                className="bg-blue-950 hover:bg-blue-900 text-white flex-1"
                             >
-                            <Trash2 /> Hapus
-                        </Button>
-                    </div>
+                                <SquarePen />Ubah
+                            </Button>
+                            <Button
+                                disabled={processing}
+                                onClick={() => handleOpenDialog(item.id, item.judul)}
+                                className="bg-red-600 hover:bg-red-500 text-white flex-1"
+                                >
+                                <Trash2 />Hapus
+                            </Button>
+                        </div>
                     </div>
                 </article>
                 ))}
@@ -307,6 +343,27 @@ export default function Index() {
             </div>
             )}
         </div>
+            <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Apakah Anda yakin ingin menghapus{" "}
+                        data ini ? Tindakan ini tidak dapat dibatalkan.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+        
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={handleConfirmDelete}
+                        className="bg-red-600 hover:bg-red-500 text-white"
+                    >
+                        Ya, Hapus
+                    </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }
