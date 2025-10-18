@@ -39,7 +39,7 @@ class PengumumanController extends Controller
             'deskripsi'     => 'required|string|max:2000',
             'category'      => 'required|string|max:255',
             'coverImage'    => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
-            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:100000',
             'video_urls'    => 'nullable|url',
         ]);
 
@@ -100,7 +100,7 @@ class PengumumanController extends Controller
             'instansi'      => 'required|in:umum,slb,smk,sma',
             'category'      => 'required|string|max:255',
             'coverImage'    => 'nullable|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
-            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:100000',
             'video_urls'    => 'nullable|url',
             'deleted_files' => 'nullable|array',
         ]);

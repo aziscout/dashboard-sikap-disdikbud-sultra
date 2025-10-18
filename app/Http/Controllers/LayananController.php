@@ -29,7 +29,7 @@ class LayananController extends Controller
             'email_pengirim' => 'required|email|max:255',
 
             // file media
-            'files.*'        => 'nullable|mimes:jpg,jpeg,png,|max:50000',
+            'files.*'        => 'nullable|mimes:jpg,jpeg,png,|max:100000',
 
             // file dokumen
             'dokumen'   => 'nullable|mimes:pdf|max:30000',
@@ -186,7 +186,7 @@ class LayananController extends Controller
             'deskripsi'     => 'sometimes|string',
             'bidang'        => 'sometimes|string|max:255',
             'status'        => 'sometimes|in:Diterima,Diproses,Selesai,Ditolak',
-            'files.*'       => 'nullable|mimes:jpg,jpeg,png|max:50000',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png|max:100000',
             'dokumen'  => 'nullable|mimes:pdf|max:30000',
         ]);
 
