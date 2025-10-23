@@ -11,10 +11,10 @@ class BidangController extends Controller
 {
     public function index() 
     {
-        $bidangs = User::where('role', 'bidang')->get();
         return Inertia::render('bidang/user/index', [
-            'bidangs' => $bidangs
+            'bidang' => User::where('role', 'bidang')->get(),
         ]);
+
     }
 
     public function create() {
@@ -36,6 +36,44 @@ class BidangController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('user.index')->with('success', 'Bidang berhasil ditambahkan.');
+        return redirect()->route('user.index')->with('message', 'Bidang berhasil ditambahkan.');
+    }
+
+    public function edit($id) 
+    {
+        $bidang = User::findOrfail($id);
+        return Inertia::render("bidang/user/edit", [
+            'bidang' => $bidang
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $bidang = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,'.$bidang->id,
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $bidang->update($data);
+
+        return redirect()->route('user.index')->with('message', 'Data bidang berhasil diperbarui.');
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return redirect()->route('user.index')->with('message',' Bidang berhasil dihapus.');
     }
 }
