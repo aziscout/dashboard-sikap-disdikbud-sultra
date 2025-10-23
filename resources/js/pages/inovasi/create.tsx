@@ -182,7 +182,7 @@ export default function CreateInovasi() {
                   alt="Preview Cover"
                   className="h-30 w-46 rounded object-cover"
                 />
-                <div className="mt-2 flex justify-center">
+                {/* <div className="mt-2 flex justify-center">
                   <Button
                     type="button"
                     className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
@@ -193,7 +193,7 @@ export default function CreateInovasi() {
                   >
                     <Trash2 /> Hapus
                   </Button>
-                </div>
+                </div> */}
               </div>
             ) : (
               <div className="flex h-30 items-center justify-center rounded border text-gray-500">

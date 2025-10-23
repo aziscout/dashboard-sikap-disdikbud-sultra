@@ -39,8 +39,8 @@ class DashboardController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
-            'hero.*' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:20240',
+            'hero.*' => 'nullable|image|mimes:jpg,jpeg,png|max:100000',
         ]);
 
         $files = [];
@@ -100,7 +100,7 @@ class DashboardController extends Controller
         $request->validate([
             'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
             'hero' => 'nullable|array|max:3',
-            'hero.*' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+            'hero.*' => 'nullable|image|mimes:jpg,jpeg,png|max:100000',
             '_existing_logo' => 'nullable|string',
             '_existing_heroes' => 'nullable|array',
         ]);

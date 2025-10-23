@@ -42,7 +42,7 @@ class AgendaController extends Controller
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'deskripsi'    => 'required|string|max:1000',
             'coverImage'  => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
-            'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:100000',
             'video_urls'   => 'nullable|url',
         ]);
 
@@ -102,7 +102,7 @@ class AgendaController extends Controller
             'instansi'     => 'required|in:umum,sma,smk,slb',
             'deskripsi'    => 'required|string|max:1000',
             'coverImage'  => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
-            'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'files.*'      => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:100000',
             'video_urls'   => 'nullable|url',
             'deleted_files'=> 'nullable|array',
         ]);

@@ -17,10 +17,10 @@ class InovasiController extends Controller
 
         if ($user->role === 'admin') {
             // Admin bisa lihat semua inovasi
-            $inovasi = Inovasi::latest()->get();
+            $inovasi = Inovasi::with('medias')->latest()->get();
         } else {
             // Bidang hanya bisa lihat inovasi miliknya
-            $inovasi = Inovasi::where('bidangs_id', $user->id)->latest()->get();
+            $inovasi = Inovasi::with('medias')->where('bidangs_id', $user->id)->latest()->get();
         }
 
         return Inertia::render('inovasi/index', compact('inovasi'));
@@ -41,7 +41,7 @@ class InovasiController extends Controller
             'instansi'      => 'required|in:umum,sma,smk,slb',
             'lokasi'        => 'required|string|max:255',
             'coverImage'    => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp,bmp,tiff|max:20480',
-            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:100000',
             'video_urls'    => 'nullable|url',
         ]);
 
@@ -100,7 +100,7 @@ class InovasiController extends Controller
             'instansi'      => 'required|in:umum,sma,smk,slb',
             'lokasi'        => 'required|string|max:255',
             'coverImage'    => 'nullable|image|mimes:jpg,jpeg,png|max:20048',
-            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:50000',
+            'files.*'       => 'nullable|mimes:jpg,jpeg,png,mp4,mov,avi|max:100000',
             'video_urls'    => 'nullable|url',
             'deleted_files' => 'nullable|array',
         ]);
