@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
 
         $user = User::create([
             'name' => $request->name,
-            'role' => 'bidang',
+            'role' => 'admin',
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
@@ -47,6 +47,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended(route('bidang.dashboard', absolute: false));
+        return redirect()->intended(route('admin.dashboard', absolute: false));
     }
 }

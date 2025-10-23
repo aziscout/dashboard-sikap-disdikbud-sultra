@@ -12,7 +12,6 @@ use App\Http\Controllers\Api\ProdukHukumApiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LayananApiController;
 
-   Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
    Route::get('/pengumuman',[PengumumanApiController::class,'index']);
 // agenda 
