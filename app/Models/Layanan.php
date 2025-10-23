@@ -51,10 +51,6 @@ class Layanan extends Model
      */
     public function dokumen(): BelongsTo
     {
-<<<<<<< HEAD
         return $this->belongsTo(Dokumen::class, 'dokumens_id');
-=======
-        return $this->belongsTo(Dokumen::class, 'dokumen_id');
->>>>>>> 29a3713a57395c78c49ed3f0bb6a96d213a906a4
     }
 }
