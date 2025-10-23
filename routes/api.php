@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\AllGaleriApiController;
-use App\Http\Controllers\Api\AllGalleryApiController;
 use App\Http\Controllers\Api\BeritaApiController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\InovasiApiController;
@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ProdukHukumApiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LayananApiController;
 
+   Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
    Route::get('/pengumuman',[PengumumanApiController::class,'index']);
 // agenda 
@@ -37,3 +38,6 @@ use App\Http\Controllers\Api\LayananApiController;
    // layanan
    Route::post('/layanan', [LayananApiController::class, 'store']);
    Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);
+   
+   // admin pangkat
+   Route::get('/admin', [AdminApiController::class, 'index']);
