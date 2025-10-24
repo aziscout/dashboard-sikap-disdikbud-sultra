@@ -897,7 +897,7 @@ curl -X GET http://localhost:8000/api/data-diri \
     "masa_gk_bulanan": "24",
     "masa_gk_tahunan": "2",
     "golongan_ruang": "III/c",
-    "jenis_jk": "Laki-laki"
+    "jenis_kp": "reguler"
 }
 ```
 
@@ -1037,12 +1037,24 @@ php artisan migrate:fresh     # Drop semua tabel dan migrate ulang
 php artisan db:seed           # Jalankan database seeders
 ```
 
-### Testing API
+### Testing API with Postman
 
 #### Prerequisites
 - Laravel application running on `http://localhost:8000`
 - Database migrated and seeded
-- Postman atau curl untuk testing
+- Postman for testing
+
+#### Postman Collection Setup
+
+1. **Create New Collection:**
+   - Open Postman
+   - Click "New" > "Collection"
+   - Name it "Dashboard Dinas Pendidikan API"
+
+2. **Set Base URL Variable:**
+   - In collection settings, add variable:
+     - Variable name: `base_url`
+     - Initial value: `http://127.0.0.1:8000`
 
 #### Testing Steps
 
@@ -1056,26 +1068,64 @@ php artisan db:seed           # Jalankan database seeders
    php artisan migrate
    ```
 
-3. **Test Register:**
-   - Use the register endpoint to create a pegawai account
-   - Save the returned token
+3. **Test Register API:**
+   - **Method:** POST
+   - **URL:** `{{base_url}}/api/register`
+   - **Headers:**
+     ```
+     Content-Type: application/json
+     ```
+   - **Body (raw JSON):**
+     ```json
+     {
+       "nama": "John Doe",
+       "email": "john.doe@example.com",
+       "password": "password123",
+       "password_confirmation": "password123",
+       "nip": "123456789012345678",
+       "nomor": "08123456789",
+       "agama": "islam",
+       "jenis_kelamin": "laki-laki",
+       "alamat": "Jl. Sudirman No. 1",
+       "tempat_lahir": "Makassar",
+       "tanggal_lahir": "1990-01-01"
+     }
+     ```
+   - **Expected Response:** Status 200 with token
 
-4. **Test Login:**
-   - Use the login endpoint with the registered credentials
-   - Verify the token is returned
+4. **Test Login API:**
+   - **Method:** POST
+   - **URL:** `{{base_url}}/api/login`
+   - **Headers:**
+     ```
+     Content-Type: application/json
+     ```
+   - **Body (raw JSON):**
+     ```json
+     {
+       "email": "john.doe@example.com",
+       "password": "password123"
+     }
+     ```
+   - **Expected Response:** Status 200 with token
+   - **Save Token:** Copy the token from response for next requests
 
 5. **Test Get Pegawai Profile:**
-   - Use the token from login for authorization
-   - Call GET /api/pegawai to get authenticated user's profile
-   - Verify only the authenticated user's data is returned
+   - **Method:** GET
+   - **URL:** `{{base_url}}/api/pegawai`
+   - **Headers:**
+     ```
+     Authorization: Bearer YOUR_TOKEN_HERE
+     ```
+   - **Expected Response:** Status 200 with authenticated user's data only
 
 6. **Test Data Diri CRUD:**
-   - Use the token from login/register for authorization
-   - Create data diri
-   - Read all data diri
-   - Read specific data diri by ID
-   - Update data diri
-   - Delete data diri
+   - Use the token from login for authorization in all requests
+   - Create data diri (POST /api/data-diri)
+   - Read all data diri (GET /api/data-diri)
+   - Read specific data diri (GET /api/data-diri/{id})
+   - Update data diri (PUT /api/data-diri/{id})
+   - Delete data diri (DELETE /api/data-diri/{id})
 
 #### Error Responses
 

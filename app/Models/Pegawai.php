@@ -43,4 +43,9 @@ class Pegawai extends Authenticatable
     {
         return $this->belongsTo(Notifikasi::class,"notifikasis_id");
     }
+
+    public function dataDiri()
+    {
+        return $this->hasOne(DataDiri::class, 'pegawais_id');
+    }
 }

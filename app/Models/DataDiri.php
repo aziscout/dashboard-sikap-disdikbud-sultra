@@ -21,7 +21,7 @@ class DataDiri extends Model
         'masa_gk_bulanan',
         'masa_gk_tahunan',
         'golongan_ruang',
-        'jenis_jk',
+        'jenis_kp',
     ];
 
     public function pegawai()
