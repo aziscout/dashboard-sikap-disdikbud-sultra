@@ -40,6 +40,16 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+
+        'pegawai' => [
+            'driver' => 'sanctum',
+            'provider' => 'pegawais',
+        ],
     ],
 
     /*
@@ -63,6 +73,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
+        'pegawais' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pegawai::class,
         ],
 
         // 'users' => [

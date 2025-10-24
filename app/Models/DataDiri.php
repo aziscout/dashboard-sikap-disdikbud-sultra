@@ -12,24 +12,20 @@ class DataDiri extends Model
     protected $table = 'data_diri';
 
     protected $fillable = [
-        'pegawai_id',
-        'nip',
+        'pegawais_id',
         'tanggal_sk',
         'nomor_sk',
-        'tempat_lahir',
-        'tanggal_lahir',
         'tmt_golongan',
-        'agama',
-        'jenis_kelamin',
-        'alamat',
-        'nomor_kepring_bkn',
+        'nomor_pertek_bkn',
+        'transpot_perbkn_bkn',
         'masa_gk_bulanan',
         'masa_gk_tahunan',
         'golongan_ruang',
+        'jenis_jk',
     ];
 
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class, 'pegawai_id');
+        return $this->belongsTo(Pegawai::class, 'pegawais_id');
     }
 }

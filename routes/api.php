@@ -1,16 +1,20 @@
 <?php
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\AllGaleriApiController;
 use App\Http\Controllers\Api\BeritaApiController;
+use App\Http\Controllers\Api\BerkasApiController;
+use App\Http\Controllers\Api\BidangApiController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\InovasiApiController;
 use App\Http\Controllers\Api\LaporanApiController;
+use App\Http\Controllers\Api\PegawaiApiController;
 use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LayananApiController;
+use App\Http\Controllers\Api\DataDiriApiController;
 
    Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
@@ -44,10 +48,25 @@ use App\Http\Controllers\Api\LayananApiController;
    Route::get('/datadiri', [AdminApiController::class, 'index']);
 
    //datadiri
-   use App\Http\Controllers\DataDiriController;
+   // bidang
+   Route::get('/bidang', [BidangApiController::class, 'index']);
+   Route::post('/bidang/login', [BidangApiController::class, 'login']);
    
-   Route::get('/data-diri', [DataDiriController::class, 'index']);
-   Route::get('/data-diri/{id}', [DataDiriController::class, 'show']);
-   Route::post('/data-diri', [DataDiriController::class, 'store']);
-   Route::put('/data-diri/{id}', [DataDiriController::class, 'update']);
-   Route::delete('/data-diri/{id}', [DataDiriController::class, 'destroy']);
+   // pegawai
+   Route::post('/register', [PegawaiApiController::class, 'register']);
+   Route::post('/login', [PegawaiApiController::class, 'login']);
+
+   // berkas
+   Route::get('/berkas',[BerkasApiController::class,'index']);
+   Route::post('/berkas',[BerkasApiController::class,'store']);
+   Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
+   Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
+   
+   Route::middleware('auth:sanctum')->group(function () {
+       Route::get('/data-diri', [DataDiriApiController::class, 'index']);
+       Route::get('/data-diri/{id}', [DataDiriApiController::class, 'show']);
+       Route::post('/data-diri', [DataDiriApiController::class, 'store']);
+       Route::put('/data-diri/{id}', [DataDiriApiController::class, 'update']);
+       Route::delete('/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
+   });
+   
