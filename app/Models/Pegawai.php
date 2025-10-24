@@ -25,4 +25,9 @@ class Pegawai extends Authenticatable
     }
 
     protected $hidden = ['password'];
+
+    public function berkas()
+    {
+        return $this->hasMany(Berkas::class, "berkas_id");
+    }
 }

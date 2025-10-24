@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\AllGaleriApiController;
 use App\Http\Controllers\Api\BeritaApiController;
+use App\Http\Controllers\Api\BerkasApiController;
 use App\Http\Controllers\Api\BidangApiController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\InovasiApiController;
@@ -48,5 +49,11 @@ use App\Http\Controllers\Api\LayananApiController;
    Route::post('/bidang/login', [BidangApiController::class, 'login']);
 
    // pegawai
-   Route::post('/pegawai/register', [PegawaiApiController::class, 'register']);
-   Route::post('/pegawai/login', [PegawaiApiController::class, 'login']);
+   Route::post('/register', [PegawaiApiController::class, 'register']);
+   Route::post('/login', [PegawaiApiController::class, 'login']);
+
+   // berkas
+   Route::get('/berkas',[BerkasApiController::class,'index']);
+   Route::post('/berkas',[BerkasApiController::class,'store']);
+   Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
+   Route::put('/berkas/{id}',[BerkasApiController::class,'update']);

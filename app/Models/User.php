@@ -25,6 +25,11 @@ class User extends Authenticatable
         'role',
     ];
 
+    public function berkas()
+    {
+        return $this->hasMany(Berkas::class, "berkas_id");
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
