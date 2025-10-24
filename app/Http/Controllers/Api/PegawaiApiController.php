@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Hash;
 
 class PegawaiApiController extends Controller
 {
+    public function index() 
+    {
+        $pegawai = Pegawai::get()->all();
+        return response()->json($pegawai);
+    }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -59,4 +65,16 @@ class PegawaiApiController extends Controller
             'token' => $token,
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logout berhasil!.',
+        ]);
+    }
+
+
 }

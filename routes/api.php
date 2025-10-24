@@ -52,6 +52,8 @@ use App\Http\Controllers\Api\LayananApiController;
    // pegawai
    Route::post('/register', [PegawaiApiController::class, 'register']);
    Route::post('/login', [PegawaiApiController::class, 'login']);
+   Route::get('/pegawai', [PegawaiApiController::class, 'index']);
+   Route::middleware('auth:pegawai')->post('/logout', [PegawaiApiController::class, 'logout']);
 
    // berkas
    Route::get('/berkas',[BerkasApiController::class,'index']);
