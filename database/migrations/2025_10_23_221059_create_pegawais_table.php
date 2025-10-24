@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('password');
+            $table->foreignId('notifikasis_id')->nullable()->constrained('notifikasis')->nullOnDelete();
             $table->timestamps();
         });
     }

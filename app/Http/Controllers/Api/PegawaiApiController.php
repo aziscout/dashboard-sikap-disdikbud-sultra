@@ -15,6 +15,7 @@ class PegawaiApiController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|unique:pegawais,email',
             'password' => 'required|string|min:8|confirmed',
+            'notifikasis_id' => 'nullable|integer',
         ]);
 
         $pegawai = Pegawai::create($validated);

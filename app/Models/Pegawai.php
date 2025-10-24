@@ -15,6 +15,7 @@ class Pegawai extends Authenticatable
         'nama',
         'email',
         'password',
+        'notifikasis_id',
     ];
 
     protected static function booted()
@@ -29,5 +30,10 @@ class Pegawai extends Authenticatable
     public function berkas()
     {
         return $this->hasMany(Berkas::class, "berkas_id");
+    }
+
+    public function notifikasis()
+    {
+        return $this->belongsTo(Notifikasi::class,"notifikasis_id");
     }
 }
