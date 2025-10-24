@@ -4,9 +4,11 @@ use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\AllGaleriApiController;
 use App\Http\Controllers\Api\BeritaApiController;
+use App\Http\Controllers\Api\BidangApiController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\InovasiApiController;
 use App\Http\Controllers\Api\LaporanApiController;
+use App\Http\Controllers\Api\PegawaiApiController;
 use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
 use Illuminate\Support\Facades\Route;
@@ -41,3 +43,10 @@ use App\Http\Controllers\Api\LayananApiController;
    
    // admin pangkat
    Route::get('/admin', [AdminApiController::class, 'index']);
+   // bidang
+   Route::get('/bidang', [BidangApiController::class, 'index']);
+   Route::post('/bidang/login', [BidangApiController::class, 'login']);
+
+   // pegawai
+   Route::post('/pegawai/register', [PegawaiApiController::class, 'register']);
+   Route::post('/pegawai/login', [PegawaiApiController::class, 'login']);
