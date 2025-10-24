@@ -20,6 +20,7 @@ class Pegawai extends Authenticatable
         'jenis_kelamin',
         'nomor',
         'alamat',
+        'tanggal_lahir',
         'tempat_lahir',
         'notifikasis_id',
     ];
@@ -35,7 +36,7 @@ class Pegawai extends Authenticatable
 
     public function berkas()
     {
-        return $this->hasMany(Berkas::class, "berkas_id");
+        return $this->hasMany(Berkas::class, "pegawais_id");
     }
 
     public function notifikasis()

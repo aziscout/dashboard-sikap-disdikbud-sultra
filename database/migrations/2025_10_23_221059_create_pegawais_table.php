@@ -9,19 +9,19 @@ return new class extends Migration {
     {
         Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
-            $table->string('nip');
             $table->string('nama');
             $table->string('email');
             $table->string('password');
-            $table->string('agama')->nullable();
-            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable();
-            $table->string('nomor');
-            $table->string('alamat')->nullable();
-            $table->date('tempat_lahir')->nullable();
-            $table->unsignedBigInteger('notifikasis_id')->nullable();
+            $table->char('nip', 18)->unique();
+            $table->enum('agama',['islam','kristen protestan','katolik','buddha', 'hindu', 'konghucu']);
+            $table->enum('jenis_kelamin',['laki-laki','perempuan']);
+            $table->char('nomor')->unique();
+            $table->string('alamat');
+            $table->date('tanggal_lahir');
+            $table->string('tempat_lahir');
+            $table->foreignId('notifikasis_id')->nullable()->constrained('notifikasis')->nullOnDelete();
             $table->timestamps();
 
-            $table->foreign('notifikasis_id')->references('id')->on('notifikasis')->onDelete('set null');
         });
     }
 

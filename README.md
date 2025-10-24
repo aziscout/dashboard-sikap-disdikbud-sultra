@@ -133,19 +133,45 @@ Dashboard ini adalah sistem manajemen data pegawai untuk Dinas Pendidikan dan Ke
 
 ## Penjelasan Controller API
 
-### 1. PegawaiApiController
+### 1. AdminApiController
+Controller ini menangani autentikasi admin dalam sistem.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan daftar semua admin
+- **login**: Otentikasi admin dan menghasilkan token Sanctum untuk akses API
+
+**Fitur keamanan:**
+- Password di-hash menggunakan bcrypt
+- Token personal access menggunakan Laravel Sanctum
+- Role-based authentication (hanya user dengan role 'admin')
+
+### 2. BidangApiController
+Controller ini menangani autentikasi bidang dalam sistem.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan daftar semua bidang
+- **login**: Otentikasi bidang dan menghasilkan token Sanctum untuk akses API
+
+**Fitur keamanan:**
+- Password di-hash menggunakan bcrypt
+- Token personal access menggunakan Laravel Sanctum
+- Role-based authentication (hanya user dengan role 'bidang')
+
+### 3. PegawaiApiController
 Controller ini menangani autentikasi pegawai (karyawan) dalam sistem.
 
 **Fungsi yang tersedia:**
-- **Register**: Mendaftarkan pegawai baru dengan validasi email unik dan password confirmation
-- **Login**: Otentikasi pegawai dan menghasilkan token Sanctum untuk akses API
+- **index**: Menampilkan daftar semua pegawai
+- **register**: Mendaftarkan pegawai baru dengan validasi email unik dan password confirmation
+- **login**: Otentikasi pegawai dan menghasilkan token Sanctum untuk akses API
+- **logout**: Logout pegawai dan menghapus token
 
 **Fitur keamanan:**
 - Password di-hash menggunakan bcrypt
 - Token personal access menggunakan Laravel Sanctum
 - Validasi input yang ketat
 
-### 2. DataDiriApiController
+### 4. DataDiriApiController
 Controller ini mengelola data pribadi pegawai dengan kontrol akses ketat.
 
 **Fungsi yang tersedia:**
@@ -161,7 +187,7 @@ Controller ini mengelola data pribadi pegawai dengan kontrol akses ketat.
 - **User isolation**: Pegawai hanya bisa akses data dirinya sendiri
 - **Automatic pegawais_id**: ID pegawai diambil dari token autentikasi
 
-### 3. BerkasApiController
+### 5. BerkasApiController
 Controller ini menangani upload dan manajemen berkas/dokumen pegawai.
 
 **Fungsi yang tersedia:**
@@ -180,6 +206,74 @@ Controller ini menangani upload dan manajemen berkas/dokumen pegawai.
 - **Pegawai**: CRUD berkas milik sendiri
 - **Admin**: Lihat semua berkas, update status, hapus berkas
 
+### 6. DashboardApiController
+Controller ini menangani data dashboard untuk tampilan publik.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan logo dan hero images untuk dashboard
+
+**Fitur:**
+- Mengambil data media dengan type 'logo' dan 'hero'
+- Menyediakan URL lengkap untuk file media
+
+### 7. AgendaApiController
+Controller ini mengelola data agenda kegiatan.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan semua agenda dengan media terkait
+- **show**: Menampilkan detail agenda berdasarkan ID
+
+### 8. BeritaApiController
+Controller ini mengelola data berita.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan semua berita dengan media terkait
+- **show**: Menampilkan detail berita berdasarkan ID
+
+### 9. InovasiApiController
+Controller ini mengelola data inovasi.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan semua inovasi dengan media terkait
+- **show**: Menampilkan detail inovasi berdasarkan ID
+
+### 10. PengumumanApiController
+Controller ini mengelola data pengumuman.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan semua pengumuman dengan media terkait
+
+### 11. ProdukHukumApiController
+Controller ini mengelola data produk hukum.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan semua produk hukum dengan dokumen terkait
+
+### 12. LaporanApiController
+Controller ini mengelola data laporan kegiatan.
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan semua laporan dengan dokumen terkait
+
+### 13. LayananApiController
+Controller ini menangani pengajuan layanan/laporan dari masyarakat.
+
+**Fungsi yang tersedia:**
+- **store**: Membuat pengajuan layanan baru dengan upload file
+- **status**: Mengecek status layanan berdasarkan kode tracking
+
+**Fitur:**
+- Auto-generate kode tracking unik
+- Upload multiple file (foto/video dan dokumen)
+- Email notification otomatis
+- Mapping bidang ke singkatan untuk kode tracking
+
+### 14. AllGaleriApiController
+Controller ini menggabungkan semua data galeri (berita, inovasi, agenda, pengumuman).
+
+**Fungsi yang tersedia:**
+- **index**: Menampilkan semua data galeri terintegrasi
+
 ## API Testing Guide
 
 ### Prerequisites
@@ -196,16 +290,18 @@ Controller ini menangani upload dan manajemen berkas/dokumen pegawai.
 **Request Body:**
 ```json
 {
-    "nip": "123456789",
     "nama": "John Doe",
     "email": "john.doe@example.com",
     "password": "password123",
     "password_confirmation": "password123",
-    "agama": "islam",
-    "jenis_kelamin": "Laki-laki",
+    "nip": "123456789012345678",
     "nomor": "08123456789",
+    "agama": "islam",
+    "jenis_kelamin": "laki-laki",
     "alamat": "Jl. Sudirman No. 1",
-    "tempat_lahir": "1990-01-01"
+    "tempat_lahir": "Makassar",
+    "tanggal_lahir": "1990-01-01",
+    
 }
 ```
 
@@ -218,11 +314,18 @@ curl -X POST http://localhost:8000/api/register \
     "email": "john.doe@example.com",
     "password": "password123",
     "password_confirmation": "password123",
+    "nip": "123456789012345678",
+    "nomor": "08123456789",
+    "agama": "islam",
+    "jenis_kelamin": "laki-laki",
+    "alamat": "Jl. Sudirman No. 1",
+    "tempat_lahir": "Makassar",
+    "tanggal_lahir": "1990-01-01",
     "notifikasis_id": 1
   }'
 ```
 
-**Expected Response:**
+**Expected Response (Status Code: 200):**
 ```json
 {
     "status": "success",
@@ -230,7 +333,13 @@ curl -X POST http://localhost:8000/api/register \
     "data": {
         "nama": "John Doe",
         "email": "john.doe@example.com",
-        "notifikasis_id": 1,
+        "nip": "123456789012345678",
+        "nomor": "08123456789",
+        "agama": "islam",
+        "jenis_kelamin": "laki-laki",
+        "alamat": "Jl. Sudirman No. 1",
+        "tempat_lahir": "Makassar",
+        "tanggal_lahir": "1990-01-01",
         "updated_at": "2025-01-01T00:00:00.000000Z",
         "created_at": "2025-01-01T00:00:00.000000Z",
         "id": 1
@@ -279,14 +388,322 @@ curl -X POST http://localhost:8000/api/login \
 }
 ```
 
-### 4. Berkas APIs
+### 6. Admin APIs
+
+#### 6.1 Get All Admins
+
+**Endpoint:** `GET /api/admin`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/admin
+```
+
+#### 6.2 Admin Login
+
+**Endpoint:** `POST /api/admin/login`
+
+**Request Body:**
+```json
+{
+    "email": "admin@example.com",
+    "password": "password123"
+}
+```
+
+**Curl Example:**
+```bash
+curl -X POST http://localhost:8000/api/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "password": "password123"
+  }'
+```
+
+**Expected Response:**
+```json
+{
+    "message": "Login berhasil",
+    "admin": {
+        "id": 1,
+        "name": "Admin User",
+        "email": "admin@example.com",
+        "role": "admin"
+    },
+    "token": "1|abc123..."
+}
+```
+
+### 7. Bidang APIs
+
+#### 7.1 Get All Bidang
+
+**Endpoint:** `GET /api/bidang`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/bidang
+```
+
+#### 7.2 Bidang Login
+
+**Endpoint:** `POST /api/bidang/login`
+
+**Request Body:**
+```json
+{
+    "email": "bidang@example.com",
+    "password": "password123"
+}
+```
+
+**Curl Example:**
+```bash
+curl -X POST http://localhost:8000/api/bidang/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "bidang@example.com",
+    "password": "password123"
+  }'
+```
+
+**Expected Response:**
+```json
+{
+    "message": "Login berhasil",
+    "bidang": {
+        "id": 1,
+        "name": "Bidang User",
+        "email": "bidang@example.com",
+        "role": "bidang"
+    },
+    "token": "1|def456..."
+}
+```
+
+### 8. Dashboard APIs
+
+#### 8.1 Get Dashboard Data
+
+**Endpoint:** `GET /api/dashboard`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/dashboard
+```
+
+**Expected Response:**
+```json
+{
+    "logo": {
+        "id": 1,
+        "file": "media/logo.png",
+        "type": "logo",
+        "url": "http://localhost:8000/storage/media/logo.png"
+    },
+    "heroes": [
+        {
+            "id": 2,
+            "file": "media/hero1.jpg",
+            "type": "hero",
+            "url": "http://localhost:8000/storage/media/hero1.jpg"
+        }
+    ]
+}
+```
+
+### 9. Agenda APIs
+
+#### 9.1 Get All Agenda
+
+**Endpoint:** `GET /api/agenda`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/agenda
+```
+
+#### 9.2 Get Agenda by ID
+
+**Endpoint:** `GET /api/agenda/{id}`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/agenda/1
+```
+
+### 10. Berita APIs
+
+#### 10.1 Get All Berita
+
+**Endpoint:** `GET /api/berita`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/berita
+```
+
+#### 10.2 Get Berita by ID
+
+**Endpoint:** `GET /api/berita/{id}`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/berita/1
+```
+
+### 11. Inovasi APIs
+
+#### 11.1 Get All Inovasi
+
+**Endpoint:** `GET /api/inovasi`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/inovasi
+```
+
+#### 11.2 Get Inovasi by ID
+
+**Endpoint:** `GET /api/inovasi/{id}`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/inovasi/1
+```
+
+### 12. Pengumuman APIs
+
+#### 12.1 Get All Pengumuman
+
+**Endpoint:** `GET /api/pengumuman`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/pengumuman
+```
+
+### 13. Produk Hukum APIs
+
+#### 13.1 Get All Produk Hukum
+
+**Endpoint:** `GET /api/produk-hukum`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/produk-hukum
+```
+
+### 14. Laporan APIs
+
+#### 14.1 Get All Laporan
+
+**Endpoint:** `GET /api/laporan`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/laporan
+```
+
+### 15. Layanan APIs
+
+#### 15.1 Submit Layanan
+
+**Endpoint:** `POST /api/layanan`
+
+**Content-Type:** `multipart/form-data`
+
+**Form Data:**
+- `judul`: String (required)
+- `deskripsi`: String (required)
+- `bidang`: String (required) - bidang_sma, bidang_smk, bidang_pklk, bidang_gtk, bidang_perencanaan, bidang_kebudayaan
+- `nama_pengirim`: String (required)
+- `email_pengirim`: Email (required)
+- `files.*`: File images/videos (optional, max 50KB each)
+- `dokumen`: File PDF (optional, max 30MB)
+
+**Curl Example:**
+```bash
+curl -X POST http://localhost:8000/api/layanan \
+  -F "judul=Pengaduan Fasilitas" \
+  -F "deskripsi=Deskripsi pengaduan..." \
+  -F "bidang=bidang_sma" \
+  -F "nama_pengirim=John Doe" \
+  -F "email_pengirim=john@example.com" \
+  -F "files[]=@photo1.jpg" \
+  -F "dokumen=@document.pdf"
+```
+
+**Expected Response:**
+```json
+{
+    "message": "Laporan berhasil dikirim",
+    "kode_tracking": "SMA20250115ABC123",
+    "data": {
+        "judul": "Pengaduan Fasilitas",
+        "deskripsi": "Deskripsi pengaduan...",
+        "bidang": "bidang_sma",
+        "nama_pengirim": "John Doe",
+        "email_pengirim": "john@example.com",
+        "kode_tracking": "SMA20250115ABC123",
+        "status": "Diterima"
+    }
+}
+```
+
+#### 15.2 Check Layanan Status
+
+**Endpoint:** `GET /api/layanan/status/{kode_tracking}`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/layanan/status/SMA20250115ABC123
+```
+
+**Expected Response:**
+```json
+{
+    "kode_tracking": "SMA20250115ABC123",
+    "status": "Diterima",
+    "judul": "Pengaduan Fasilitas",
+    "bidang": "bidang_sma",
+    "tanggal": "15-01-2025 10:30"
+}
+```
+
+### 16. Galeri APIs
+
+#### 16.1 Get All Galeri
+
+**Endpoint:** `GET /api/galeri`
+
+**Curl Example:**
+```bash
+curl -X GET http://localhost:8000/api/galeri
+```
+
+**Expected Response:**
+```json
+{
+    "berita": [...],
+    "inovasi": [...],
+    "agenda": [...],
+    "pengumuman": [...]
+}
+```
+
+### 17. Berkas APIs
 
 **Note:** Berkas endpoints menggunakan role-based access control. Pegawai dapat mengelola berkasnya sendiri, admin dapat melihat semua berkas.
 
 **Authentication:**
 - **Pegawai**: Gunakan Bearer token dari login pegawai
 - **Admin**: Gunakan Bearer token dari login admin
-buatkan ``
+
+#### 17.1 Get Berkas
+
+**Endpoint:** `GET /api/berkas`
 
 **Expected Response (Pegawai):**
 ```json
@@ -317,7 +734,7 @@ buatkan ``
 }
 ```
 
-#### 4.2 Upload Berkas Baru
+#### 17.2 Upload Berkas Baru
 
 **Endpoint:** `POST /api/berkas`
 
@@ -365,7 +782,7 @@ curl -X POST http://localhost:8000/api/berkas \
 }
 ```
 
-#### 4.3 Update Berkas
+#### 17.3 Update Berkas
 
 **Endpoint:** `PUT /api/berkas/{id}`
 
@@ -397,7 +814,7 @@ curl -X PUT http://localhost:8000/api/berkas/1 \
   -F "status=Telah dikirim ke BKN"
 ```
 
-#### 4.4 Delete Berkas
+#### 17.4 Delete Berkas
 
 **Endpoint:** `DELETE /api/berkas/{id}`
 
@@ -407,7 +824,7 @@ curl -X DELETE http://localhost:8000/api/berkas/1 \
   -H "Authorization: Bearer TOKEN_HERE"
 ```
 
-### 5. Data Diri APIs
+### 18. Data Diri APIs
 
 **Note:** All Data Diri endpoints require authentication. Include the Bearer token in the Authorization header.
 
@@ -416,7 +833,7 @@ curl -X DELETE http://localhost:8000/api/berkas/1 \
 Authorization: Bearer YOUR_TOKEN_HERE
 ```
 
-#### 5.1 Get All Data Diri
+#### 18.1 Get All Data Diri
 
 **Endpoint:** `GET /api/data-diri`
 
@@ -463,7 +880,7 @@ curl -X GET http://localhost:8000/api/data-diri \
 }
 ```
 
-#### 5.2 Create Data Diri
+#### 18.2 Create Data Diri
 
 **Endpoint:** `POST /api/data-diri`
 
@@ -533,7 +950,7 @@ curl -X POST http://localhost:8000/api/data-diri \
 }
 ```
 
-#### 5.3 Get Data Diri by ID
+#### 18.3 Get Data Diri by ID
 
 **Endpoint:** `GET /api/data-diri/{id}`
 
@@ -543,7 +960,7 @@ curl -X GET http://localhost:8000/api/data-diri/1 \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
-#### 5.4 Update Data Diri
+#### 18.4 Update Data Diri
 
 **Endpoint:** `PUT /api/data-diri/{id}`
 
@@ -567,7 +984,7 @@ curl -X PUT http://localhost:8000/api/data-diri/1 \
   }'
 ```
 
-#### 5.5 Delete Data Diri
+#### 18.5 Delete Data Diri
 
 **Endpoint:** `DELETE /api/data-diri/{id}`
 
@@ -647,7 +1064,12 @@ php artisan db:seed           # Jalankan database seeders
    - Use the login endpoint with the registered credentials
    - Verify the token is returned
 
-5. **Test Data Diri CRUD:**
+5. **Test Get Pegawai Profile:**
+   - Use the token from login for authorization
+   - Call GET /api/pegawai to get authenticated user's profile
+   - Verify only the authenticated user's data is returned
+
+6. **Test Data Diri CRUD:**
    - Use the token from login/register for authorization
    - Create data diri
    - Read all data diri

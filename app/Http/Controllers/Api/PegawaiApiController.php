@@ -9,18 +9,25 @@ use Illuminate\Support\Facades\Hash;
 
 class PegawaiApiController extends Controller
 {
+    public function index()
+    {
+        $pegawai = auth('pegawai')->user();
+        return response()->json($pegawai);
+    }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'nip' => 'required|string|max:255',
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|unique:pegawais,email',
             'password' => 'required|string|min:8|confirmed',
-            'agama' => 'required|in:islam,kristen,katolik,hindu,budha,konghucu',
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'nomor' => 'required|string|max:20',
+            'nip' => 'required|string|size:18|unique:pegawais,nip',
+            'nomor' => 'required|string|unique:pegawais,nomor',
+            'agama' => 'required|in:islam,kristen protestan,katolik,buddha,hindu,konghucu',
+            'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'alamat' => 'required|string|max:255',
-            'tempat_lahir' => 'required|date',
+            'tanggal_lahir' => 'required|date',
+            'tempat_lahir' => 'required|string|max:255',
             'notifikasis_id' => 'nullable|integer',
         ]);
 
@@ -59,4 +66,16 @@ class PegawaiApiController extends Controller
             'token' => $token,
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logout berhasil!.',
+        ]);
+    }
+
+
 }

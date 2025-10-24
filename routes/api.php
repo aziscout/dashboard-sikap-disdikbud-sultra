@@ -45,9 +45,10 @@ use App\Http\Controllers\Api\DataDiriApiController;
    
    // admin pangkat
    Route::get('/admin', [AdminApiController::class, 'index']);
-   Route::get('/datadiri', [AdminApiController::class, 'index']);
+   // Route::get('/datadiri', [AdminApiController::class, 'index']);
 
    //datadiri
+   Route::post('/admin/login', [AdminApiController::class, 'login']);
    // bidang
    Route::get('/bidang', [BidangApiController::class, 'index']);
    Route::post('/bidang/login', [BidangApiController::class, 'login']);
@@ -55,9 +56,11 @@ use App\Http\Controllers\Api\DataDiriApiController;
    // pegawai
    Route::post('/register', [PegawaiApiController::class, 'register']);
    Route::post('/login', [PegawaiApiController::class, 'login']);
+   Route::middleware('auth:pegawai')->get('/pegawai', [PegawaiApiController::class, 'index']);
+   Route::middleware('auth:pegawai')->post('/logout', [PegawaiApiController::class, 'logout']);
 
    // berkas
-      Route::middleware('auth:sanctum')->group(function () {
+   Route::middleware('auth:sanctum')->group(function () {
       Route::get('/data-diri', [DataDiriApiController::class, 'index']);
       Route::get('/data-diri/{id}', [DataDiriApiController::class, 'show']);
       Route::post('/data-diri', [DataDiriApiController::class, 'store']);
@@ -70,3 +73,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
    });
    
+   // Route::get('/berkas',[BerkasApiController::class,'index']);
+   // Route::post('/berkas',[BerkasApiController::class,'store']);
+   // Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
+   // Route::post('/berkas/{id}',[BerkasApiController::class,'update']);

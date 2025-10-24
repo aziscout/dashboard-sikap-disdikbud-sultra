@@ -14,7 +14,7 @@ class DataDiriApiController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user(); // Get authenticated user
+        $user = $request->user(); 
 
         $data = DataDiri::with('pegawai')->where('pegawais_id', $user->id)->get();
         return response()->json([
@@ -29,7 +29,7 @@ class DataDiriApiController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $request->user(); // Get authenticated user
+        $user = $request->user(); 
 
         // Check if user already has data diri
         $existing = DataDiri::where('pegawais_id', $user->id)->first();
