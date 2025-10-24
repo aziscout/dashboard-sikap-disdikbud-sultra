@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\LayananReceived;
+use App\Models\Dokumen;
 use App\Models\Layanan;
 use App\Models\Media;
 use App\Models\Document;
@@ -79,7 +80,7 @@ class LayananApiController extends Controller
                 $docFile = $request->file('dokumen');
                 if ($docFile->getSize() <= 30000 * 1024) {
                     $docPath = $docFile->store('layanan/documents', 'public');
-                    $documents = Document::create(['dokumen' => $docPath]);
+                    $documents = Dokumen::create(['dokumen' => $docPath]);
                     $validated['dokumens_id'] = $documents->id;
                 } else {
                     Log::warning('Dokumen file terlalu besar untuk layanan submission.');

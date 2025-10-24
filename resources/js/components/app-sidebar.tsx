@@ -3,49 +3,40 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen,Brain,CalendarDays,FileText, LayoutGrid, Megaphone, MessagesSquare, Newspaper, Scale } from 'lucide-react';
+import { BookOpen,Brain,CalendarDays,FileText, LayoutGrid, Megaphone, MessagesSquare, Newspaper, Scale, Users } from 'lucide-react';
 import AppLogo from './app-logo';
+import { NavPangkat } from './nav-pangkat';
 
-// const mainNavItems: NavItem[] = [
-//     {
-//         title: 'Dashboard',
-//         href: '/dashboard',
-//         icon: LayoutGrid,
-//     },
-//     {
-//         title: 'Berita',
-//         href: '/berita',
-//         icon: Newspaper,
-//     },
-//     {
-//         title: 'Laporan Kegiatan',
-//         href: '/laporan',
-//         icon: BookOpen ,
-//     },
-//     {
-//         title: 'PPID',
-//         href: '/ppid',
-//         icon: FileText ,
-//     },
-//     {
-//         title: 'Inovasi',
-//         href: '/inovasi',
-//         icon: Brain ,
-//     },
-//     {
-//         title: 'Produk Hukum',
-//         href: '/produk-hukum',
-//         icon: Scale,
-//     },
-// ];
+const mainNavPangkat: NavItem[] = [
+    {
+        title: 'Dashboard',
+        href: '/admin/dashboardPangkat',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Usulan Pangkat',
+        href: '/berita',
+        icon: Newspaper,
+    },
+    {
+        title: 'Pegawai',
+        href: '/laporan',
+        icon: BookOpen ,
+    },
+    {
+        title: 'Riwayat',
+        href: '/ppid',
+        icon: FileText ,
+    },
+];
 
 
 export function AppSidebar() {
-      type AuthUser = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
+    type AuthUser = {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
   // add other user fields if needed
 };
 
@@ -83,6 +74,14 @@ const { auth } = usePage<PageProps>().props;
         });
     }
 
+    if (userPermissions.includes('Bidang')) {
+        mainNavItems.push({
+            title: 'Bidang',
+            href: '/bidang/user',
+            icon: Users,
+        });
+    }
+
     if (userPermissions.includes('Layanan')) {
         mainNavItems.push({
             title: 'Layanan',
@@ -90,6 +89,7 @@ const { auth } = usePage<PageProps>().props;
             icon: MessagesSquare,
         });
     }
+
     if (userPermissions.includes('Agenda')) {
         mainNavItems.push({
             title: 'Agenda',
@@ -168,6 +168,7 @@ const { auth } = usePage<PageProps>().props;
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
+                <NavPangkat items={mainNavPangkat} />
             </SidebarContent>
 
             <SidebarFooter>

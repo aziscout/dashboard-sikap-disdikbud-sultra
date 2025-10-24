@@ -7,7 +7,7 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AuthLayout from '@/layouts/auth-layout';
 
 type RegisterForm = {
@@ -23,7 +23,7 @@ export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
         name: '',
         // bidang: '',
-        role : 'bidang',
+        role : 'admin',
         email: '',
         password: '',
         password_confirmation: '',
@@ -44,7 +44,7 @@ export default function Register() {
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
                     {/* name */}
-                    <div className="grid gap-2">
+                    {/* <div className="grid gap-2">
                         <Label htmlFor="name">Bidang</Label>
                         <Select value={data.name} onValueChange={(val) => setData('name', val)}>
                             <SelectTrigger>
@@ -60,10 +60,10 @@ export default function Register() {
                             </SelectContent>
                         </Select>
                         <InputError message={errors.name} />
-                    </div>
+                    </div> */}
 
                     {/* Nama */}
-                    {/* <div className="grid gap-2">
+                    <div className="grid gap-2">
                         <Label htmlFor="name">Nama</Label>
                         <Input
                             id="name"
@@ -78,7 +78,7 @@ export default function Register() {
                             placeholder="Nama Lengkap"
                         />
                         <InputError message={errors.name} className="mt-2" />
-                    </div> */}
+                    </div>
 
                     {/* Email */}
                     <div className="grid gap-2">

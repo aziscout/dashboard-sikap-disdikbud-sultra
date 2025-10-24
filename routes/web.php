@@ -3,6 +3,7 @@
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Bidang\DashboardController as BidangDashboardController;
+use App\Http\Controllers\BidangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProdukHukumController;
 use App\Http\Controllers\AgendaController;
@@ -116,7 +117,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/layanan/{layanan}', [LayananController::class, 'update'])->name('layanan.update'); // update status
         Route::delete('/layanan/{layanan}', [LayananController::class, 'destroy'])->name('layanan.destroy'); // hapus
     });
+
+    Route::middleware(['auth', 'verified'])->group(function() {
+        Route::resource('/bidang/user', BidangController::class);
+    });
+
 });
+
+
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
