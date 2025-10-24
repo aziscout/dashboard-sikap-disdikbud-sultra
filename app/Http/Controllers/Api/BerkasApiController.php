@@ -55,8 +55,9 @@ class BerkasApiController extends Controller
         }
 
         $pegawai = auth('pegawai')->user();
-        $admin = auth('sanctum')->user();
+        $admin   = auth('sanctum')->user();
 
+        // Validasi input
         $validated = $request->validate([
             'sk_cpns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_pns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
@@ -67,6 +68,7 @@ class BerkasApiController extends Controller
             'status' => 'nullable|in:Telah dikirim ke BKD,Telah dikirim ke BKN,SK telah terbit',
         ]);
 
+        // Cek hak akses
         if ($pegawai && $berkas->pegawais_id !== $pegawai->id) {
             return response()->json([
                 'status' => 'error',
@@ -81,29 +83,42 @@ class BerkasApiController extends Controller
             ], 403);
         }
 
+        // Update file jika dikirim
         foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan', 'file_sk'] as $field) {
             if ($request->hasFile($field)) {
-                
+
+                // hapus file lama
                 if ($berkas->$field && Storage::disk('public')->exists($berkas->$field)) {
                     Storage::disk('public')->delete($berkas->$field);
                 }
 
-                $berkas->$field = $request->file($field)->store('berkas', 'public');
+                // simpan file baru
+                $path = $request->file($field)->store('berkas', 'public');
+                $berkas->$field = $path;
             }
         }
 
+        // Admin boleh ubah status
         if ($admin && $admin->role === 'admin' && $request->filled('status')) {
-            $berkas->status = $validated['status'];
+            $berkas->status = $request->status;
         }
 
+        // Pegawai juga bisa ubah status ke "Telah dikirim ke BKD" (jika kamu izinkan)
+        if ($pegawai && $request->filled('status') && $request->status === 'Telah dikirim ke BKD') {
+            $berkas->status = $request->status;
+        }
+
+        // Simpan perubahan
         $berkas->save();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Berkas berhasil diperbarui',
-            'data' => $berkas,
+            'data' => $berkas->fresh(),
         ], 200);
     }
+
+
 
     public function store(Request $request)
     {

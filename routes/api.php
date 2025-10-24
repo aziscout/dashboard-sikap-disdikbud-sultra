@@ -44,6 +44,7 @@ use App\Http\Controllers\Api\LayananApiController;
    
    // admin pangkat
    Route::get('/admin', [AdminApiController::class, 'index']);
+   Route::post('/admin/login', [AdminApiController::class, 'login']);
    // bidang
    Route::get('/bidang', [BidangApiController::class, 'index']);
    Route::post('/bidang/login', [BidangApiController::class, 'login']);
@@ -56,4 +57,4 @@ use App\Http\Controllers\Api\LayananApiController;
    Route::get('/berkas',[BerkasApiController::class,'index']);
    Route::post('/berkas',[BerkasApiController::class,'store']);
    Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
-   Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
+   Route::post('/berkas/{id}',[BerkasApiController::class,'update']);
