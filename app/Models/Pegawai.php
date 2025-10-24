@@ -15,6 +15,12 @@ class Pegawai extends Authenticatable
         'nama',
         'email',
         'password',
+        'nip',
+        'agama',
+        'jenis_kelamin',
+        'nomor',
+        'alamat',
+        'tempat_lahir',
         'notifikasis_id',
     ];
 

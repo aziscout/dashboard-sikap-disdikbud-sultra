@@ -16,6 +16,12 @@ return new class extends Migration
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('password');
+            $table->char('nip', 18)->unique();
+            $table->enum('agama',['islam','kristen protestan','katolik','buddha', 'hindu', 'konghucu']);
+            $table->enum('jenis_kelamin',['laki-laki','perempuan']);
+            $table->char('nomor')->unique();
+            $table->string('alamat');
+            $table->date('tempat_lahir');
             $table->foreignId('notifikasis_id')->nullable()->constrained('notifikasis')->nullOnDelete();
             $table->timestamps();
         });

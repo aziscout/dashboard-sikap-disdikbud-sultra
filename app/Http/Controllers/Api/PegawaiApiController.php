@@ -15,6 +15,12 @@ class PegawaiApiController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|unique:pegawais,email',
             'password' => 'required|string|min:8|confirmed',
+            'nip' => 'required|integer',
+            'nomor' => 'required|integer',
+            'agama' => 'required|in:islam,kristen protestan, katolik,buddha, hindu, konghucu',
+            'jenis_kelamin' => 'required|in:laki-laki,perempuan',
+            'alamat' => 'required|string|max:255',
+            'tempat_lahir' => 'required|date',
             'notifikasis_id' => 'nullable|integer',
         ]);
 
