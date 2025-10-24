@@ -1,5 +1,136 @@
 # Dashboard Dinas Pendidikan dan Kebudayaan Provinsi Sultra
 
+## Deskripsi Proyek
+
+Dashboard ini adalah sistem manajemen data pegawai untuk Dinas Pendidikan dan Kebudayaan Provinsi Sulawesi Tenggara (Sultra). Sistem ini dirancang untuk mengelola data pegawai, berkas administrasi, dan informasi kepegawaian secara terintegrasi.
+
+## Teknologi yang Digunakan
+
+### Backend
+- **Laravel 12** - Framework PHP modern untuk pengembangan aplikasi web
+- **PHP 8.2+** - Bahasa pemrograman utama
+- **Laravel Sanctum** - Sistem autentikasi API berbasis token
+- **MySQL** - Database utama untuk penyimpanan data
+- **Composer** - Dependency management untuk PHP
+
+### Frontend
+- **React 19** - Library JavaScript untuk UI modern
+- **TypeScript** - Superset JavaScript dengan type safety
+- **Inertia.js** - Framework untuk SPA dengan backend Laravel
+- **Tailwind CSS 4** - Framework CSS utility-first
+- **Vite** - Build tool modern dan cepat
+- **Radix UI** - Komponen UI primitif yang dapat diakses
+- **Lucide React** - Icon library modern
+
+### Development Tools
+- **ESLint** - Linting untuk JavaScript/TypeScript
+- **Prettier** - Code formatter
+- **Laravel Pail** - Command line interface
+- **PHPUnit** - Testing framework untuk PHP
+- **Composer Scripts** - Otomasi development workflow
+
+## Fitur Utama
+
+### 1. Manajemen Pegawai
+- Registrasi dan login pegawai
+- Manajemen data pribadi pegawai
+- Sistem autentikasi berbasis token
+
+### 2. Upload Berkas Administrasi
+- Upload berkas SK CPNS, SK PNS, SK Gaji Berkala
+- Upload SK Pangkat Terakhir, SK Jabatan
+- Validasi file dan manajemen storage
+
+### 3. Dashboard Admin
+- Monitoring data pegawai
+- Manajemen status berkas
+- Laporan dan statistik
+
+### 4. API RESTful
+- Endpoint untuk CRUD operations
+- Autentikasi dan autorisasi
+- Response format JSON standar
+
+## Arsitektur Sistem
+
+### Backend Architecture
+- **MVC Pattern** - Model-View-Controller untuk struktur kode
+- **Repository Pattern** - Abstraksi data layer
+- **Service Layer** - Business logic separation
+- **Middleware** - Request filtering dan authentication
+- **Eloquent ORM** - Database abstraction
+
+### Frontend Architecture
+- **Component-based** - Reusable UI components
+- **Hooks Pattern** - State management dengan React hooks
+- **TypeScript** - Type safety dan better DX
+- **Responsive Design** - Mobile-first approach
+
+## Keamanan
+
+- **Laravel Sanctum** untuk API authentication
+- **CSRF Protection** pada form requests
+- **Input Validation** pada semua endpoints
+- **Role-based Access Control** (RBAC)
+- **File Upload Security** dengan validasi tipe dan ukuran
+- **SQL Injection Prevention** melalui Eloquent ORM
+
+## Instalasi dan Setup
+
+### Persyaratan Sistem
+- PHP 8.2 atau lebih tinggi
+- Composer
+- Node.js 18+ dan npm
+- MySQL 8.0+
+- Git
+
+### Langkah Instalasi
+
+1. **Clone Repository**
+   ```bash
+   git clone <repository-url>
+   cd dashboard-dinas-pendidikan-dan-kebudayaan-provinsi-sultra
+   ```
+
+2. **Install PHP Dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install Node.js Dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Database Setup**
+   ```bash
+   # Konfigurasi database di .env file
+   # Jalankan migration
+   php artisan migrate
+   php artisan db:seed
+   ```
+
+6. **Build Assets**
+   ```bash
+   npm run build
+   ```
+
+7. **Jalankan Aplikasi**
+   ```bash
+   # Development mode dengan hot reload
+   composer run dev
+
+   # Atau jalankan secara terpisah
+   php artisan serve
+   npm run dev
+   ```
+
 ## Penjelasan Controller API
 
 ### 1. PegawaiApiController
@@ -446,7 +577,57 @@ curl -X DELETE http://localhost:8000/api/data-diri/1 \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
-### Testing Steps
+## Development Workflow
+
+### Available Scripts
+
+**Composer Scripts:**
+```bash
+composer run dev          # Jalankan server, queue, dan Vite secara bersamaan
+composer run dev:ssr      # Jalankan dengan SSR support
+composer run test         # Jalankan PHPUnit tests
+```
+
+**NPM Scripts:**
+```bash
+npm run dev              # Development server dengan hot reload
+npm run build            # Build untuk production
+npm run build:ssr        # Build dengan SSR support
+npm run lint             # ESLint checking dan fixing
+npm run format           # Prettier code formatting
+npm run types            # TypeScript type checking
+```
+
+### Code Quality
+
+**PHP:**
+- Menggunakan Laravel Pint untuk code formatting
+- PHPUnit untuk unit dan feature testing
+- PSR-12 coding standards
+
+**JavaScript/TypeScript:**
+- ESLint untuk linting
+- Prettier untuk code formatting
+- TypeScript untuk type safety
+
+### Database Management
+
+**Migration Commands:**
+```bash
+php artisan migrate           # Jalankan semua migration
+php artisan migrate:rollback  # Rollback migration terakhir
+php artisan migrate:fresh     # Drop semua tabel dan migrate ulang
+php artisan db:seed           # Jalankan database seeders
+```
+
+### Testing API
+
+#### Prerequisites
+- Laravel application running on `http://localhost:8000`
+- Database migrated and seeded
+- Postman atau curl untuk testing
+
+#### Testing Steps
 
 1. **Start the Laravel server:**
    ```bash
@@ -474,7 +655,7 @@ curl -X DELETE http://localhost:8000/api/data-diri/1 \
    - Update data diri
    - Delete data diri
 
-### Error Responses
+#### Error Responses
 
 **401 Unauthorized:**
 ```json
@@ -500,3 +681,15 @@ curl -X DELETE http://localhost:8000/api/data-diri/1 \
     }
 }
 ```
+
+## Kontribusi
+
+1. Fork repository
+2. Buat feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+## Lisensi
+
+Distributed under the MIT License. See `LICENSE` for more information.

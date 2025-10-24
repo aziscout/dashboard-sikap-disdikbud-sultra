@@ -57,16 +57,16 @@ use App\Http\Controllers\Api\DataDiriApiController;
    Route::post('/login', [PegawaiApiController::class, 'login']);
 
    // berkas
-   Route::get('/berkas',[BerkasApiController::class,'index']);
-   Route::post('/berkas',[BerkasApiController::class,'store']);
-   Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
-   Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
-   
-   Route::middleware('auth:sanctum')->group(function () {
-       Route::get('/data-diri', [DataDiriApiController::class, 'index']);
-       Route::get('/data-diri/{id}', [DataDiriApiController::class, 'show']);
-       Route::post('/data-diri', [DataDiriApiController::class, 'store']);
-       Route::put('/data-diri/{id}', [DataDiriApiController::class, 'update']);
-       Route::delete('/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
+      Route::middleware('auth:sanctum')->group(function () {
+      Route::get('/data-diri', [DataDiriApiController::class, 'index']);
+      Route::get('/data-diri/{id}', [DataDiriApiController::class, 'show']);
+      Route::post('/data-diri', [DataDiriApiController::class, 'store']);
+      Route::put('/data-diri/{id}', [DataDiriApiController::class, 'update']);
+      Route::delete('/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
+
+      Route::get('/berkas',[BerkasApiController::class,'index']);
+      Route::post('/berkas',[BerkasApiController::class,'store']);
+      Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
+      Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
    });
    
