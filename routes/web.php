@@ -12,6 +12,7 @@ use App\Http\Controllers\InovasiController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PengumumanController;
+use App\Models\Pegawai;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -129,7 +130,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['permission:Pegawai'])->group(function() {
-        Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
+        Route::resource('/pangkat/pegawai', PegawaiController::class);
     });
 
 });

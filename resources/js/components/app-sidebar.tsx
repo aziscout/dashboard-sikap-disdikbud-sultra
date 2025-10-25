@@ -160,8 +160,8 @@ const { auth } = usePage<PageProps>().props;
     if (userPermissions.includes('Pegawai')) {
         mainNavPangkat.push({
             title: 'Pegawai',
-            href: '/pegawai',
-            icon: Brain,
+            href: '/pangkat/pegawai',
+            icon: Users,
         });
     }
 
