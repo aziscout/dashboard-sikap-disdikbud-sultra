@@ -1,4 +1,4 @@
-<?php
+  <?php
 
 namespace App\Http\Controllers\Api;
 
@@ -51,12 +51,13 @@ class PegawaiApiController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|string|email|unique:pegawais,email',
             'password' => 'required|string|min:8|confirmed',
-            'nip' => 'required|integer',
-            'nomor' => 'required|integer',
-            'agama' => 'required|in:islam,kristen protestan, katolik,buddha, hindu, konghucu',
+            'nip' => 'required|integer|unique:pegawais,nip',
+            'nomor' => 'required|integer|unique:pegawais,nomor',
+            'agama' => 'required|in:islam,kristen protestan,katolik,buddha,hindu,konghucu',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'alamat' => 'required|string|max:255',
-            'tempat_lahir' => 'required|date',
+            'tanggal_lahir' => 'required|date',
+            'tempat_lahir' => 'required|string|max:255',
             'notifikasis_id' => 'nullable|integer',
         ]);
 

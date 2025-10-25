@@ -12,14 +12,15 @@ class Pegawai extends Authenticatable
 {
     use HasApiTokens, HasFactory;
     protected $fillable = [
+        'nip',
         'nama',
         'email',
         'password',
-        'nip',
         'agama',
         'jenis_kelamin',
         'nomor',
         'alamat',
+        'tanggal_lahir',
         'tempat_lahir',
         'notifikasis_id',
     ];
@@ -35,11 +36,16 @@ class Pegawai extends Authenticatable
 
     public function berkas()
     {
-        return $this->hasMany(Berkas::class, "berkas_id");
+        return $this->hasMany(Berkas::class, "pegawais_id");
     }
 
     public function notifikasis()
     {
         return $this->belongsTo(Notifikasi::class,"notifikasis_id");
+    }
+
+    public function dataDiri()
+    {
+        return $this->hasOne(DataDiri::class, 'pegawais_id');
     }
 }
