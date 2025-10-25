@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->string('tmt_golongan');
             $table->string('nomor_pertek_bkn');
             $table->string('tanggal_pertek_bkn');
-            $table->string('transpot_perbkn_bkn')->nullable();
             $table->string('masa_gk_bulanan');
             $table->string('masa_gk_tahunan');
             $table->string('golongan_ruang');
