@@ -142,18 +142,26 @@ const { auth } = usePage<PageProps>().props;
 
     const mainNavPangkat: NavItem[] = [];
 
-    if (userPermissions.includes('Dashboard')) {
+    if (userPermissions.includes('Dashboard Pangkat')) {
         const dashboardLink =
             auth.user?.role === 'admin'
-                ? '/admin/dashboard'
+                ? '/pangkat/dashboard'
                 : auth.user?.role === 'bidang'
                 ? '/bidang/dashboard'
                 : '/dashboard';
 
-        mainNavItems.push({
+        mainNavPangkat.push({
             title: 'Dashboard',
             href: dashboardLink,
             icon: LayoutGrid,
+        });
+    }
+
+    if (userPermissions.includes('Pegawai')) {
+        mainNavPangkat.push({
+            title: 'Pegawai',
+            href: '/pegawai',
+            icon: Brain,
         });
     }
 

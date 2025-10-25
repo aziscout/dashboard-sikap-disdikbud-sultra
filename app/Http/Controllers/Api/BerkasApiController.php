@@ -118,8 +118,6 @@ class BerkasApiController extends Controller
         ], 200);
     }
 
-
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -205,4 +203,57 @@ class BerkasApiController extends Controller
             'message' => 'Tidak diizinkan menghapus berkas.',
         ], 403);
     }
+
+    public function show($id)
+    {
+        $pegawai = auth('pegawai')->user();
+        $admin   = auth('sanctum')->user();
+
+        // Cari data berkas berdasarkan ID
+        $berkas = Berkas::with('pegawai')->find($id);
+
+        if (!$berkas) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data berkas tidak ditemukan.',
+            ], 404);
+        }
+
+        // Hanya admin atau pegawai pemilik berkas yang boleh melihat
+        if ($pegawai && $berkas->pegawais_id !== $pegawai->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda tidak diizinkan melihat berkas ini.',
+            ], 403);
+        }
+
+        if (!$pegawai && (!$admin || $admin->role !== 'admin')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Akses ditolak.',
+            ], 403);
+        }
+
+        // Buat URL publik untuk setiap file yang tersedia
+        $fields = ['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan', 'file_sk'];
+        $files = [];
+
+        foreach ($fields as $field) {
+            $files[$field] = $berkas->$field ? asset('storage/' . $berkas->$field) : null;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Detail berkas berhasil diambil.',
+            'data' => [
+                'id' => $berkas->id,
+                'pegawai' => $berkas->pegawai?->nama,
+                'status' => $berkas->status,
+                'created_at' => $berkas->created_at,
+                'updated_at' => $berkas->updated_at,
+                'files' => $files,
+            ],
+        ], 200);
+    }
+
 }
