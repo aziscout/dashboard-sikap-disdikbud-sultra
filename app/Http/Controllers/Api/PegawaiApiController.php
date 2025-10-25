@@ -9,11 +9,41 @@ use Illuminate\Support\Facades\Hash;
 
 class PegawaiApiController extends Controller
 {
-    public function index() 
+    public function index()
     {
-        $pegawai = Pegawai::get()->all();
-        return response()->json($pegawai);
+        $pegawaiAuth = auth('pegawai')->user() ?? auth('api')->user();
+
+        if (!$pegawaiAuth) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Token tidak valid atau belum login.',
+            ], 401);
+        }
+
+        if (isset($pegawaiAuth->role) && $pegawaiAuth->role === 'admin') {
+            $pegawais = Pegawai::all();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data seluruh pegawai berhasil diambil (oleh admin).',
+                'data' => $pegawais,
+            ], 200);
+        }
+
+        if ($pegawaiAuth instanceof Pegawai) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data pegawai berhasil diambil.',
+                'data' => $pegawaiAuth,
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Akses ditolak.',
+        ], 403);
     }
+
 
     public function register(Request $request)
     {
