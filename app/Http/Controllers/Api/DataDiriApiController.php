@@ -46,8 +46,8 @@ class DataDiriApiController extends Controller
             'tmt_golongan' => 'required|string|max:100',
             'nomor_pertek_bkn' => 'required|string|max:100',
             'tanggal_pertek_bkn' => 'required|string|max:100',
-            'masa_gk_bulanan' => 'required|string|max:50',
-            'masa_gk_tahunan' => 'required|string|max:50',
+            'masa_gk_bulanan' => 'required|integer|max:12',
+            'masa_gk_tahunan' => 'required|integer|max:12',
             'golongan_ruang' => 'required|string|max:50',
             'jenis_kp' => 'required|string|max:20'
         ]);
