@@ -17,6 +17,7 @@ class DataDiri extends Model
         'nomor_sk',
         'tmt_golongan',
         'nomor_pertek_bkn',
+        'tanggal_pertek_bkn',
         'transpot_perbkn_bkn',
         'masa_gk_bulanan',
         'masa_gk_tahunan',
