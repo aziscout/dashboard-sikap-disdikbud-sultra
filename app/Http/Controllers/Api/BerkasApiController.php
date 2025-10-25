@@ -42,6 +42,52 @@ class BerkasApiController extends Controller
             'message' => 'Tidak diizinkan mengakses data berkas.',
         ], 403);
     }
+    public function show($id)
+{
+    $pegawai = auth('pegawai')->user();
+    $admin   = auth('sanctum')->user();
+
+    $berkas = Berkas::with('pegawai')->find($id);
+
+    if (!$berkas) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Data berkas tidak ditemukan.',
+        ], 404);
+    }
+
+    // Pegawai hanya bisa lihat berkasnya sendiri
+    if ($pegawai && $berkas->pegawais_id !== $pegawai->id) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Anda tidak diizinkan melihat berkas ini.',
+        ], 403);
+    }
+
+    // Admin bisa lihat semua
+    if ($admin && $admin->role === 'admin') {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Detail berkas berhasil diambil (oleh admin).',
+            'data' => $berkas,
+        ], 200);
+    }
+
+    // Pegawai yang memiliki berkas
+    if ($pegawai && $berkas->pegawais_id === $pegawai->id) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Detail berkas berhasil diambil.',
+            'data' => $berkas,
+        ], 200);
+    }
+
+    return response()->json([
+        'status' => 'error',
+        'message' => 'Akses ditolak.',
+    ], 403);
+}
+
 
     public function update(Request $request, $id)
     {
@@ -205,4 +251,28 @@ class BerkasApiController extends Controller
             'message' => 'Tidak diizinkan menghapus berkas.',
         ], 403);
     }
+            public function showFile($filename)
+        {
+            $pegawai = auth('pegawai')->user();
+            $admin   = auth('sanctum')->user();
+
+            if (!$pegawai && (!$admin || $admin->role !== 'admin')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Akses ditolak. Harus login terlebih dahulu.',
+                ], 403);
+            }
+
+            $path = storage_path('app/public/berkas/' . $filename);
+
+            if (!file_exists($path)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'File tidak ditemukan.',
+                ], 404);
+            }
+
+            return response()->file($path);
+        }
+
 }

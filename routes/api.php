@@ -71,6 +71,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::post('/berkas',[BerkasApiController::class,'store']);
       Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
       Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
+      Route::get('/berkas/{id}', [BerkasApiController::class, 'show']);
    });
 
    // pegawai data diri and berkas
@@ -85,6 +86,8 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::post('/pegawai/berkas',[BerkasApiController::class,'store']);
       Route::delete('/pegawai/berkas/{id}',[BerkasApiController::class,'destroy']);
       Route::put('/pegawai/berkas/{id}',[BerkasApiController::class,'update']);
+
+      
    });
    
    // Route::get('/berkas',[BerkasApiController::class,'index']);

@@ -7,28 +7,28 @@ import { BookOpen,Brain,CalendarDays,FileText, LayoutGrid, Megaphone, MessagesSq
 import AppLogo from './app-logo';
 import { NavPangkat } from './nav-pangkat';
 
-const mainNavPangkat: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/admin/dashboardPangkat',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Usulan Pangkat',
-        href: '/berita',
-        icon: Newspaper,
-    },
-    {
-        title: 'Pegawai',
-        href: '/laporan',
-        icon: BookOpen ,
-    },
-    {
-        title: 'Riwayat',
-        href: '/ppid',
-        icon: FileText ,
-    },
-];
+// const mainNavPangkat: NavItem[] = [
+//     {
+//         title: 'Dashboard',
+//         href: '/admin/dashboardPangkat',
+//         icon: LayoutGrid,
+//     },
+//     {
+//         title: 'Usulan Pangkat',
+//         href: '/berita',
+//         icon: Newspaper,
+//     },
+//     {
+//         title: 'Pegawai',
+//         href: '/laporan',
+//         icon: BookOpen ,
+//     },
+//     {
+//         title: 'Riwayat',
+//         href: '/ppid',
+//         icon: FileText ,
+//     },
+// ];
 
 
 export function AppSidebar() {
@@ -139,6 +139,24 @@ const { auth } = usePage<PageProps>().props;
             icon: Scale,
         });
     }
+
+    const mainNavPangkat: NavItem[] = [];
+
+    if (userPermissions.includes('Dashboard')) {
+        const dashboardLink =
+            auth.user?.role === 'admin'
+                ? '/admin/dashboard'
+                : auth.user?.role === 'bidang'
+                ? '/bidang/dashboard'
+                : '/dashboard';
+
+        mainNavItems.push({
+            title: 'Dashboard',
+            href: dashboardLink,
+            icon: LayoutGrid,
+        });
+    }
+
 
     return (
         <Sidebar collapsible="icon" variant="inset">
