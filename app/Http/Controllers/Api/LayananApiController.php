@@ -7,7 +7,6 @@ use App\Mail\LayananReceived;
 use App\Models\Dokumen;
 use App\Models\Layanan;
 use App\Models\Media;
-use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -120,25 +119,43 @@ class LayananApiController extends Controller
     }
 
     /**
+     * List layanan untuk bidang yang sedang login.
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user || $user->role !== 'bidang') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $bidangFilter = 'bidang_' . ($user->name ?? explode('@', $user->email)[0]);
+
+        $layanans = Layanan::where('bidang', $bidangFilter)->with('media', 'dokumen')->latest()->get();
+
+        return response()->json($layanans);
+    }
+
+    /**
      * Cek status layanan berdasarkan kode tracking.
      */
     public function status($kode_tracking)
-{
-    $layanan = \App\Models\Layanan::where('kode_tracking', $kode_tracking)->first();
+    {
+        $layanan = \App\Models\Layanan::where('kode_tracking', $kode_tracking)->first();
 
-    if (!$layanan) {
+        if (!$layanan) {
+            return response()->json([
+                'message' => 'Laporan tidak ditemukan'
+            ], 404);
+        }
+
         return response()->json([
-            'message' => 'Laporan tidak ditemukan'
-        ], 404);
+            'kode_tracking' => $layanan->kode_tracking,
+            'status'        => $layanan->status,
+            'judul'         => $layanan->judul,
+            'bidang'        => $layanan->bidang,
+            'tanggal'       => $layanan->created_at->format('d-m-Y H:i'),
+        ]);
     }
-
-    return response()->json([
-        'kode_tracking' => $layanan->kode_tracking,
-        'status'        => $layanan->status,
-        'judul'         => $layanan->judul,
-        'bidang'        => $layanan->bidang,
-        'tanggal'       => $layanan->created_at->format('d-m-Y H:i'),
-    ]);
-}
 
 }

@@ -290,18 +290,17 @@ Controller ini menggabungkan semua data galeri (berita, inovasi, agenda, pengumu
 **Request Body:**
 ```json
 {
-    "nama": "John Doe",
-    "email": "john.doe@example.com",
-    "password": "password123",
-    "password_confirmation": "password123",
-    "nip": "123456789012345678",
-    "nomor": "08123456789",
-    "agama": "islam",
+    "nama": "Baba",
+    "email": "baba@gmail.com",
+    "password": "12345678",
+    "password_confirmation": "12345678",
+    "nip": 198912312022021008,
+    "nomor": 62812345638,
     "jenis_kelamin": "laki-laki",
-    "alamat": "Jl. Sudirman No. 1",
-    "tempat_lahir": "Makassar",
-    "tanggal_lahir": "1990-01-01",
-    
+    "agama": "islam",
+    "alamat": "kendari",
+    "tanggal_lahir": "2005-01-01",
+    "tempat_lahir": "Makassar"
 }
 ```
 

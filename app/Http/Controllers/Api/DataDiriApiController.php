@@ -46,8 +46,8 @@ class DataDiriApiController extends Controller
             'tmt_golongan' => 'required|string|max:100',
             'nomor_pertek_bkn' => 'required|string|max:100',
             'tanggal_pertek_bkn' => 'required|string|max:100',
-            'masa_gk_bulanan' => 'required|integer|max:12',
-            'masa_gk_tahunan' => 'required|integer|max:12',
+            'masa_gk_bulanan' => 'required|string|max:50',
+            'masa_gk_tahunan' => 'required|integer|max:50',
             'golongan_ruang' => 'required|string|max:50',
             'jenis_kp' => 'required|string|max:20'
         ]);
@@ -109,7 +109,7 @@ class DataDiriApiController extends Controller
             'nomor_pertek_bkn' => 'sometimes|string|max:100',
             'tanggal_pertek_bkn' => 'required|string|max:100',
             'masa_gk_bulanan' => 'sometimes|string|max:50',
-            'masa_gk_tahunan' => 'sometimes|string|max:50',
+            'masa_gk_tahunan' => 'sometimes|integer|max:50',
             'golongan_ruang' => 'sometimes|string|max:50',
             'jenis_kp' => 'sometimes|string|max:20'
         ]);

@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
    // layanan
    Route::post('/layanan', [LayananApiController::class, 'store']);
    Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);
+   Route::middleware('auth:sanctum')->get('/layanan', [LayananApiController::class, 'index']);
    
    // admin pangkat
    Route::get('/admin', [AdminApiController::class, 'index']);
@@ -68,6 +69,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::delete('/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
 
       Route::get('/berkas',[BerkasApiController::class,'index']);
+      Route::get('/berkas/{id}', [BerkasApiController::class, 'show']);
       Route::post('/berkas',[BerkasApiController::class,'store']);
       Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
       Route::put('/berkas/{id}',[BerkasApiController::class,'update']);

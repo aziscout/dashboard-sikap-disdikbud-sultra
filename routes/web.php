@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Pangkat\DashboardController as PangkatDashboardController;
 use App\Http\Controllers\Bidang\DashboardController as BidangDashboardController;
 use App\Http\Controllers\BidangController;
 use App\Http\Controllers\LaporanController;
@@ -9,7 +10,9 @@ use App\Http\Controllers\ProdukHukumController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\InovasiController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PengumumanController;
+use App\Models\Pegawai;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,11 +40,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::post('/dashboard/update', [DashboardController::class, 'update'])->name('dashboard.update');
 
     Route::middleware(['role:admin'])->group(function () {
+        // admin website
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/dashboard/create', [AdminDashboardController::class, 'create'])->name('admin.dashboard.create');
         Route::post('/admin/dashboard', [AdminDashboardController::class, 'store'])->name('admin.dashboard.store');
         Route::get('/admin/dashboard/edit', [AdminDashboardController::class, 'edit'])->name('admin.dashboard.edit');
         Route::post('/admin/dashboard/update', [AdminDashboardController::class, 'update'])->name('admin.dashboard.update');
+
+        // admin pangkat
+        Route::get('pangkat/dashboard', [PangkatDashboardController::class, 'index'])->name('pangkat.dashboard');
     });
 
     // DASHBOARD BIDANG
@@ -120,6 +127,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['auth', 'verified'])->group(function() {
         Route::resource('/bidang/user', BidangController::class);
+    });
+
+    Route::middleware(['permission:Pegawai'])->group(function() {
+        Route::resource('/pangkat/pegawai', PegawaiController::class);
     });
 
 });

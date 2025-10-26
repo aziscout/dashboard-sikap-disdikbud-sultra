@@ -81,7 +81,7 @@ class LayananController extends Controller
                 $docFile = $request->file('dokumen');
                 if ($docFile->getSize() <= 30000 * 1024) {
                     $docPath = $docFile->store('layanan/documents', 'public');
-                    $documents = Dokumen    ::create(['dokumen' => $docPath]);
+                    $documents = Dokumen::create(['dokumen' => $docPath]);
                     $validated['dokumens_id'] = $documents->id;
                 } else {
                     Log::warning('Dokumen file terlalu besar untuk layanan submission.');
@@ -151,7 +151,7 @@ class LayananController extends Controller
         $layanans = Layanan::query();
 
         if ($user && $user->role === 'bidang') {
-            $bidangFilter = $user->name ?? explode('@', $user->email)[0];
+            $bidangFilter = 'bidang_' . ($user->name ?? explode('@', $user->email)[0]);
             $layanans->where('bidang', $bidangFilter);
         }
 

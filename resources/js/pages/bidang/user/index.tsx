@@ -170,7 +170,7 @@ export default function Index() {
                         </DropdownMenuContent>
                     </DropdownMenu> */}
                     </div>
-                </div>
+            </div>
                 <div className="w-full px-4 md:w-1/2">
                     {flash?.message && (
                         <Alert>
