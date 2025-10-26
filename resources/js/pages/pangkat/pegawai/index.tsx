@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ListFilterPlus, Megaphone } from 'lucide-react';
+import { Eye, ListFilterPlus, Megaphone } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -95,7 +95,7 @@ export default function Index() {
             <div className="mt-4 overflow-hidden shadow-sm m-4">
                 <Table className="w-full">
                 <TableHeader>
-                    <TableRow className="bg-muted">
+                    <TableRow>
                         <TableHead className="w-[60px] text-center">No</TableHead>
                         <TableHead>Nama</TableHead>
                         <TableHead>Email</TableHead>
@@ -114,9 +114,9 @@ export default function Index() {
                             <TableCell className="capitalize">{item.jenis_kelamin}</TableCell>
                             <TableCell>{item.alamat}</TableCell>
                             <TableCell>
-                                <Link href={route('pegawai.show', item.id)}>
-                                    <Button>
-                                        Detail
+                                <Link href={route('pegawai.show', item.id)} title='Detail'>
+                                    <Button className='bg-blue-500 hover:bg-blue-600'>
+                                        <Eye/>
                                     </Button>
                                 </Link>
                             </TableCell>
