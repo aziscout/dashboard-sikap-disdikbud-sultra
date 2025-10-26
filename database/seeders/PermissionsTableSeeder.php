@@ -26,6 +26,7 @@ class PermissionsTableSeeder extends Seeder
                 ['role'=> 'admin', 'feature' => 'Produk Hukum','created_at' => now() ],
                 ['role'=> 'admin', 'feature' => 'Bidang','created_at' => now() ],
                 ['role'=> 'admin', 'feature' => 'Pegawai','created_at' => now() ],
+                ['role'=> 'admin', 'feature' => 'Usulan Pangkat','created_at' => now() ],
 
 
                 //bidang

@@ -64,7 +64,7 @@ class BerkasApiController extends Controller
             'sk_gaji_berkala' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_pangkat_terakhir' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_jabatan' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'file_sk' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            // 'file_sk' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'status' => 'nullable|in:Telah dikirim ke BKD,Telah dikirim ke BKN,SK telah terbit',
         ]);
 
@@ -84,7 +84,7 @@ class BerkasApiController extends Controller
         }
 
         // Update file jika dikirim
-        foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan', 'file_sk'] as $field) {
+        foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan'] as $field) {
             if ($request->hasFile($field)) {
 
                 // hapus file lama
@@ -126,7 +126,7 @@ class BerkasApiController extends Controller
             'sk_gaji_berkala' => 'required|file|mimes:pdf,doc,docx|max:5120',
             'sk_pangkat_terakhir' => 'required|file|mimes:pdf,doc,docx|max:5120',
             'sk_jabatan' => 'required|file|mimes:pdf,doc,docx|max:5120',
-            'file_sk' => 'required|file|mimes:pdf,doc,docx|max:5120',
+            // 'file_sk' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
         // Simpan semua file ke storage
@@ -149,7 +149,7 @@ class BerkasApiController extends Controller
             'sk_gaji_berkala' => $paths['sk_gaji_berkala'] ?? null,
             'sk_pangkat_terakhir' => $paths['sk_pangkat_terakhir'] ?? null,
             'sk_jabatan' => $paths['sk_jabatan'] ?? null,
-            'file_sk' => $paths['file_sk'] ?? null,
+            // 'file_sk' => $paths['file_sk'] ?? null,
             'status' => 'Telah dikirim ke BKD', // default status
             'users_id' => $admin?->id ?? null,
             'pegawais_id' => $pegawai->id,

@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen,Brain,CalendarDays,FileText, LayoutGrid, Megaphone, MessagesSquare, Newspaper, Scale, Users } from 'lucide-react';
+import { BookOpen,Brain,CalendarDays,Crown,FileText, LayoutGrid, Megaphone, MessagesSquare, Newspaper, Scale, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 import { NavPangkat } from './nav-pangkat';
 
@@ -157,6 +157,14 @@ const { auth } = usePage<PageProps>().props;
         });
     }
 
+    if (userPermissions.includes('Usulan Pangkat')) {
+        mainNavPangkat.push({
+            title: 'Usulan Pangkat',
+            href: '/pangkat/usulanPangkat',
+            icon: Crown,
+        });
+    }
+    
     if (userPermissions.includes('Pegawai')) {
         mainNavPangkat.push({
             title: 'Pegawai',
@@ -164,6 +172,7 @@ const { auth } = usePage<PageProps>().props;
             icon: Users,
         });
     }
+
 
 
     return (

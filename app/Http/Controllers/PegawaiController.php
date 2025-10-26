@@ -38,4 +38,20 @@ class PegawaiController extends Controller
         ]);
     }   
 
+    public function status($id)
+    {
+        $pegawai = Pegawai::with(['dataDiri', 'berkas'])->find($id);
+
+        if (!$pegawai) {
+            return redirect()->route('pangkat.pegawai')->with('message', 'Data pegawai tidak ditemukan.');
+        }
+
+        return Inertia::render('pangkat/pegawai/status', [
+            'pegawai' => $pegawai,
+            'data_diri' => $pegawai->dataDiri,
+            'berkas' => $pegawai->berkas,
+        ]);
+    }
+
+
 }

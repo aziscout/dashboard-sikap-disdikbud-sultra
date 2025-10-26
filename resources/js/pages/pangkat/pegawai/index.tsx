@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { Eye, ListFilterPlus, Megaphone } from 'lucide-react';
+import { Head,  Link,  usePage } from '@inertiajs/react';
+import {  Eye, ListFilterPlus, Megaphone } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -112,7 +112,7 @@ export default function Index() {
                             <TableCell className="font-medium">{item.nama}</TableCell>
                             <TableCell>{item.email}</TableCell>
                             <TableCell className="capitalize">{item.jenis_kelamin}</TableCell>
-                            <TableCell>{item.alamat}</TableCell>
+                            <TableCell className='capitalize'>{item.alamat}</TableCell>
                             <TableCell>
                                 <Link href={route('pegawai.show', item.id)} title='Detail'>
                                     <Button className='bg-blue-500 hover:bg-blue-600'>

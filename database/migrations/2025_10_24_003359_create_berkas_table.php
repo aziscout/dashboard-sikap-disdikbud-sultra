@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('sk_gaji_berkala');
             $table->string('sk_pangkat_terakhir');
             $table->string('sk_jabatan');
-            $table->string('file_sk');
+            $table->string('file_sk')->nullable();
             $table->enum('status', ['Telah dikirim ke BKD', 'Telah dikirim ke BKN', 'SK telah terbit']);
             $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('pegawais_id')->constrained('pegawais')->onDelete('cascade');
