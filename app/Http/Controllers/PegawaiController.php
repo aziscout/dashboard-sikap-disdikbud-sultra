@@ -20,9 +20,22 @@ class PegawaiController extends Controller
         ]);
     }
 
-    public function create()
+    public function show($id)
     {
-        return Inertia::render('pangkat/pegawai/create', []);
-    }
+        $pegawai = Pegawai::with(['dataDiri', 'berkas'])->find($id);
+
+        if (!$pegawai) {
+            return redirect()->route('pangkat.pegawai')->with('message', 'Data pegawai tidak ditemukan.');
+        }
+
+        return Inertia::render('pangkat/pegawai/show', [
+            'pegawai' => $pegawai,
+            'data_diri' => $pegawai->dataDiri,
+            'berkas' => $pegawai->berkas,
+            'flash' => [
+                'message' => session('message'),
+            ],
+        ]);
+    }   
 
 }
