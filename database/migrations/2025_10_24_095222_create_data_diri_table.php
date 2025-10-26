@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->string('tmt_golongan');
             $table->string('nomor_pertek_bkn');
             $table->string('tanggal_pertek_bkn');
-            $table->integer('masa_gk_bulanan');
+            $table->string('masa_gk_bulanan');
             $table->integer('masa_gk_tahunan');
             $table->string('golongan_ruang');
             $table->string('jenis_kp');

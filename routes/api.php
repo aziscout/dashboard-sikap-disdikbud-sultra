@@ -60,7 +60,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
    Route::middleware('auth:pegawai')->post('/logout', [PegawaiApiController::class, 'logout']);
 
    // berkas
-   Route::middleware('auth:sanctum')->group(function () {
+ 
       Route::get('/data-diri', [DataDiriApiController::class, 'index']);
       Route::get('/data-diri/{id}', [DataDiriApiController::class, 'show']);
       Route::post('/data-diri', [DataDiriApiController::class, 'store']);
@@ -72,7 +72,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
       Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
       Route::get('/berkas/{id}', [BerkasApiController::class, 'show']);
-   });
+
 
    // pegawai data diri and berkas
    Route::middleware('auth:pegawai')->group(function () {
