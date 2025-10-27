@@ -12,6 +12,7 @@ use App\Http\Controllers\InovasiController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\UsulanPangkatController;
 use App\Models\Pegawai;
 use Illuminate\Support\Facades\Route;
@@ -135,9 +136,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['permission:Usulan Pangkat'])->group(function() {
-        Route::get('/pangkat/usulanPangkat', [ UsulanPangkatController::class, 'index'])->name('pangkat.usulanPangkat.index');
-        
+        Route::get('/pangkat/usulanPangkat', [ UsulanPangkatController::class, 'index'])->name('pangkat.usulanPangkat');
         Route::get('/pangkat/usulanPangkat/{id}', [ UsulanPangkatController::class, 'show'])->name('pangkat.usulanPangkat.show');
+    });
+
+    Route::middleware(['permission:Riwayat'])->group(function() {
+        Route::get('/pangkat/riwayat', [RiwayatController::class, 'index'])->name('pangkat.riwayat');
     });
 
 });

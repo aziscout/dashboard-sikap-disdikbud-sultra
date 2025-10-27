@@ -82,12 +82,12 @@ export default function Edit({bidang}: Props) {
                                     <SelectValue placeholder="Pilih Bidang" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Bidang Pembinaan SMA">Bidang Pembinaan SMA</SelectItem>
-                                    <SelectItem value="Bidang Pembinaan SMK">Bidang Pembinaan SMK</SelectItem>
-                                    <SelectItem value="Bidang Pembinaan PK-LK">Bidang Pembinaan PK-LK</SelectItem>
-                                    <SelectItem value="Bidang GTK">Bidang GTK</SelectItem>
-                                    <SelectItem value="Bidang Perencanaan dan Penganggaran">Bidang Perencanaan dan Penganggaran</SelectItem>
-                                    <SelectItem value="Bidang Kebudayaan">Bidang Kebudayaan</SelectItem>
+                                    <SelectItem value="bidang_sma">Bidang Pembinaan SMA</SelectItem>
+                                    <SelectItem value="bidang_smk">Bidang Pembinaan SMK</SelectItem>
+                                    <SelectItem value="bidang_pklk">Bidang Pembinaan PK-LK</SelectItem>
+                                    <SelectItem value="bidang_gtk">Bidang GTK</SelectItem>
+                                    <SelectItem value="bidang_perencanaan">Bidang Perencanaan dan Penganggaran</SelectItem>
+                                    <SelectItem value="bidang_kebudayaan">Bidang Kebudayaan</SelectItem>
                                 </SelectContent>
                             </Select>
                             <InputError message={errors.name} />
