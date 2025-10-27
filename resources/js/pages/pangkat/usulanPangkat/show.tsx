@@ -7,10 +7,10 @@ import { Head, usePage } from '@inertiajs/react';
 import { Download, Eye } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { 
-        title: 'Usulan Pangkat', 
-        href: '/pangkat/usulanPangkat' 
-    },
+    // { 
+    //     title: 'Usulan Pangkat', 
+    //     href: '/pangkat/usulanPangkat' 
+    // },
     { 
         title: 'Detail Usulan Pangkat', 
         href: '#' 

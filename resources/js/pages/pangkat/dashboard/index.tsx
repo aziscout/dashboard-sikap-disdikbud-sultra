@@ -1,8 +1,17 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent } from '@/components/ui/card';
-// import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Users, ArrowUpCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'Dashboard',
+    href: '/pangkat/dashboard',
+  }
+];
 
 interface Pegawai {
   nama: string;
@@ -19,14 +28,14 @@ interface PageProps {
 }
 
 export default function Dashboard() {
-  const { totalPegawai, totalNaikPangkat, pegawaiNaikPangkat } = usePage().props as unknown as PageProps;
+  const { totalPegawai, totalNaikPangkat, pegawaiNaikPangkat } =
+    usePage().props as unknown as PageProps;
 
   return (
-    <AppLayout>
+    <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard Pangkat" />
 
       <div className="flex flex-col gap-6 p-4">
-        <h1 className="text-2xl font-semibold">Dashboard Kenaikan Pangkat</h1>
 
         {/* Statistik */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -60,47 +69,52 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Daftar Pegawai Naik Pangkat */}
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-4">Daftar Kenaikan Pangkat Pegawai Tahun Ini</h2>
+            <div className="flex justify-between items-center ">
+              <h2 className="text-lg font-semibold">
+                Daftar Kenaikan Pangkat Pegawai Tahun Ini
+              </h2>
+              <Link href={route('pegawai.index')}>
+                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  Lihat Semua
+                </Button>
+              </Link>
+            </div>
 
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100 text-gray-700">
-                <th className="border p-2 text-left">Nama</th>
-                <th className="border p-2 text-left">Golongan</th>
-                <th className="border p-2 text-left">Jenis Kelamin</th>
-                <th className="border p-2 text-left">Alamat</th>
-                <th className="border p-2 text-left">TMT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pegawaiNaikPangkat.length > 0 ? (
-                pegawaiNaikPangkat.map((p, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="border p-2">{p.nama}</td>
-                    <td className="border p-2">{p.golongan_ruang}</td>
-                    <td className="border p-2">{p.jenis_kelamin}</td>
-                    <td className="border p-2">{p.alamat}</td>
-                    <td className="border p-2">{p.tmt_golongan}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="text-center p-4 text-gray-500">
-                    Tidak ada pegawai yang naik pangkat tahun ini.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {/* <div className="mt-4 text-center">
-            <Link href={route('pangkat.usulanPangkat.index')}>
-              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">Lihat Semua</Button>
-            </Link>
-          </div> */}
-        </div>
+            <div className="overflow-hidden shadow-sm">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[30%]">Nama</TableHead>
+                    <TableHead>Golongan</TableHead>
+                    <TableHead>Jenis Kelamin</TableHead>
+                    <TableHead>Alamat</TableHead>
+                    <TableHead>TMT</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pegawaiNaikPangkat.length > 0 ? (
+                    pegawaiNaikPangkat.map((p, index) => (
+                      <TableRow key={index} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{p.nama}</TableCell>
+                        <TableCell>{p.golongan_ruang}</TableCell>
+                        <TableCell>{p.jenis_kelamin}</TableCell>
+                        <TableCell>{p.alamat}</TableCell>
+                        <TableCell>{p.tmt_golongan}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className="text-center py-6 text-gray-500"
+                      >
+                        Tidak ada pegawai yang naik pangkat tahun ini.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
       </div>
     </AppLayout>
   );

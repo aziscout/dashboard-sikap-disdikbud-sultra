@@ -22,6 +22,8 @@ interface Pegawai {
     email: string;
     jenis_kelamin: string;
     alamat: string;
+    status: string;
+    is_active: boolean;
     created_at: string;
 }
 
@@ -101,6 +103,7 @@ export default function Index() {
                         <TableHead>Email</TableHead>
                         <TableHead>Jenis Kelamin</TableHead>
                         <TableHead>Alamat</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Aksi</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -114,12 +117,29 @@ export default function Index() {
                             <TableCell className="capitalize">{item.jenis_kelamin}</TableCell>
                             <TableCell className='capitalize'>{item.alamat}</TableCell>
                             <TableCell>
-                                <Link href={route('pegawai.show', item.id)} title='Detail'>
-                                    <Button className='bg-blue-500 hover:bg-blue-600'>
-                                        <Eye/>
-                                    </Button>
-                                </Link>
+                                <span
+                                    className={`px-2 py-1 rounded-full text-sm font-semibold ${
+                                        item.status === 'Siap'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-yellow-100 text-yellow-700'
+                                    }`}
+                                >
+                                    {item.status}
+                                </span>
                             </TableCell>
+                            <TableCell>
+                                    {item.is_active ? (
+                                        <Link href={route('pangkat.usulanPangkat.show', item.id)} title="Detail">
+                                            <Button className="bg-blue-500 hover:bg-blue-600">
+                                                <Eye />
+                                            </Button>
+                                        </Link>
+                                    ) : (
+                                        <Button disabled className="bg-gray-300 text-gray-600 cursor-not-allowed">
+                                            <Eye />
+                                        </Button>
+                                    )}
+                                </TableCell>
                         </TableRow>
                     ))
                     ) : (

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -10,7 +11,35 @@ class PegawaiController extends Controller
 {
     public function index()
     {
-        $pegawai = Pegawai::select('id', 'nama', 'email', 'jenis_kelamin', 'alamat', 'created_at')->get();
+        $pegawai = Pegawai::with(['dataDiri', 'berkas'])
+            ->select('id', 'nama', 'email', 'jenis_kelamin', 'alamat', 'created_at')
+            ->get();
+
+        $pegawai->transform(function ($item) {
+            $tmt = $item->dataDiri->tmt_golongan ?? null;
+            $status = 'Belum Siap';
+            $siap = false;
+
+            if ($tmt) {
+                $tmtDate = Carbon::parse($tmt);
+                $threeMonthsBefore = $tmtDate->copy()->subMonths(3);
+
+                if (Carbon::now()->greaterThanOrEqualTo($threeMonthsBefore)) {
+                    $status = 'Siap';
+                    $siap = true;
+                }
+            }
+
+            $hasBerkas = $item->berkas && $item->berkas->count() > 0;
+
+            $isActive = $siap && $hasBerkas;
+
+            $item->status = $status;
+            $item->tmt_golongan = $tmt ? Carbon::parse($tmt)->format('d/m/Y') : '-';
+            $item->is_active = $isActive;
+
+            return $item;
+        });
 
         return Inertia::render('pangkat/pegawai/index', [
             'pegawai' => $pegawai,
@@ -19,6 +48,7 @@ class PegawaiController extends Controller
             ],
         ]);
     }
+
 
     public function show($id)
     {

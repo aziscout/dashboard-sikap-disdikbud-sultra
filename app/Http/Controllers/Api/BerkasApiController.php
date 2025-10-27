@@ -150,7 +150,7 @@ class BerkasApiController extends Controller
             'sk_pangkat_terakhir' => $paths['sk_pangkat_terakhir'] ?? null,
             'sk_jabatan' => $paths['sk_jabatan'] ?? null,
             // 'file_sk' => $paths['file_sk'] ?? null,
-            'status' => 'Telah dikirim ke BKD', // default status
+            'status' => 'berkas terkirim', // default status
             'users_id' => $admin?->id ?? null,
             'pegawais_id' => $pegawai->id,
         ]);
