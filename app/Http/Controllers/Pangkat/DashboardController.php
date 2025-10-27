@@ -31,6 +31,7 @@ class DashboardController extends Controller
             'pegawaiNaikPangkat' => $pegawaiNaikPangkat->map(function ($item) {
                 return [
                     'nama' => $item->pegawai->nama ?? '-',
+                    'golongan_ruang' => $item->golongan_ruang ?? '-',
                     'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
                     'alamat' => $item->pegawai->alamat ?? '-',
                     'tmt_golongan' => Carbon::parse($item->tmt_golongan)->format('d/m/Y'),

@@ -9,6 +9,7 @@ interface Pegawai {
   jenis_kelamin: string;
   alamat: string;
   tmt_golongan: string;
+  golongan_ruang: string;
 }
 
 interface PageProps {
@@ -67,6 +68,7 @@ export default function Dashboard() {
             <thead>
               <tr className="bg-gray-100 text-gray-700">
                 <th className="border p-2 text-left">Nama</th>
+                <th className="border p-2 text-left">Golongan</th>
                 <th className="border p-2 text-left">Jenis Kelamin</th>
                 <th className="border p-2 text-left">Alamat</th>
                 <th className="border p-2 text-left">TMT</th>
@@ -77,6 +79,7 @@ export default function Dashboard() {
                 pegawaiNaikPangkat.map((p, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="border p-2">{p.nama}</td>
+                    <td className="border p-2">{p.golongan_ruang}</td>
                     <td className="border p-2">{p.jenis_kelamin}</td>
                     <td className="border p-2">{p.alamat}</td>
                     <td className="border p-2">{p.tmt_golongan}</td>
