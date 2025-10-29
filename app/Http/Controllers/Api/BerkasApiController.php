@@ -65,7 +65,7 @@ class BerkasApiController extends Controller
             'sk_pangkat_terakhir' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_jabatan' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             // 'file_sk' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'status' => 'nullable|in:Telah dikirim ke BKD,Telah dikirim ke BKN,SK telah terbit',
+            'status' => 'nullable|in:berkas terkirim,telah dikirim ke bkd, telah dikirim ke bkn, sk telah terbit',
         ]);
 
         // Cek hak akses

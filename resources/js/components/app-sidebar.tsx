@@ -157,19 +157,20 @@ const { auth } = usePage<PageProps>().props;
         });
     }
 
-    if (userPermissions.includes('Usulan Pangkat')) {
-        mainNavPangkat.push({
-            title: 'Usulan Pangkat',
-            href: '/pangkat/usulanPangkat',
-            icon: Crown,
-        });
-    }
     
     if (userPermissions.includes('Pegawai')) {
         mainNavPangkat.push({
             title: 'Pegawai',
             href: '/pangkat/pegawai',
             icon: Users,
+        });
+    }
+    
+    if (userPermissions.includes('Usulan Pangkat')) {
+        mainNavPangkat.push({
+            title: 'Usulan Pangkat',
+            href: '/pangkat/usulanPangkat',
+            icon: Crown,
         });
     }
 

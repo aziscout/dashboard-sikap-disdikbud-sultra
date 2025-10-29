@@ -129,7 +129,7 @@ export default function Index() {
                             </TableCell>
                             <TableCell>
                                     {item.is_active ? (
-                                        <Link href={route('pangkat.usulanPangkat.show', item.id)} title="Detail">
+                                        <Link href={route('pegawai.show', item.id)} title="Detail">
                                             <Button className="bg-blue-500 hover:bg-blue-600">
                                                 <Eye />
                                             </Button>

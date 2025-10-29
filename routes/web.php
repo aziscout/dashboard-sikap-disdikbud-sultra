@@ -137,13 +137,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['permission:Usulan Pangkat'])->group(function() {
         Route::get('/pangkat/usulanPangkat', [ UsulanPangkatController::class, 'index'])->name('pangkat.usulanPangkat');
-        Route::get('/pangkat/usulanPangkat/{id}', [ UsulanPangkatController::class, 'show'])->name('pangkat.usulanPangkat.show');
+        Route::get('/pangkat/usulanPangkat/status/{id}', [UsulanPangkatController::class, 'status'])
+        ->name('pangkat.usulanPangkat.status');
+        Route::post('/pangkat/usulanPangkat/updateStatus/{id}', [UsulanPangkatController::class, 'updateStatus'])->name('pangkat.usulanPangkat.updateStatus');
     });
 
     Route::middleware(['permission:Riwayat'])->group(function() {
         Route::get('/pangkat/riwayat', [RiwayatController::class, 'index'])->name('pangkat.riwayat');
     });
-
 });
 
 
