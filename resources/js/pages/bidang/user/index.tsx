@@ -175,7 +175,7 @@ export default function Index() {
                     {flash?.message && (
                         <Alert>
                             <Megaphone className="h-4 w-4" />
-                            <AlertTitle>Notification!</AlertTitle>
+                            <AlertTitle>Notifikasi!</AlertTitle>
                             <AlertDescription>{flash.message}</AlertDescription>
                         </Alert>
                     )}
