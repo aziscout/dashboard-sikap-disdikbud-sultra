@@ -40,7 +40,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
    // gallery
    Route::get('/galeri', [AllGaleriApiController::class, 'index']);
    // layanan
-   Route::post('/layanan', [LayananApiController::class, 'store']);
+   // Route::post('/layanan', [LayananApiController::class, 'store']);
    Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);
    Route::middleware('auth:sanctum')->get('/layanan', [LayananApiController::class, 'index']);
    

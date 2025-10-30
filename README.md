@@ -1161,6 +1161,62 @@ php artisan db:seed           # Jalankan database seeders
 4. Push ke branch (`git push origin feature/AmazingFeature`)
 5. Buat Pull Request
 
+## Perbaikan Layanan (Service Fixes)
+
+### Masalah yang Ditemukan
+1. **Filter Bidang di Layanan Index**: Bidang tidak dapat melihat layanan yang masuk ke bidang mereka di halaman `resources/js/pages/layanan/index.tsx`
+2. **Filter Bidang di Dashboard Bidang**: Dashboard bidang menampilkan layanan dengan filter yang salah
+3. **Dark Mode Support**: Halaman detail layanan (`resources/js/pages/layanan/show.tsx`) belum mendukung dark mode
+
+### Perbaikan yang Dilakukan
+
+#### 1. Perbaikan Filter Bidang di LayananController
+**File:** `app/Http/Controllers/LayananController.php`
+
+**Masalah:** Filter bidang menggunakan prefix 'bidang_' yang tidak sesuai dengan data yang disimpan.
+
+**Perbaikan:**
+```php
+// Sebelum (salah):
+$bidangFilter = 'bidang_' . ($user->name ?? explode('@', $user->email)[0]);
+$layanans->where('bidang', $bidangFilter);
+
+// Sesudah (benar):
+$bidangFilter = $user->name ?? explode('@', $user->email)[0];
+$layanans->where('bidang', $bidangFilter);
+```
+
+#### 2. Perbaikan Filter Bidang di Bidang/DashboardController
+**File:** `app/Http/Controllers/Bidang/DashboardController.php`
+
+**Masalah:** Filter bidang tidak menggunakan prefix 'bidang_' yang diperlukan untuk dashboard bidang.
+
+**Perbaikan:**
+```php
+// Sebelum (salah):
+$bidangFilter = $user->name ?? explode('@', $user->email)[0];
+$layananQuery->where('bidang', $bidangFilter);
+
+// Sesudah (benar):
+$bidangFilter = 'bidang_' . ($user->name ?? explode('@', $user->email)[0]);
+$layananQuery->where('bidang', $bidangFilter);
+```
+
+#### 3. Penambahan Dark Mode Support di Layanan Show
+**File:** `resources/js/pages/layanan/show.tsx`
+
+**Masalah:** Halaman detail layanan belum mendukung dark mode.
+
+**Perbaikan:**
+- Background gradient: `from-slate-50 to-slate-100/30 dark:from-slate-900 dark:to-slate-800/30`
+- Header text: `text-slate-800 dark:text-slate-200`
+- Sub-header text: `text-slate-600 dark:text-slate-400`
+
+### Hasil Perbaikan
+1. ✅ Bidang dapat melihat layanan yang masuk ke bidang mereka di halaman layanan index
+2. ✅ Dashboard bidang menampilkan jumlah layanan masuk dengan benar
+3. ✅ Halaman detail layanan mendukung dark mode sesuai sistem
+
 ## Lisensi
 
 Distributed under the MIT License. See `LICENSE` for more information.

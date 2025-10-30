@@ -151,10 +151,11 @@ class LayananController extends Controller
         $layanans = Layanan::query();
 
         if ($user && $user->role === 'bidang') {
-            $bidangFilter = 'bidang_' . ($user->name ?? explode('@', $user->email)[0]);
+            $bidangFilter = $user->name ?? explode('@', $user->email)[0];
             $layanans->where('bidang', $bidangFilter);
         }
 
+        // Admin can see all layanan
         $data = $layanans->with('media', 'dokumen')->latest()->get();
 
         return Inertia::render('layanan/index', [

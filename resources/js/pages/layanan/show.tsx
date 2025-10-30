@@ -114,30 +114,30 @@ export default function Show() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Diterima":
-        return "bg-blue-50 text-blue-700 border-blue-200";
+        return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800";
       case "Diproses":
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800";
       case "Selesai":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800";
       case "Ditolak":
-        return "bg-red-50 text-red-700 border-red-200";
+        return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800";
       default:
-        return "bg-black-50 text-black-700 border-black-200";
+        return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Diterima":
-        return <CheckCircle className="h-4 w-4 text-blue-600" />;
+        return <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
       case "Diproses":
-        return <Clock className="h-4 w-4 text-amber-600" />;
+        return <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
       case "Selesai":
-        return <CheckCircle className="h-4 w-4 text-emerald-600" />;
+        return <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />;
       case "Ditolak":
-        return <XCircle className="h-4 w-4 text-red-600" />;
+        return <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />;
       default:
-        return <Clock className="h-4 w-4 text-black-600" />;
+        return <Clock className="h-4 w-4 text-gray-600 dark:text-gray-400" />;
     }
   };
 
@@ -212,20 +212,17 @@ export default function Show() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`Detail Laporan - ${layanan.judul}`} />
 
-      <div className="min-h-screen bg-gradient-to-br from-white-50 to-black-50/30 py-6 px-4 sm:px-6 lg:px-8">
-
-
+      <div className="min-h-screen dark:bg-white-900 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
           <div className="mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
               <div className="flex items-center gap-4">
-                
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white">
                     Detail Laporan
                   </h1>
-                  <p className="text-white-600 mt-1 flex items-center gap-2 flex-wrap">
+                  <p className="text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2 flex-wrap">
                     <span>ID: #{layanan.id}</span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
@@ -233,13 +230,12 @@ export default function Show() {
                       {formatDate(layanan.created_at)}
                     </span>
                     <span>•</span>
-                    <span className="text-slate-500">{getRelativeTime(layanan.created_at)}</span>
+                    <span className="text-slate-500 dark:text-gray-500">{getRelativeTime(layanan.created_at)}</span>
                   </p>
                 </div>
               </div>
               
               <div className="flex items-center gap-3">
-                
                 <Badge 
                   className={`px-4 py-2 border-2 text-sm font-semibold flex items-center gap-2 ${getStatusColor(layanan.status)}`}
                 >
@@ -250,18 +246,18 @@ export default function Show() {
             </div>
 
             {/* Progress Bar Indicator */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <div className=" dark:bg-white-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-slate-700">Status Progress</span>
-                <span className="text-sm text-slate-500">{layanan.status}</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-white-300">Status Progress</span>
+                <span className="text-sm text-slate-500 dark:text-gray-400">{layanan.status}</span>
               </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div 
                   className={`h-2 rounded-full transition-all duration-500 ${
-                    layanan.status === "Diterima" ? "bg-blue-500 w-1/4" :
-                    layanan.status === "Diproses" ? "bg-amber-500 w-2/4" :
-                    layanan.status === "Selesai" ? "bg-emerald-500 w-full" :
-                    layanan.status === "Ditolak" ? "bg-red-500 w-full" : "bg-slate-500 w-1/4"
+                    layanan.status === "Diterima" ? "bg-blue-500 dark:bg-blue-400 w-1/4" :
+                    layanan.status === "Diproses" ? "bg-amber-500 dark:bg-amber-400 w-2/4" :
+                    layanan.status === "Selesai" ? "bg-emerald-500 dark:bg-emerald-400 w-full" :
+                    layanan.status === "Ditolak" ? "bg-red-500 dark:bg-red-400 w-full" : "bg-gray-500 dark:bg-gray-400 w-1/4"
                   }`}
                 />
               </div>
@@ -272,15 +268,15 @@ export default function Show() {
             {/* Left Column - Main Content */}
             <div className="xl:col-span-2 space-y-6">
               {/* Informasi Laporan Card */}
-              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                  <CardTitle className="flex items-center gap-3 text-slate-800">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <FileText className="h-5 w-5 text-blue-600" />
+              <Card className="border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-700  dark:bg-white-800">
+                  <CardTitle className="flex items-center gap-3 text-slate-800 dark:text-white">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
                       <span className="text-lg">Informasi Laporan</span>
-                      <p className="text-sm font-normal text-slate-600 mt-1">
+                      <p className="text-sm font-normal text-slate-600 dark:text-gray-400 mt-1">
                         Detail lengkap mengenai laporan yang diajukan
                       </p>
                     </div>
@@ -288,34 +284,34 @@ export default function Show() {
                 </CardHeader>
                 <CardContent className="pt-6 space-y-6">
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                       Judul Laporan
                     </label>
-                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <p className="text-lg font-semibold text-slate-800 leading-relaxed">
+                    <div className="p-4 -50 dark:bg-white-800 rounded-lg border border-slate-200 dark:border-gray-700">
+                      <p className="text-lg font-semibold text-slate-800 dark:text-white leading-relaxed">
                         {layanan.judul}
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                       Deskripsi Lengkap
                     </label>
-                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 min-h-[120px]">
-                      <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
+                    <div className="p-4 -50 dark:bg-white-800 rounded-lg border border-slate-200 dark:border-gray-700 min-h-[120px]">
+                      <p className="text-slate-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
                         {layanan.deskripsi}
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                       Bidang Terkait
                     </label>
-                    <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <Tag className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                      <span className="font-medium text-blue-800">{layanan.bidang}</span>
+                    <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <Tag className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      <span className="font-medium text-blue-800 dark:text-blue-300">{layanan.bidang}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -323,15 +319,15 @@ export default function Show() {
 
               {/* Media Files Section */}
               {layanan.media && layanan.media.file?.length > 0 && (
-                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <CardHeader className="pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                    <CardTitle className="flex items-center gap-3 text-slate-800">
-                      <div className="p-2 bg-emerald-100 rounded-lg">
-                        <Image className="h-5 w-5 text-emerald-600" />
+                <Card className="border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-700  dark:bg-white-800">
+                    <CardTitle className="flex items-center gap-3 text-slate-800 dark:text-white">
+                      <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                        <Image className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                       </div>
                       <div>
                         <span className="text-lg">File Gambar</span>
-                        <p className="text-sm font-normal text-slate-600 mt-1">
+                        <p className="text-sm font-normal text-slate-600 dark:text-gray-400 mt-1">
                           {layanan.media.file.length} gambar terlampir
                         </p>
                       </div>
@@ -342,33 +338,32 @@ export default function Show() {
                       {layanan.media.file.map((file, index) => (
                         <div 
                           key={index} 
-                          className="group border-2 border-slate-200 rounded-xl overflow-hidden hover:border-blue-300 transition-all duration-300 hover:shadow-lg"
+                          className="group border-2 border-slate-200 dark:border-gray-700 rounded-xl overflow-hidden hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 hover:shadow-lg"
                         >
-                          <div className="aspect-video bg-slate-100 relative overflow-hidden">
+                          <div className="aspect-video bg-slate-100 dark:bg-gray-700 relative overflow-hidden">
                             <img
                               src={`/storage/${file.file}`}
                               alt={`Gambar ${index + 1}`}
                               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
                               onClick={() => openFileInNewTab(file.file)}
                             />
-                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300" />
                           </div>
-                          <div className="p-3 bg-white">
+                          <div className="p-3  dark:bg-white-800">
                             <div className="flex gap-2">
-                              <Button
+                              {/* <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => openFileInNewTab(file.file)}
-                                className="flex-1 flex items-center justify-center gap-2 border-slate-300 hover:bg-slate-50 transition-colors"
+                                className="flex-1 flex items-center justify-center gap-2 border-slate-300 dark:border-gray-600 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
                               >
                                 <Eye className="h-4 w-4" />
                                 Lihat
-                              </Button>
+                              </Button> */}
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => downloadFile(file.file, getFileNameFromPath(file.file))}
-                                className="flex-1 flex items-center justify-center gap-2 border-slate-300 hover:bg-slate-50 transition-colors"
+                                className="flex-1 flex items-center justify-center gap-2 border-slate-300 dark:border-gray-600 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
                               >
                                 <Download className="h-4 w-4" />
                                 Unduh
@@ -385,42 +380,42 @@ export default function Show() {
 
               {/* Document Files Section */}
               {layanan.dokumen && layanan.dokumen.dokumen && (
-                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <CardHeader className="pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                    <CardTitle className="flex items-center gap-3 text-slate-800">
-                      <div className="p-2 bg-red-100 rounded-lg">
-                        <File className="h-5 w-5 text-red-600" />
+                <Card className="border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-700  dark:bg-white-800">
+                    <CardTitle className="flex items-center gap-3 text-slate-800 dark:text-white">
+                      <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                        <File className="h-5 w-5 text-red-600 dark:text-red-400" />
                       </div>
                       <div>
                         <span className="text-lg">File Dokumen</span>
-                        <p className="text-sm font-normal text-slate-600 mt-1">
+                        <p className="text-sm font-normal text-slate-600 dark:text-gray-400 mt-1">
                           Dokumen pendukung terlampir
                         </p>
                       </div>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-6">
-                    <div className="border-2 border-slate-200 rounded-xl p-4 hover:border-red-300 transition-all duration-300">
+                    <div className="border-2 border-slate-200 dark:border-gray-700 rounded-xl p-4 hover:border-red-300 dark:hover:border-red-600 transition-all duration-300">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-4 min-w-0 flex-1">
-                          <div className="p-3 bg-red-100 rounded-lg">
-                            <File className="h-6 w-6 text-red-600" />
+                          <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                            <File className="h-6 w-6 text-red-600 dark:text-red-400" />
                           </div>
                           <div className="min-w-0 flex-1">
                             <p
-                              className="font-semibold text-slate-800 truncate"
+                              className="font-semibold text-slate-800 dark:text-white truncate"
                               title={getFileNameFromPath(layanan.dokumen.dokumen)}
                             >
                               {getFileNameFromPath(layanan.dokumen.dokumen)}
                             </p>
-                            <p className="text-sm text-slate-500 mt-1">PDF Document</p>
+                            <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">PDF Document</p>
                           </div>
                         </div>
                         <div className="flex gap-2 shrink-0">
                           <Button
                             onClick={() => openFileInNewTab(layanan.dokumen.dokumen)}
                             variant="outline"
-                            className="flex items-center gap-2 border-slate-300 hover:bg-slate-50 transition-colors"
+                            className="flex items-center gap-2 border-slate-300 dark:border-gray-600 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
                           >
                             <Eye className="h-4 w-4" />
                             Lihat
@@ -446,35 +441,33 @@ export default function Show() {
               )}
             </div>
             
-            
-
             {/* Right Column - Sidebar */}
             <div className="space-y-6">
               {/* Pengirim Information */}
-              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                  <CardTitle className="flex items-center gap-3 text-slate-800">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <User className="h-5 w-5 text-purple-600" />
+              <Card className="border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-700  dark:bg-white-800">
+                  <CardTitle className="flex items-center gap-3 text-slate-800 dark:text-white">
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                      <User className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <span className="text-lg">Informasi Pengirim</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4">
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-700">Nama Pengirim</label>
-                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                      <User className="h-5 w-5 text-slate-500 flex-shrink-0" />
-                      <span className="font-medium text-slate-800 break-words">{layanan.nama_pengirim}</span>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">Nama Pengirim</label>
+                    <div className="flex items-center gap-3 p-3 -50 dark:bg-white-800 rounded-lg border border-slate-200 dark:border-gray-700">
+                      <User className="h-5 w-5 text-slate-500 dark:text-gray-400 flex-shrink-0" />
+                      <span className="font-medium text-slate-800 dark:text-white break-words">{layanan.nama_pengirim}</span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-700">Email</label>
-                    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 group hover:bg-slate-100 transition-colors">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">Email</label>
+                    <div className="flex items-center justify-between p-3 -50 dark:bg-white-800 rounded-lg border border-slate-200 dark:border-gray-700 group hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <Mail className="h-5 w-5 text-slate-500 flex-shrink-0" />
-                        <span className="truncate text-slate-700" title={layanan.email_pengirim}>
+                        <Mail className="h-5 w-5 text-slate-500 dark:text-gray-400 flex-shrink-0" />
+                        <span className="truncate text-slate-700 dark:text-gray-300" title={layanan.email_pengirim}>
                           {layanan.email_pengirim}
                         </span>
                       </div>
@@ -482,7 +475,7 @@ export default function Show() {
                         size="sm"
                         variant="ghost"
                         onClick={copyEmail}
-                        className="h-8 w-8 p-0 flex-shrink-0 ml-2 opacity-70 hover:opacity-100 hover:bg-white transition-all"
+                        className="h-8 w-8 p-0 flex-shrink-0 ml-2 opacity-70 hover:opacity-100 hover:bg-white dark:hover:bg-gray-600 transition-all"
                         title="Salin email"
                       >
                         <Copy className="h-4 w-4" />
@@ -493,23 +486,23 @@ export default function Show() {
               </Card>
 
               {/* Tracking & Status */}
-              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                  <CardTitle className="flex items-center gap-3 text-slate-800">
-                    <div className="p-2 bg-amber-100 rounded-lg">
-                      <Hash className="h-5 w-5 text-amber-600" />
+              <Card className="border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-700  dark:bg-white-800">
+                  <CardTitle className="flex items-center gap-3 text-slate-800 dark:text-white">
+                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                      <Hash className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                     </div>
                     <span className="text-lg">Tracking & Status</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4">
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-700">Kode Tracking</label>
-                    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 group hover:bg-slate-100 transition-colors">
+                    <label className="block text-sm font-semibold text-slate-700bg  dark:text-gray-300">Kode Tracking</label>
+                    <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-800 rounded-lg border border-slate-200 dark:border-gray-700 group hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <Hash className="h-5 w-5 text-slate-500 flex-shrink-0" />
+                        <Hash className="h-5 w-5 text-slate-500 dark:text-gray-400 flex-shrink-0" />
                         <code
-                          className="font-mono font-bold text-slate-800 truncate min-w-0"
+                          className="font-mono font-bold text-slate-800 dark:text-white truncate min-w-0"
                           title={layanan.kode_tracking}
                         >
                           {layanan.kode_tracking}
@@ -519,7 +512,7 @@ export default function Show() {
                         size="sm"
                         variant="ghost"
                         onClick={copyTrackingCode}
-                        className="h-8 w-8 p-0 flex-shrink-0 ml-2 opacity-70 hover:opacity-100 hover:bg-white transition-all"
+                        className="h-8 w-8 p-0 flex-shrink-0 ml-2 opacity-70 hover:opacity-100 hover:bg-white dark:hover:bg-gray-600 transition-all"
                         title="Salin kode tracking"
                       >
                         <Copy className="h-4 w-4" />
@@ -528,50 +521,50 @@ export default function Show() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-slate-700">Ubah Status</label>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">Ubah Status</label>
                     <Select onValueChange={handleStatusChange} defaultValue={layanan.status}>
-                      <SelectTrigger className="w-full border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                      <SelectTrigger className="w-full border-slate-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 transition-colors bg-white dark:bg-gray-800 text-slate-900 dark:text-white">
                         <SelectValue placeholder="Pilih status" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white dark:bg-gray-800 border-slate-300 dark:border-gray-600">
                         <SelectItem
                           value="Diterima"
                           disabled={["Diproses", "Selesai", "Ditolak"].includes(layanan.status)}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 text-slate-900 dark:text-white focus:bg-slate-100 dark:focus:bg-gray-700"
                         >
-                          <CheckCircle className="h-4 w-4 text-blue-600" />
+                          <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                           Diterima
                         </SelectItem>
 
                         <SelectItem
                           value="Diproses"
                           disabled={["Selesai", "Ditolak"].includes(layanan.status)}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 text-slate-900 dark:text-white focus:bg-slate-100 dark:focus:bg-gray-700"
                         >
-                          <Clock className="h-4 w-4 text-amber-600" />
+                          <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                           Diproses
                         </SelectItem>
 
                         <SelectItem
                           value="Selesai"
                           disabled={layanan.status === "Ditolak"}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 text-slate-900 dark:text-white focus:bg-slate-100 dark:focus:bg-gray-700"
                         >
-                          <CheckCircle className="h-4 w-4 text-emerald-600" />
+                          <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                           Selesai
                         </SelectItem>
 
                         <SelectItem
                           value="Ditolak"
                           disabled={["Selesai", "Ditolak"].includes(layanan.status)}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 text-slate-900 dark:text-white focus:bg-slate-100 dark:focus:bg-gray-700"
                         >
-                          <XCircle className="h-4 w-4 text-red-600" />
+                          <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
                           Ditolak
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-500 mt-2">
+                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">
                       Pilih status baru untuk memperbarui progres laporan
                     </p>
                   </div>
@@ -579,37 +572,37 @@ export default function Show() {
               </Card>
 
               {/* Timeline */}
-              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardHeader className="pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                  <CardTitle className="flex items-center gap-3 text-slate-800">
-                    <div className="p-2 bg-slate-100 rounded-lg">
-                      <Calendar className="h-5 w-5 text-slate-600" />
+              <Card className="border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-700  dark:bg-white-800">
+                  <CardTitle className="flex items-center gap-3 text-slate-800 dark:text-white">
+                    <div className="p-2 bg-slate-100 dark:bg-gray-700 rounded-lg">
+                      <Calendar className="h-5 w-5 text-slate-600 dark:text-gray-400" />
                     </div>
                     <span className="text-lg">Timeline</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-full">
-                          <Calendar className="h-4 w-4 text-blue-600" />
+                        <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
+                          <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
-                          <span className="block text-sm font-semibold text-blue-800">Dibuat</span>
-                          <span className="block text-sm text-blue-600">{formatDate(layanan.created_at)}</span>
+                          <span className="block text-sm font-semibold text-blue-800 dark:text-blue-300">Dibuat</span>
+                          <span className="block text-sm text-blue-600 dark:text-blue-400">{formatDate(layanan.created_at)}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-emerald-100 rounded-full">
-                          <Calendar className="h-4 w-4 text-emerald-600" />
+                        <div className="p-2 bg-emerald-100 dark:bg-white-800 rounded-full">
+                          <Calendar className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
-                          <span className="block text-sm font-semibold text-emerald-800">Diupdate</span>
-                          <span className="block text-sm text-emerald-600">{formatDate(layanan.updated_at)}</span>
+                          <span className="block text-sm font-semibold text-emerald-800 dark:text-emerald-300">Diupdate</span>
+                          <span className="block text-sm text-emerald-600 dark:text-emerald-400">{formatDate(layanan.updated_at)}</span>
                         </div>
                       </div>
                     </div>
@@ -622,18 +615,18 @@ export default function Show() {
 
         {/* Modal Konfirmasi */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="sm:max-w-md border-slate-200 shadow-xl">
+          <DialogContent className="sm:max-w-md border-slate-200 dark:border-gray-700 shadow-xl bg-white dark:bg-gray-800">
             <DialogHeader>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-amber-100 rounded-full">
-                  <AlertTriangle className="h-6 w-6 text-amber-600" />
+                <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+                  <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                 </div>
-                <DialogTitle className="text-slate-800">Konfirmasi Ubah Status</DialogTitle>
+                <DialogTitle className="text-slate-800 dark:text-white">Konfirmasi Ubah Status</DialogTitle>
               </div>
-              <DialogDescription className="text-slate-600 text-base leading-relaxed">
+              <DialogDescription className="text-slate-600 dark:text-gray-400 text-base leading-relaxed">
                 Anda akan mengubah status dari{" "}
-                <span className="font-semibold text-slate-800">{layanan.status}</span> menjadi{" "}
-                <span className="font-semibold text-slate-800">{selectedStatus}</span>.
+                <span className="font-semibold text-slate-800 dark:text-white">{layanan.status}</span> menjadi{" "}
+                <span className="font-semibold text-slate-800 dark:text-white">{selectedStatus}</span>.
                 <br />
                 <span className="text-red-500 font-medium mt-2 block">
                   Tindakan ini tidak dapat dibatalkan.
@@ -644,7 +637,7 @@ export default function Show() {
               <Button
                 variant="outline"
                 onClick={cancelUbahStatus}
-                className="border-slate-300 hover:bg-slate-100 text-slate-700 transition-colors"
+                className="border-slate-300 dark:border-gray-600 hover:bg-slate-100 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 transition-colors"
               >
                 Batal
               </Button>
@@ -660,28 +653,36 @@ export default function Show() {
 
         {/* Notification Modal */}
         <Dialog open={isNotificationModalOpen} onOpenChange={setIsNotificationModalOpen}>
-          <DialogContent className="sm:max-w-md border-slate-200 shadow-xl">
+          <DialogContent className="sm:max-w-md border-slate-200 dark:border-gray-700 shadow-xl bg-white dark:bg-gray-800">
             <DialogHeader>
               <div className="flex items-center gap-3 mb-2">
                 <div className={`p-2 rounded-full ${
-                  notificationType === "success" ? "bg-emerald-100" : "bg-red-100"
+                  notificationType === "success" 
+                    ? "bg-emerald-100 dark:bg-emerald-900/30" 
+                    : "bg-red-100 dark:bg-red-900/30"
                 }`}>
                   {notificationType === "success" ? (
                     <CheckCircle className={`h-6 w-6 ${
-                      notificationType === "success" ? "text-emerald-600" : "text-red-600"
+                      notificationType === "success" 
+                        ? "text-emerald-600 dark:text-emerald-400" 
+                        : "text-red-600 dark:text-red-400"
                     }`} />
                   ) : (
                     <XCircle className={`h-6 w-6 ${
-                      notificationType === "success" ? "text-emerald-600" : "text-red-600"
+                      notificationType === "success" 
+                        ? "text-emerald-600 dark:text-emerald-400" 
+                        : "text-red-600 dark:text-red-400"
                     }`} />
                   )}
                 </div>
-                <DialogTitle className="text-slate-800">
+                <DialogTitle className="text-slate-800 dark:text-white">
                   {notificationType === "success" ? "Berhasil" : "Gagal"}
                 </DialogTitle>
               </div>
               <DialogDescription className={`text-base leading-relaxed ${
-                notificationType === "success" ? "text-emerald-700" : "text-red-700"
+                notificationType === "success" 
+                  ? "text-emerald-700 dark:text-emerald-400" 
+                  : "text-red-700 dark:text-red-400"
               }`}>
                 {notificationMessage}
               </DialogDescription>
