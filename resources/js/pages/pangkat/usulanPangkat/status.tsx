@@ -18,12 +18,12 @@ interface Pegawai {
   nip: string;
   nama: string;
   jenis_kelamin: string;
-  nomor: string;
 }
 
 interface DataDiri {
   golongan_ruang: string;
   tmt_golongan: string;
+  nomor_sk: string;
 }
 
 interface Berkas {
@@ -62,10 +62,17 @@ export default function Status() {
 
   // 🔄 Update status
   const handleStatusChange = (value: string) => {
-    const prevStatus = status; // simpan status lama
-    setStatus(value); // ubah dulu di UI sementara
-    setIsUpdating(true);
+    const prevStatus = status;
+    setStatus(value);
 
+    // 🟡 Jika admin memilih "SK telah terbit" → jangan kirim dulu
+    if (value === 'sk telah terbit') {
+      setFlashMessage('Silakan upload file SK untuk menyelesaikan proses ini.');
+      return; // tidak kirim ke backend dulu
+    }
+
+    // 🟢 Jika status lain → kirim langsung ke backend
+    setIsUpdating(true);
     router.post(
       `/pangkat/usulanPangkat/updateStatus/${pegawai.id}`,
       { status: value },
@@ -73,27 +80,28 @@ export default function Status() {
         preserveScroll: true,
         onSuccess: () => {
           setFlashMessage('Status berhasil diperbarui!');
-          // setFlashError(false);
           router.reload({ only: ['pegawai', 'data_diri', 'berkas'] });
         },
         onError: () => {
-          // kembalikan ke status lama karena gagal update
           setStatus(prevStatus);
           setFlashMessage('Status hanya bisa diubah secara berurutan!');
-          // setFlashError(true);
         },
         onFinish: () => setIsUpdating(false),
       }
     );
   };
 
-  // 📎 Upload file SK
+  // 📎 Submit file SK (bersamaan dengan update status)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (status !== 'sk telah terbit') {
+      setFlashMessage('Upload hanya bisa dilakukan jika status SK telah terbit.');
+      return;
+    }
+
     if (!file) {
       setFlashMessage('Silakan upload file SK terlebih dahulu.');
-      // setFlashError(true);
       return;
     }
 
@@ -101,18 +109,19 @@ export default function Status() {
     formData.append('status', status);
     formData.append('file_sk', file);
 
+    setIsUpdating(true);
+
     router.post(`/pangkat/usulanPangkat/updateStatus/${pegawai.id}`, formData, {
       preserveScroll: true,
       onSuccess: () => {
-        setFlashMessage('File SK berhasil diunggah dan status disimpan!');
-        // setFlashError(false);
+        setFlashMessage('File SK berhasil diunggah dan status diperbarui!');
         setFile(null);
         router.reload({ only: ['pegawai', 'data_diri', 'berkas'] });
       },
       onError: (errors) => {
         setFlashMessage(Object.values(errors).join('\n'));
-        // setFlashError(true);
       },
+      onFinish: () => setIsUpdating(false),
     });
   };
 
@@ -144,7 +153,7 @@ export default function Status() {
                 <li><strong>NIP</strong> : {pegawai.nip}</li>
                 <li><strong>Nama</strong> : {pegawai.nama}</li>
                 <li><strong>Jenis Kelamin</strong> : {pegawai.jenis_kelamin}</li>
-                <li><strong>Nomor Surat</strong> : {pegawai.nomor}</li>
+                <li><strong>Nomor Surat</strong> : {data_diri.nomor_sk}</li>
                 <li><strong>TMT Golongan</strong> : {data_diri?.tmt_golongan}</li>
                 <li><strong>Golongan Ruang</strong> : {data_diri?.golongan_ruang}</li>
                 <li className="text-gray-500 italic mt-3">

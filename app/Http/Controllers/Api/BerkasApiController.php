@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Berkas;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BerkasApiController extends Controller
@@ -55,18 +56,24 @@ class BerkasApiController extends Controller
         }
 
         $pegawai = auth('pegawai')->user();
-        $admin   = auth('sanctum')->user();
+        $admin = Auth::guard('sanctum')->user() ?? Auth::user();
 
-        // Validasi input
-        $validated = $request->validate([
+        // Validasi input sesuai role
+        $rules = [
             'sk_cpns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_pns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_gaji_berkala' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_pangkat_terakhir' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'sk_jabatan' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            // 'file_sk' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'status' => 'nullable|in:berkas terkirim,telah dikirim ke bkd, telah dikirim ke bkn, sk telah terbit',
-        ]);
+        ];
+
+        // Kalau admin, boleh juga upload file_sk + ubah status
+        if ($admin && $admin->role === 'admin') {
+            $rules['file_sk'] = 'nullable|file|mimes:pdf,doc,docx|max:5120';
+            $rules['status'] = 'nullable|in:berkas terkirim,telah dikirim ke bkd,telah dikirim ke bkn,sk telah terbit';
+        }
+
+        $validated = $request->validate($rules);
 
         // Cek hak akses
         if ($pegawai && $berkas->pegawais_id !== $pegawai->id) {
@@ -83,32 +90,53 @@ class BerkasApiController extends Controller
             ], 403);
         }
 
-        // Update file jika dikirim
-        foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan'] as $field) {
-            if ($request->hasFile($field)) {
-
-                // hapus file lama
-                if ($berkas->$field && Storage::disk('public')->exists($berkas->$field)) {
-                    Storage::disk('public')->delete($berkas->$field);
+        // Jika pegawai update: hanya ubah file-file miliknya
+        if ($pegawai) {
+            foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan'] as $field) {
+                if ($request->hasFile($field)) {
+                    if ($berkas->$field && Storage::disk('public')->exists($berkas->$field)) {
+                        Storage::disk('public')->delete($berkas->$field);
+                    }
+                    $path = $request->file($field)->store('berkas', 'public');
+                    $berkas->$field = $path;
                 }
-
-                // simpan file baru
-                $path = $request->file($field)->store('berkas', 'public');
-                $berkas->$field = $path;
             }
         }
 
-        // Admin boleh ubah status
-        if ($admin && $admin->role === 'admin' && $request->filled('status')) {
-            $berkas->status = $request->status;
+        // Jika admin update
+        if ($admin && $admin->role === 'admin') {
+
+            // Upload file_sk jika ada
+            if ($request->hasFile('file_sk')) {
+                if ($berkas->file_sk && Storage::disk('public')->exists($berkas->file_sk)) {
+                    Storage::disk('public')->delete($berkas->file_sk);
+                }
+                $path = $request->file('file_sk')->store('berkas', 'public');
+                $berkas->file_sk = $path;
+            }
+
+            // Update status berurutan
+            $allowedTransitions = [
+                'berkas terkirim' => 'telah dikirim ke bkd',
+                'telah dikirim ke bkd' => 'telah dikirim ke bkn',
+                'telah dikirim ke bkn' => 'sk telah terbit',
+            ];
+
+            if ($request->filled('status')) {
+                $current = $berkas->status;
+                $next = $allowedTransitions[$current] ?? null;
+
+                if ($request->status === $next || $request->status === $current) {
+                    $berkas->status = $request->status;
+                } else {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => "Status tidak valid. Urutan perubahan harus sesuai: $current → $next",
+                    ], 422);
+                }
+            }
         }
 
-        // Pegawai juga bisa ubah status ke "Telah dikirim ke BKD" (jika kamu izinkan)
-        if ($pegawai && $request->filled('status') && $request->status === 'Telah dikirim ke BKD') {
-            $berkas->status = $request->status;
-        }
-
-        // Simpan perubahan
         $berkas->save();
 
         return response()->json([
@@ -117,6 +145,7 @@ class BerkasApiController extends Controller
             'data' => $berkas->fresh(),
         ], 200);
     }
+
 
     public function store(Request $request)
     {

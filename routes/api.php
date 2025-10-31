@@ -71,7 +71,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::get('/berkas/{id}', [BerkasApiController::class, 'show']);
       Route::post('/berkas',[BerkasApiController::class,'store']);
       Route::delete('/berkas/{id}',[BerkasApiController::class,'destroy']);
-      Route::put('/berkas/{id}',[BerkasApiController::class,'update']);
+      Route::post('/berkas/{id}/update',[BerkasApiController::class,'update']);
    });
    
    // Route::get('/berkas',[BerkasApiController::class,'index']);

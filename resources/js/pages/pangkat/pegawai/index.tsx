@@ -23,6 +23,7 @@ interface Pegawai {
     jenis_kelamin: string;
     alamat: string;
     status: string;
+    tmt_golongan: string;
     is_active: boolean;
     created_at: string;
 }
@@ -103,6 +104,7 @@ export default function Index() {
                         <TableHead>Email</TableHead>
                         <TableHead>Jenis Kelamin</TableHead>
                         <TableHead>Alamat</TableHead>
+                        <TableHead>TMT</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Aksi</TableHead>
                     </TableRow>
@@ -116,6 +118,7 @@ export default function Index() {
                             <TableCell>{item.email}</TableCell>
                             <TableCell className="capitalize">{item.jenis_kelamin}</TableCell>
                             <TableCell className='capitalize'>{item.alamat}</TableCell>
+                            <TableCell className='capitalize'>{item.tmt_golongan}</TableCell>
                             <TableCell>
                                 <span
                                     className={`px-2 py-1 rounded-full text-sm font-semibold ${
