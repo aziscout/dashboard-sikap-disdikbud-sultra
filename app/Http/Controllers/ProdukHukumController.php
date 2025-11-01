@@ -11,7 +11,13 @@ use Illuminate\Support\Facades\Storage;
 class ProdukHukumController extends Controller
 {
     public function index() {
-        $produk_hukum = ProdukHukum::all();
+        $produk_hukum = ProdukHukum::with('dokumens')->get();
+
+        $produk_hukum->transform(function ($item) {
+            $item->dokumen = $item->dokumens->dokumen ?? null;
+            return $item;
+        });
+
         return Inertia::render("produk-hukum/index", compact('produk_hukum'));
     }
 

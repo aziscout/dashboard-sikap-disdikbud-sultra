@@ -82,6 +82,4 @@ class PegawaiController extends Controller
             'berkas' => $pegawai->berkas,
         ]);
     }
-
-
 }

@@ -112,7 +112,7 @@ export default function Show() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Jenis Dokumen</TableHead>
-                                        <TableHead>Nama Dokumen</TableHead>
+                                        <TableHead>Status Dokumen</TableHead>
                                         <TableHead className="text-center">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -120,7 +120,9 @@ export default function Show() {
                                     {daftarBerkas.map((item) => (
                                         <TableRow key={item.key}>
                                             <TableCell>{item.label}</TableCell>
-                                            <TableCell>{berkas[0]?.[item.key as keyof Berkas] || '-'}</TableCell>
+                                            <TableCell>
+                                                {berkas[0]?.[item.key as keyof Berkas] ? 'Tersedia' : '-'}
+                                            </TableCell>
                                             <TableCell className="flex justify-center gap-2">
                                                 {berkas[0]?.[item.key as keyof Berkas] && (
                                                     <>

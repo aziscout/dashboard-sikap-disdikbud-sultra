@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Berkas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -9,6 +11,26 @@ class RiwayatController extends Controller
 {
     public function index()
     {
-        return Inertia::render('pangkat/riwayat/index',[]);
+        $riwayat = Berkas::with(['pegawai'])
+            ->where('status', 'sk telah terbit')
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->pegawai->nama ?? '-',
+                    'email' => $item->pegawai->email ?? '-',
+                    'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
+                    'alamat' => $item->pegawai->alamat ?? '-',
+                    'tmt_golongan' => optional($item->pegawai->dataDiri)->tmt_golongan
+                        ? Carbon::parse($item->pegawai->dataDiri->tmt_golongan)->format('d/m/Y')
+                        : '-',
+                    'tanggal_naik_pangkat' => Carbon::parse($item->updated_at)->format('d/m/Y'),
+                ];
+            });
+
+        return Inertia::render('pangkat/riwayat/index', [
+            'riwayat' => $riwayat,
+        ]);
     }
 }

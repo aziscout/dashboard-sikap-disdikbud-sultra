@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { CalendarDays, ListFilterPlus, Megaphone, Plus, Scale, SquarePen, Trash2 } from 'lucide-react';
+import { CalendarDays, FileText, ListFilterPlus, Megaphone, Plus, Scale, SquarePen, Trash2 } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { useMemo, useState } from 'react';
@@ -208,8 +208,10 @@ export default function Index() {
                                         {categories.find(c => c.value === produk.category)?.label}
                                     </p>
                                 )}
+
                                 <p className="text-gray-600 dark:text-gray-300">{produk.deskripsi}</p>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
+
+                                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mt-2">
                                     <CalendarDays className='w-4 h-4'/>
                                     {new Date(produk.created_at).toLocaleDateString("id-ID", {
                                         day: "numeric",
@@ -217,6 +219,18 @@ export default function Index() {
                                         year: "numeric",
                                     })}
                                 </p>
+                                {produk.dokumen ? (
+                                    <a
+                                        href={`/storage/${produk.dokumen}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline text-sm flex gap-1 w-30"
+                                    >
+                                        <FileText className='w-4 h-4'/>Lihat Dokumen
+                                    </a>
+                                    ) : (
+                                    <p className="text-gray-400 text-sm mt-2">Tidak ada dokumen</p>
+                                )}
                             </div>
 
                             {/* Aksi */}
@@ -227,11 +241,11 @@ export default function Index() {
                                     </Button>
                                 </Link>
                                 <Button
-                                  disabled={processing}
-                                  onClick={() => handleOpenDialog(produk.id, produk.judul)}
-                                  className="bg-red-600 hover:bg-red-500 text-white flex-1"
+                                    disabled={processing}
+                                    onClick={() => handleOpenDialog(produk.id, produk.judul)}
+                                    className="bg-red-600 hover:bg-red-500 text-white flex-1"
                                 >
-                                  <Trash2 />Hapus
+                                    <Trash2 />Hapus
                                 </Button>
                             </div>
                         </div>

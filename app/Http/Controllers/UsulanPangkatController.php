@@ -140,10 +140,10 @@ class UsulanPangkatController extends Controller
             $dataDiri = DataDiri::where('pegawais_id', $id)->first();
             if ($dataDiri) {
                 $urutanGolongan = [
-                    'I/a', 'I/b', 'I/c', 'I/d',
-                    'II/a', 'II/b', 'II/c', 'II/d',
-                    'III/a', 'III/b', 'III/c', 'III/d',
-                    'IV/a', 'IV/b', 'IV/c', 'IV/d', 'IV/e',
+                    'I/A', 'I/B', 'I/C', 'I/D',
+                    'II/A', 'II/B', 'II/C', 'II/D',
+                    'III/A', 'III/B', 'III/C', 'III/D',
+                    'IV/A', 'IV/B', 'IV/C', 'IV/D', 'IV/E',
                 ];
 
                 $current = strtoupper(trim($dataDiri->golongan_ruang));
@@ -154,17 +154,20 @@ class UsulanPangkatController extends Controller
                     $dataDiri->golongan_ruang = $nextGolongan;
                 }
 
-                // Update tanggal SK & TMT ke hari ini
-                $today = now()->toDateString();
-                $dataDiri->tanggal_sk = $today;
-                $dataDiri->tmt_golongan = $today;
+                // 📅 Tanggal SK = hari ini
+                $today = now();
+                $dataDiri->tanggal_sk = $today->toDateString();
+
+                // ⏩ TMT golongan = 4 tahun setelah SK terbit
+                $dataDiri->tmt_golongan = $today->copy()->addYears(4)->toDateString();
 
                 $dataDiri->save();
             }
 
             return redirect()->route('pangkat.usulanPangkat.status', $id)
-                ->with('message', 'File SK berhasil diunggah dan pegawai berhasil naik pangkat.')
+                ->with('message', 'File SK berhasil diunggah.')
                 ->with('error', false);
         }
+
     }
 }

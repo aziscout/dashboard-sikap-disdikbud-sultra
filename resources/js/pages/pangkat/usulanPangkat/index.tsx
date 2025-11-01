@@ -134,7 +134,8 @@ export default function Index() {
                                     rel="noopener noreferrer"
                                 >
                                     <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3">
-                                    {pegawai.berkas[0].sk_pns.slice(0, 8)}...
+                                    {/* {pegawai.berkas[0].sk_pns.slice(0, 8)}... */}
+                                        Lihat dokumen
                                     </Button>
                                 </a>
                                 ) : (
@@ -150,7 +151,8 @@ export default function Index() {
                                     rel="noopener noreferrer"
                                 >
                                     <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3">
-                                    {pegawai.berkas[0].sk_cpns.slice(0, 8)}...
+                                    {/* {pegawai.berkas[0].sk_cpns.slice(0, 8)}... */}
+                                        Lihat dokumen
                                     </Button>
                                 </a>
                                 ) : (
@@ -166,7 +168,8 @@ export default function Index() {
                                     rel="noopener noreferrer"
                                 >
                                     <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3">
-                                    {pegawai.berkas[0].sk_gaji_berkala.slice(0, 8)}...
+                                    {/* {pegawai.berkas[0].sk_gaji_berkala.slice(0, 8)}... */}
+                                        Lihat dokumen
                                     </Button>
                                 </a>
                                 ) : (
@@ -182,7 +185,8 @@ export default function Index() {
                                     rel="noopener noreferrer"
                                 >
                                     <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3">
-                                    {pegawai.berkas[0].sk_jabatan.slice(0, 8)}...
+                                    {/* {pegawai.berkas[0].sk_jabatan.slice(0, 8)}... */}
+                                        Lihat dokumen
                                     </Button>
                                 </a>
                                 ) : (
@@ -198,7 +202,8 @@ export default function Index() {
                                     rel="noopener noreferrer"
                                 >
                                     <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3">
-                                    {pegawai.berkas[0].sk_pangkat_terakhir.slice(0, 8)}...
+                                    {/* {pegawai.berkas[0].sk_pangkat_terakhir.slice(0, 8)}... */}
+                                        Lihat dokumen
                                     </Button>
                                 </a>
                                 ) : (

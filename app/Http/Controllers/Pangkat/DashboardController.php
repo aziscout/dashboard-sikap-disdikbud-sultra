@@ -63,10 +63,10 @@ class DashboardController extends Controller
     private function getNextGolongan($current)
     {
         $urutanGolongan = [
-            'I/a', 'I/b', 'I/c', 'I/d',
-            'II/a', 'II/b', 'II/c', 'II/d',
-            'III/a', 'III/b', 'III/c', 'III/d',
-            'IV/a', 'IV/b', 'IV/c', 'IV/d', 'IV/e',
+            'I/A', 'I/B', 'I/C', 'I/D',
+            'II/A', 'II/B', 'II/C', 'II/D',
+            'III/A', 'III/B', 'III/C', 'III/D',
+            'IV/A', 'IV/B', 'IV/C', 'IV/D', 'IV/E',
         ];
 
         $current = strtoupper(trim($current)); // normalisasi input
