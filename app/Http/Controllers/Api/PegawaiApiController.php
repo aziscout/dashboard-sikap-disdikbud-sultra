@@ -52,7 +52,7 @@ class PegawaiApiController extends Controller
             'email' => 'required|string|email|unique:pegawais,email',
             'password' => 'required|string|min:8|confirmed',
             'nip' => 'required|integer|unique:pegawais,nip',
-            'nomor' => 'required|integer|unique:pegawais,nomor',
+            'nomor' => 'required|chart|unique:pegawais,nomor',
             'agama' => 'required|in:islam,kristen protestan,katolik,buddha,hindu,konghucu',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'alamat' => 'required|string|max:255',
