@@ -212,7 +212,8 @@ const { auth } = usePage<PageProps>().props;
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
-                <NavPangkat items={mainNavPangkat} />
+                {/* <NavPangkat items={mainNavPangkat} /> */}
+                {mainNavPangkat.length > 0 && <NavPangkat items={mainNavPangkat} />}
             </SidebarContent>
 
             <SidebarFooter>
