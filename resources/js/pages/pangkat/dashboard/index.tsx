@@ -24,11 +24,12 @@ interface Pegawai {
 interface PageProps {
   totalPegawai: number;
   totalNaikPangkat: number;
+  totalSudahNaikPangkat: number;
   pegawaiNaikPangkat: Pegawai[];
 }
 
 export default function Dashboard() {
-  const { totalPegawai, totalNaikPangkat, pegawaiNaikPangkat } =
+  const { totalPegawai, totalNaikPangkat, totalSudahNaikPangkat, pegawaiNaikPangkat } =
     usePage().props as unknown as PageProps;
 
   return (
@@ -39,82 +40,97 @@ export default function Dashboard() {
 
         {/* Statistik */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-indigo-50">
+          {/* Card 1 */}
+          <Card className="bg-gradient-to-br from-indigo-500 via-sky-500 to-blue-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 border border-white/20 rounded-2xl">
             <CardContent className="flex items-center justify-between p-6">
               <div>
-                <h2 className="text-gray-700 font-semibold">Total Pegawai</h2>
-                <p className="text-4xl font-bold">{totalPegawai}</p>
+                <h2 className="text-indigo-100 uppercase tracking-wide text-sm">Total Pegawai</h2>
+                <p className="text-4xl font-extrabold mt-1 drop-shadow-md">{totalPegawai}</p>
               </div>
-              <Users className="text-indigo-500 w-10 h-10" />
+              <div className="bg-white/20 p-3 rounded-full backdrop-blur-md">
+                <Users className="w-8 h-8 text-white" />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-pink-50">
+          {/* Card 2 */}
+          <Card className="bg-gradient-to-br from-pink-500 via-rose-400 to-orange-400 text-white shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 border border-white/20 rounded-2xl">
             <CardContent className="flex items-center justify-between p-6">
               <div>
-                <h2 className="text-gray-700 font-semibold">Total Naik Pangkat</h2>
-                <p className="text-4xl font-bold">{totalNaikPangkat}</p>
+                <h2 className="text-pink-100 uppercase tracking-wide text-sm">Siap Naik Pangkat</h2>
+                <p className="text-4xl font-extrabold mt-1 drop-shadow-md">{totalNaikPangkat}</p>
               </div>
-              <ArrowUpCircle className="text-pink-500 w-10 h-10" />
+              <div className="bg-white/20 p-3 rounded-full backdrop-blur-md">
+                <ArrowUpCircle className="w-8 h-8 text-white" />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-green-50">
-            <CardContent className="flex items-center justify-center p-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-500">100%</p>
-                <p className="text-sm text-gray-600">Kinerja Kenaikan Pangkat</p>
+          {/* Card 3 */}
+          <Card className="bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 border border-white/20 rounded-2xl">
+            <CardContent className="flex items-center justify-between p-6">
+              <div>
+                <h2 className="text-emerald-100 uppercase tracking-wide text-sm">
+                  Sudah Naik Pangkat Tahun {new Date().getFullYear()}
+                </h2>
+                <p className="text-4xl font-extrabold mt-1 drop-shadow-md">
+                  {totalSudahNaikPangkat}
+                </p>
+              </div>
+              <div className="bg-white/20 p-3 rounded-full backdrop-blur-md">
+                <ArrowUpCircle className="w-8 h-8 text-white" />
               </div>
             </CardContent>
           </Card>
+
         </div>
 
-            <div className="flex justify-between items-center ">
-              <h2 className="text-lg font-semibold">
-                Daftar Kenaikan Pangkat Pegawai Tahun Ini
-              </h2>
-              <Link href={route('pegawai.index')}>
-                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                  Lihat Semua
-                </Button>
-              </Link>
-            </div>
+        <div className="flex justify-between items-center ">
+          <h2 className="text-lg font-semibold">
+            Daftar Kenaikan Pangkat Pegawai Tahun Ini
+          </h2>
+          <Link href={route('pegawai.index')}>
+            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+              Lihat Semua
+            </Button>
+          </Link>
+        </div>
 
-            <div className="overflow-hidden shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[30%]">Nama</TableHead>
-                    <TableHead>Golongan</TableHead>
-                    <TableHead>Jenis Kelamin</TableHead>
-                    <TableHead>Alamat</TableHead>
-                    <TableHead>TMT</TableHead>
+        <div className="overflow-hidden shadow-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[30%]">Nama</TableHead>
+                <TableHead>Golongan</TableHead>
+                <TableHead>Jenis Kelamin</TableHead>
+                <TableHead>Alamat</TableHead>
+                <TableHead>TMT</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pegawaiNaikPangkat.length > 0 ? (
+                pegawaiNaikPangkat.map((p, index) => (
+                  <TableRow key={index} className="hover:bg-gray-50">
+                    <TableCell className="font-medium">{p.nama}</TableCell>
+                    <TableCell>{p.golongan_ruang}</TableCell>
+                    <TableCell className='capitalize'>{p.jenis_kelamin}</TableCell>
+                    <TableCell className='capitalize'>{p.alamat}</TableCell>
+                    <TableCell>{p.tmt_golongan}</TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pegawaiNaikPangkat.length > 0 ? (
-                    pegawaiNaikPangkat.map((p, index) => (
-                      <TableRow key={index} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{p.nama}</TableCell>
-                        <TableCell>{p.golongan_ruang}</TableCell>
-                        <TableCell>{p.jenis_kelamin}</TableCell>
-                        <TableCell>{p.alamat}</TableCell>
-                        <TableCell>{p.tmt_golongan}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={5}
-                        className="text-center py-6 text-gray-500"
-                      >
-                        Tidak ada pegawai yang naik pangkat tahun ini.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-6 text-gray-500"
+                  >
+                    Tidak ada pegawai yang naik pangkat tahun ini.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </AppLayout>
   );

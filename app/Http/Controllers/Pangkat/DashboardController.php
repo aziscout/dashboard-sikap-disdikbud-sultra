@@ -37,9 +37,16 @@ class DashboardController extends Controller
             })
             ->count();
 
+        $totalSudahNaikPangkat = DataDiri::whereHas('pegawai.berkas', function ($query) use ($tahunSekarang) {
+            $query->where('status', 'sk telah terbit')
+                ->whereYear('updated_at', $tahunSekarang);
+            })->count();
+
+
         return Inertia::render('pangkat/dashboard/index', [
             'totalPegawai' => $totalPegawai,
             'totalNaikPangkat' => $totalNaikPangkat,
+            'totalSudahNaikPangkat' => $totalSudahNaikPangkat,
             'pegawaiNaikPangkat' => $pegawaiNaikPangkat->map(function ($item) {
                 $currentGolongan = $item->golongan_ruang ?? '-';
                 $nextGolongan = $this->getNextGolongan($currentGolongan);
