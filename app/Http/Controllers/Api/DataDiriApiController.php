@@ -49,7 +49,9 @@ class DataDiriApiController extends Controller
             'masa_gk_bulanan' => 'required|string|max:50',
             'masa_gk_tahunan' => 'required|integer|max:50',
             'golongan_ruang' => 'required|string|max:50',
-            'jenis_kp' => 'required|string|max:20'
+            'jenis_kp' => 'required|string|max:20',
+            'pangkat' => 'required|string',
+            'gaji_pokok' => 'required|integer',
         ]);
 
         // Add pegawais_id from authenticated user
@@ -111,7 +113,9 @@ class DataDiriApiController extends Controller
             'masa_gk_bulanan' => 'sometimes|string|max:50',
             'masa_gk_tahunan' => 'sometimes|integer|max:50',
             'golongan_ruang' => 'sometimes|string|max:50',
-            'jenis_kp' => 'sometimes|string|max:20'
+            'jenis_kp' => 'sometimes|string|max:20',
+            'pangkat' => 'sometimes|string',
+            'gaji_pokok' => 'sometimes|integer',
         ]);
 
         $data->update($validated);

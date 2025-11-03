@@ -18,6 +18,8 @@ return new class extends Migration {
             $table->integer('masa_gk_tahunan');
             $table->string('golongan_ruang');
             $table->string('jenis_kp');
+            $table->string('pangkat');
+            $table->integer('gaji_pokok');
             $table->foreignId('pegawais_id')->unique()->constrained('pegawais')->onDelete('cascade');
             $table->timestamps();
         });

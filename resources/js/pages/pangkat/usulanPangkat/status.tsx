@@ -26,6 +26,8 @@ interface DataDiri {
   nomor_sk: string;
   masa_gk_tahunan: number;
   masa_gk_bulanan: string;
+  pangkat: string;
+  gaji_pokok: number;
 }
 
 interface Berkas {
@@ -53,6 +55,11 @@ export default function Status() {
   const [flashMessage, setFlashMessage] = useState<string | null>(flash?.message || null);
   // const [flashError, setFlashError] = useState<boolean>(flash?.error || false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const formatRupiah = (value?: number) => {
+    if (!value) return '-';
+    return 'Rp ' + value.toLocaleString('id-ID');
+  };
 
   // 🧠 Jika backend mengirim flash error (status gagal diperbarui)
   useEffect(() => {
@@ -159,7 +166,9 @@ export default function Status() {
                 <li><strong>Masa Kerja Golongan (Bulan)</strong> : {data_diri.masa_gk_bulanan}</li>
                 <li><strong>Nomor Surat</strong> : {data_diri.nomor_sk}</li>
                 <li><strong>TMT Golongan</strong> : {data_diri?.tmt_golongan}</li>
+                <li><strong>Pangkat Lama</strong> : {data_diri?.pangkat}</li>
                 <li><strong>Golongan/Ruang</strong> : {data_diri?.golongan_ruang}</li>
+                <li><strong>Gaji Pokok</strong> : {formatRupiah(data_diri?.gaji_pokok)}</li>
                 <li className="text-gray-500 italic mt-3">
                   Dibuat pada: {new Date().toLocaleDateString('id-ID')}
                 </li>

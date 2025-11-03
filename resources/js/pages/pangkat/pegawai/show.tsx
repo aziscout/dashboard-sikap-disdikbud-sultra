@@ -27,6 +27,8 @@ interface DataDiri {
     tanggal_sk: string;
     nomor_pertek_bkn: string;
     tanggal_pertek_bkn: string;
+    pangkat: string;
+    gaji_pokok: number;
 }
 
 interface Berkas {
@@ -72,6 +74,14 @@ export default function Show() {
         { label: 'Tanggal Surat Keputusan (SK)', value: data_diri?.tanggal_sk },
         { label: 'Nomor Pertek BKN', value: data_diri?.nomor_pertek_bkn },
         { label: 'Tanggal Pertek BKN', value: data_diri?.tanggal_pertek_bkn },
+        { label: 'Pangkat Lama', value: data_diri?.pangkat },
+        // { label: 'Gaji Pokok', value: data_diri?.gaji_pokok },
+        { 
+        label: 'Gaji Pokok', 
+        value: data_diri?.gaji_pokok 
+            ? `Rp ${data_diri.gaji_pokok.toLocaleString('id-ID')}` 
+            : '-' 
+        },
     ];
 
     return (
