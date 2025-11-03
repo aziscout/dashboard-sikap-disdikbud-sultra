@@ -133,7 +133,7 @@ export default function Index() {
                             <TableCell>
                                     {item.is_active ? (
                                         <Link href={route('pegawai.show', item.id)} title="Detail">
-                                            <Button className="bg-blue-500 hover:bg-blue-600">
+                                            <Button className="bg-blue-500 hover:bg-blue-600 dark:text-white">
                                                 <Eye />
                                             </Button>
                                         </Link>

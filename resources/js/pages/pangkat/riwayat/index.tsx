@@ -115,7 +115,7 @@ export default function RiwayatIndex() {
                         <TableCell>{item.tmt_golongan}</TableCell>
                         <TableCell>
                             <Link href={route('pegawai.show', item.id)} title="Detail">
-                            <Button className="bg-blue-500 hover:bg-blue-600">
+                            <Button className="bg-blue-500 hover:bg-blue-600 dark:text-white">
                                 <Eye />
                             </Button>
                             </Link>

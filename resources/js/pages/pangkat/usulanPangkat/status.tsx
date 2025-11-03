@@ -24,6 +24,8 @@ interface DataDiri {
   golongan_ruang: string;
   tmt_golongan: string;
   nomor_sk: string;
+  masa_gk_tahunan: number;
+  masa_gk_bulanan: string;
 }
 
 interface Berkas {
@@ -153,9 +155,11 @@ export default function Status() {
                 <li><strong>NIP</strong> : {pegawai.nip}</li>
                 <li><strong>Nama</strong> : {pegawai.nama}</li>
                 <li><strong>Jenis Kelamin</strong> : {pegawai.jenis_kelamin}</li>
+                <li><strong>Masa Kerja Golongan (Tahun)</strong> : {data_diri.masa_gk_tahunan}</li>
+                <li><strong>Masa Kerja Golongan (Bulan)</strong> : {data_diri.masa_gk_bulanan}</li>
                 <li><strong>Nomor Surat</strong> : {data_diri.nomor_sk}</li>
                 <li><strong>TMT Golongan</strong> : {data_diri?.tmt_golongan}</li>
-                <li><strong>Golongan Ruang</strong> : {data_diri?.golongan_ruang}</li>
+                <li><strong>Golongan/Ruang</strong> : {data_diri?.golongan_ruang}</li>
                 <li className="text-gray-500 italic mt-3">
                   Dibuat pada: {new Date().toLocaleDateString('id-ID')}
                 </li>

@@ -212,7 +212,7 @@ export default function Index() {
                             </TableCell>
                             <TableCell>
                                 <Link href={route('pangkat.usulanPangkat.status', pegawai.id)} title='Cek Status'>
-                                    <Button className='bg-blue-500 hover:bg-blue-600'>
+                                    <Button className='bg-blue-500 hover:bg-blue-600 dark:text-white'>
                                         <Eye/>
                                     </Button>
                                 </Link>

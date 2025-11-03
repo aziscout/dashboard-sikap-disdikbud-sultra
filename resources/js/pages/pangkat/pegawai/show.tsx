@@ -90,11 +90,11 @@ export default function Show() {
                     </CardHeader>
                     <CardContent>
                         <div>
-                            <ul className="divide-y divide-gray-100 text-sm">
+                            <ul className="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
                                 {dataDiri.map((item, index) => (
                                     <li key={index} className="grid grid-cols-2 px-4 py-2 sm:px-6">
-                                        <span className="font-bold text-gray-700">{item.label}</span>
-                                        <span className="text-gray-900">: {item.value || '-'}</span>
+                                        <span className="font-bold text-gray-700 dark:text-white">{item.label}</span>
+                                        <span className="text-gray-900 dark:text-white">: {item.value || '-'}</span>
                                     </li>
                                 ))}
                             </ul>
