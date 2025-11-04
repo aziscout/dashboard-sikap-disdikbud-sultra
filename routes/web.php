@@ -144,6 +144,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['permission:Riwayat'])->group(function() {
         Route::get('/pangkat/riwayat', [RiwayatController::class, 'index'])->name('pangkat.riwayat');
+        Route::get('/pangkat/riwayat/show/{id}', [RiwayatController::class, 'show'])->name('pangkat.riwayat.show');
     });
 });
 

@@ -32,7 +32,7 @@ interface PageProps {
     riwayat: Riwayat[];
 }
 
-export default function RiwayatIndex() {
+export default function Index() {
     const { riwayat, flash } = usePage().props as unknown as PageProps;
     const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
     const [searchQuery, setSearchQuery] = useState('');
@@ -99,7 +99,7 @@ export default function RiwayatIndex() {
                     <TableHead>Alamat</TableHead>
                     <TableHead>Tanggal Naik Pangkat</TableHead>
                     <TableHead>TMT</TableHead>
-                    {/* <TableHead>Aksi</TableHead> */}
+                    <TableHead>Aksi</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -114,7 +114,7 @@ export default function RiwayatIndex() {
                         <TableCell>{item.tanggal_naik_pangkat}</TableCell>
                         <TableCell>{item.tmt_golongan}</TableCell>
                         <TableCell>
-                            <Link href={route('pegawai.show', item.id)} title="Detail">
+                            <Link href={route('pangkat.riwayat.show', item.id)} title="Detail">
                                 <Button className="bg-blue-500 hover:bg-blue-600 dark:text-white">
                                     <Eye />
                                 </Button>
