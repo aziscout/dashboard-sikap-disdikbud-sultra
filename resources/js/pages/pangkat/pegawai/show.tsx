@@ -74,7 +74,7 @@ export default function Show() {
         { label: 'Tanggal Surat Keputusan (SK)', value: data_diri?.tanggal_sk },
         { label: 'Nomor Pertek BKN', value: data_diri?.nomor_pertek_bkn },
         { label: 'Tanggal Pertek BKN', value: data_diri?.tanggal_pertek_bkn },
-        { label: 'Pangkat Lama', value: data_diri?.pangkat },
+        { label: 'Pangkat', value: data_diri?.pangkat },
         // { label: 'Gaji Pokok', value: data_diri?.gaji_pokok },
         { 
         label: 'Gaji Pokok', 

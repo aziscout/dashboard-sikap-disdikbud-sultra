@@ -110,7 +110,7 @@ export default function Dashboard() {
             <TableBody>
               {pegawaiNaikPangkat.length > 0 ? (
                 pegawaiNaikPangkat.map((p, index) => (
-                  <TableRow key={index} className="hover:bg-gray-50">
+                  <TableRow key={index}>
                     <TableCell className="font-medium">{p.nama}</TableCell>
                     <TableCell>{p.golongan_ruang}</TableCell>
                     <TableCell className='capitalize'>{p.jenis_kelamin}</TableCell>

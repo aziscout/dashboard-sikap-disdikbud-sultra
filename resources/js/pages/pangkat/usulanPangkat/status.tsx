@@ -166,7 +166,7 @@ export default function Status() {
                 <li><strong>Masa Kerja Golongan (Bulan)</strong> : {data_diri.masa_gk_bulanan}</li>
                 <li><strong>Nomor Surat</strong> : {data_diri.nomor_sk}</li>
                 <li><strong>TMT Golongan</strong> : {data_diri?.tmt_golongan}</li>
-                <li><strong>Pangkat Lama</strong> : {data_diri?.pangkat}</li>
+                <li><strong>Pangkat</strong> : {data_diri?.pangkat}</li>
                 <li><strong>Golongan/Ruang</strong> : {data_diri?.golongan_ruang}</li>
                 <li><strong>Gaji Pokok</strong> : {formatRupiah(data_diri?.gaji_pokok)}</li>
                 <li className="text-gray-500 italic mt-3">

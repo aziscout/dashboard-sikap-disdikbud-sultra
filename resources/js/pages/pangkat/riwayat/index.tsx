@@ -4,11 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Eye, ListFilterPlus, Megaphone } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Link } from '@inertiajs/react';
+// import { Link } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { 
@@ -99,7 +99,7 @@ export default function RiwayatIndex() {
                     <TableHead>Alamat</TableHead>
                     <TableHead>Tanggal Naik Pangkat</TableHead>
                     <TableHead>TMT</TableHead>
-                    <TableHead>Aksi</TableHead>
+                    {/* <TableHead>Aksi</TableHead> */}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -115,9 +115,9 @@ export default function RiwayatIndex() {
                         <TableCell>{item.tmt_golongan}</TableCell>
                         <TableCell>
                             <Link href={route('pegawai.show', item.id)} title="Detail">
-                            <Button className="bg-blue-500 hover:bg-blue-600 dark:text-white">
-                                <Eye />
-                            </Button>
+                                <Button className="bg-blue-500 hover:bg-blue-600 dark:text-white">
+                                    <Eye />
+                                </Button>
                             </Link>
                         </TableCell>
                         </TableRow>
