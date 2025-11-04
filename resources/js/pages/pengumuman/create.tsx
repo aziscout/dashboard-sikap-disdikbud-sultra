@@ -112,11 +112,15 @@ export default function CreatePengumuman() {
 
             <div>
               <Label htmlFor="category">Kategori</Label>
-              <Input
-                placeholder="Cth : Prestasi, Inovasi, Ujian"
-                value={data.category}
-                onChange={(e) => setData('category', e.target.value)}
-              />
+              <Select value={data.category} onValueChange={(val) => setData('category', val)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="foto">Foto</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
@@ -129,15 +133,17 @@ export default function CreatePengumuman() {
               />
             </div>
 
-            <div>
-              <Label>Link Video</Label>
-              <Input
-                type="url"
-                placeholder="https://youtube.com/..."
-                defaultValue={data.video_urls}
-                onChange={(e) => setData('video_urls', e.target.value)}
-              />
-            </div>
+            {data.category.toLowerCase() !== 'foto' && (
+              <div>
+                <Label>Link Video</Label>
+                <Input
+                  type="url"
+                  placeholder="https://youtube.com/..."
+                  defaultValue={data.video_urls}
+                  onChange={(e) => setData('video_urls', e.target.value)}
+                />
+              </div>
+            )}
 
             <div>
               <Label htmlFor="instansi">Instansi</Label>
@@ -202,67 +208,69 @@ export default function CreatePengumuman() {
           </div>
 
           {/* UPLOAD FOTO */}
-          <div className="space-y-2 rounded border p-4">
-            <Label className="mr-5">Upload Foto</Label>
+          {data.category.toLowerCase() !== 'video' && (
+            <div className="space-y-2 rounded border p-4">
+              <Label className="mr-5">Upload Foto</Label>
 
-            {previewFileUrls.length > 0 ? (
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {previewFileUrls.map((url, i) => (
-                  <div key={i}>
-                    <img src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
-                    <div className="mt-2 flex justify-center">
-                      <Button
-                        type="button"
-                        className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
-                        onClick={() => {
-                          const updatedFiles = data.files.filter((_, idx) => idx !== i);
-                          setData('files', updatedFiles);
-                          setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
-                        }}
-                      >
-                        <Trash2 /> Hapus
-                      </Button>
+              {previewFileUrls.length > 0 ? (
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {previewFileUrls.map((url, i) => (
+                    <div key={i}>
+                      <img src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
+                      <div className="mt-2 flex justify-center">
+                        <Button
+                          type="button"
+                          className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
+                          onClick={() => {
+                            const updatedFiles = data.files.filter((_, idx) => idx !== i);
+                            setData('files', updatedFiles);
+                            setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
+                          }}
+                        >
+                          <Trash2 /> Hapus
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {/* Add Photo Card */}
-                {previewFileUrls.length < 5 && (
-                  <div
-                    className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.multiple = true;
-                      input.onchange = (e: Event) => {
-                        handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
-                      };
-                      input.click();
-                    }}
-                  >
-                    <Plus /> Tambah Foto
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div
-                className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.accept = 'image/*';
-                  input.multiple = true;
-                  input.onchange = (e: Event) => {
-                    handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
-                  };
-                  input.click();
-                }}
-              >
-                <Plus /> Tambah Foto
-              </div>
-            )}
-          </div>
+                  {/* Add Photo Card */}
+                  {previewFileUrls.length < 5 && (
+                    <div
+                      className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.multiple = true;
+                        input.onchange = (e: Event) => {
+                          handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
+                        };
+                        input.click();
+                      }}
+                    >
+                      <Plus /> Tambah Foto
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.multiple = true;
+                    input.onchange = (e: Event) => {
+                      handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
+                    };
+                    input.click();
+                  }}
+                >
+                  <Plus /> Tambah Foto
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>

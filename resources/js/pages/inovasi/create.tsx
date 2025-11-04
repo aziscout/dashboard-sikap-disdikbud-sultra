@@ -36,6 +36,22 @@ export default function CreateInovasi() {
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
+  const [formatDokumentasi, setFormatDokumentasi] = useState<string>('');
+
+
+
+  const handleFormatChange = (value: string) => {
+    setFormatDokumentasi(value);
+    // Reset video_urls if switching from video to foto
+    if (value.toLowerCase() !== 'video') {
+      setData('video_urls', '');
+    }
+    // Clear files if switching from foto to video
+    if (value.toLowerCase() === 'video') {
+      setData('files', []);
+      setPreviewFileUrls([]);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,11 +123,19 @@ export default function CreateInovasi() {
 
             <div>
               <Label htmlFor="kategori">Kategori</Label>
-              <Input
-                placeholder="Cth : Prestasi, Inovasi, Ujian"
-                value={data.category}
-                onChange={(e) => setData('category', e.target.value)}
-              />
+              <Select value={data.category} onValueChange={(val) => setData('category', val)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Workshop">Workshop</SelectItem>
+                  <SelectItem value="Monitoring">Monitoring</SelectItem>
+                  <SelectItem value="Sosialisasi">Sosialisasi</SelectItem>
+                  <SelectItem value="Pelatihan">Pelatihan</SelectItem>
+                  <SelectItem value="Lomba">Lomba</SelectItem>
+                  <SelectItem value="Evaluasi">Evaluasi</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
@@ -125,14 +149,19 @@ export default function CreateInovasi() {
             </div>
 
             <div>
-              <Label>Link Video</Label>
-              <Input
-                type="url"
-                placeholder="https://youtube.com/..."
-                value={data.video_urls}
-                onChange={(e) => setData('video_urls', e.target.value)}
-              />
+              <Label htmlFor="format_dokumentasi">Format Dokumentasi</Label>
+              <Select value={formatDokumentasi} onValueChange={handleFormatChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Format Dokumentasi" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="foto">Foto</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            
 
             <div>
               <Label htmlFor="instansi">Instansi</Label>
@@ -182,18 +211,6 @@ export default function CreateInovasi() {
                   alt="Preview Cover"
                   className="h-30 w-46 rounded object-cover"
                 />
-                {/* <div className="mt-2 flex justify-center">
-                  <Button
-                    type="button"
-                    className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
-                    onClick={() => {
-                      setData('coverImage', null);
-                      setPreviewCoverUrl(null);
-                    }}
-                  >
-                    <Trash2 /> Hapus
-                  </Button>
-                </div> */}
               </div>
             ) : (
               <div className="flex h-30 items-center justify-center rounded border text-gray-500">
@@ -201,70 +218,83 @@ export default function CreateInovasi() {
               </div>
             )}
           </div>
-
-          {/* UPLOAD FOTO */}
-          <div className="space-y-2 rounded border p-4">
-            <Label className="mr-5">Upload Foto</Label>
-            {previewFileUrls.length > 0 ? (
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {previewFileUrls.map((url, i) => (
-                  <div key={i}>
-                    <img
-                      src={url}
-                      alt={`Preview File ${i}`}
-                      className="h-30 w-full rounded object-cover"
-                    />
-                    <div className="mt-2 flex justify-center">
-                      <Button
-                        type="button"
-                        className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
-                        onClick={() => {
-                          const updatedFiles = data.files.filter((_, idx) => idx !== i);
-                          setData('files', updatedFiles);
-                          setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
-                        }}
-                      >
-                        <Trash2 /> Hapus
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                {data.files.length < MAX_FILES && (
-                  <div
-                    className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.multiple = true;
-                      input.onchange = (e: Event) => {
-                        handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
-                      };
-                      input.click();
-                    }}
-                  >
-                    <Plus /> Tambah Foto
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div
-                className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.accept = 'image/*';
-                  input.multiple = true;
-                  input.onchange = (e: Event) => {
-                    handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
-                  };
-                  input.click();
-                }}
-              >
-                <Plus /> Tambah Foto
+          {formatDokumentasi.toLowerCase() === 'video' && (
+              <div>
+                <Label>Link Video</Label>
+                <Input
+                  type="url"
+                  placeholder="https://youtube.com/..."
+                  value={data.video_urls}
+                  onChange={(e) => setData('video_urls', e.target.value)}
+                />
               </div>
             )}
-          </div>
+
+          {/* UPLOAD FOTO */}
+          {formatDokumentasi.toLowerCase() !== 'video' && (
+            <div className="space-y-2 rounded border p-4">
+              <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
+              {previewFileUrls.length > 0 ? (
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {previewFileUrls.map((url, i) => (
+                    <div key={i}>
+                      <img
+                        src={url}
+                        alt={`Preview File ${i}`}
+                        className="h-30 w-full rounded object-cover"
+                      />
+                      <div className="mt-2 flex justify-center">
+                        <Button
+                          type="button"
+                          className="flex items-center gap-1 bg-red-600 hover:bg-red-500"
+                          onClick={() => {
+                            const updatedFiles = data.files.filter((_, idx) => idx !== i);
+                            setData('files', updatedFiles);
+                            setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
+                          }}
+                        >
+                          <Trash2 /> Hapus
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {data.files.length < MAX_FILES && (
+                    <div
+                      className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.multiple = true;
+                        input.onchange = (e: Event) => {
+                          handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
+                        };
+                        input.click();
+                      }}
+                    >
+                      <Plus /> Tambah Foto
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.multiple = true;
+                    input.onchange = (e: Event) => {
+                      handleFilesChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
+                    };
+                    input.click();
+                  }}
+                >
+                  <Plus /> Tambah Foto
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>

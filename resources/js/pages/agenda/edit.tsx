@@ -157,10 +157,15 @@ export default function Edit() {
             </div>
             <div>
               <Label htmlFor="kategori">Kategori</Label>
-              <Input
-                defaultValue={data.category}
-                onChange={(e) => setData('category', e.target.value)}
-              />
+              <Select value={data.category} onValueChange={(val) => setData('category', val)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="foto">Foto</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
@@ -172,15 +177,17 @@ export default function Edit() {
               />
             </div>
 
-            <div>
-              <Label>Link Video</Label>
-              <Input
-                type="url"
-                placeholder="https://youtube.com/..."
-                defaultValue={data.video_urls}
-                onChange={(e) => setData('video_urls', e.target.value)}
-              />
-            </div>
+            {data.category.toLowerCase() !== 'foto' && (
+              <div>
+                <Label>Link Video</Label>
+                <Input
+                  type="url"
+                  placeholder="https://youtube.com/..."
+                  defaultValue={data.video_urls}
+                  onChange={(e) => setData('video_urls', e.target.value)}
+                />
+              </div>
+            )}
 
             {/* <div>
               <Label htmlFor="category">Kategori</Label>
@@ -242,94 +249,96 @@ export default function Edit() {
           </div>
 
           {/* UPLOAD FOTO */}
-          <div className="space-y-2 rounded border p-4">
-            <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
-            {previewFileUrls.length > 0 ? (
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {previewFileUrls.map((url, i) => (
-                  <div key={i} className="relative">
-                    <img src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
-                    <div className="mt-2 flex gap-2">
-                      {/* Ubah foto */}
-                      <Button
-                        type="button"
-                        className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
-                        onClick={() => {
-                          const input = document.createElement('input');
-                          input.type = 'file';
-                          input.accept = 'image/*';
-                          input.onchange = (e: Event) => {
-                            const file = (e.target as HTMLInputElement).files?.[0];
-                            if (file) {
-                              handleChangePhoto(i, file);
+          {data.category.toLowerCase() !== 'video' && (
+            <div className="space-y-2 rounded border p-4">
+              <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
+              {previewFileUrls.length > 0 ? (
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {previewFileUrls.map((url, i) => (
+                    <div key={i} className="relative">
+                      <img src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
+                      <div className="mt-2 flex gap-2">
+                        {/* Ubah foto */}
+                        <Button
+                          type="button"
+                          className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'image/*';
+                            input.onchange = (e: Event) => {
+                              const file = (e.target as HTMLInputElement).files?.[0];
+                              if (file) {
+                                handleChangePhoto(i, file);
+                              }
+                            };
+                            input.click();
+                          }}
+                        >
+                          <SquarePen /> Ubah
+                        </Button>
+
+                        {/* Hapus foto */}
+                        <Button
+                          type="button"
+                          className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500 text-white  "
+                          onClick={() => {
+                            const originalIndex = localMediaIndices[i];
+                            const removedFile = agenda.medias?.file[originalIndex]?.file;
+                            if (removedFile) {
+                              setData("deleted_files", [...data.deleted_files, removedFile]);
                             }
-                          };
-                          input.click();
-                        }}
-                      >
-                        <SquarePen /> Ubah
-                      </Button>
 
-                      {/* Hapus foto */}
-                      <Button
-                        type="button"
-                        className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500 text-white  "
-                        onClick={() => {
-                          const originalIndex = localMediaIndices[i];
-                          const removedFile = agenda.medias?.file[originalIndex]?.file;
-                          if (removedFile) {
-                            setData("deleted_files", [...data.deleted_files, removedFile]);
-                          }
-
-                          const newFiles = data.files.filter((_, idx) => idx !== i);
-                          const newPreview = previewFileUrls.filter((_, idx) => idx !== i);
-                          setData('files', newFiles);
-                          setPreviewFileUrls(newPreview);
-                        }}
-                      >
-                        <Trash2 /> Hapus
-                      </Button>
+                            const newFiles = data.files.filter((_, idx) => idx !== i);
+                            const newPreview = previewFileUrls.filter((_, idx) => idx !== i);
+                            setData('files', newFiles);
+                            setPreviewFileUrls(newPreview);
+                          }}
+                        >
+                          <Trash2 /> Hapus
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {/* Tambah foto card (only if less than MAX_FILES) */}
-                {previewFileUrls.length < MAX_FILES && (
-                  <div
-                    className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.multiple = true;
-                      input.onchange = (e: Event) => {
-                        handleFilesChange((e.target as HTMLInputElement).files);
-                      };
-                      input.click();
-                    }}
-                  >
-                    <Plus /> Tambah Foto
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div
-                className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.accept = 'image/*';
-                  input.multiple = true;
-                  input.onchange = (e: Event) => {
-                    handleFilesChange((e.target as HTMLInputElement).files);
-                  };
-                  input.click();
-                }}
-              >
-                <Plus /> Tambah Foto
-              </div>
-            )}
-          </div>
+                  {/* Tambah foto card (only if less than MAX_FILES) */}
+                  {previewFileUrls.length < MAX_FILES && (
+                    <div
+                      className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.multiple = true;
+                        input.onchange = (e: Event) => {
+                          handleFilesChange((e.target as HTMLInputElement).files);
+                        };
+                        input.click();
+                      }}
+                    >
+                      <Plus /> Tambah Foto
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.multiple = true;
+                    input.onchange = (e: Event) => {
+                      handleFilesChange((e.target as HTMLInputElement).files);
+                    };
+                    input.click();
+                  }}
+                >
+                  <Plus /> Tambah Foto
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>
