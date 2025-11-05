@@ -43,6 +43,9 @@ export default function CreatePengumuman() {
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
+  const [formatDokumentasi, setFormatDokumentasi] = useState<string>('');
+  const [fileError, setFileError] = useState<string>('');
+  const [coverError, setCoverError] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +57,27 @@ export default function CreatePengumuman() {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 3MB)
+      if (file.size > 3 * 1024 * 1024) {
+        setCoverError('Ukuran file maksimal 3MB');
+        return;
+      }
+      setCoverError('');
       setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleFormatChange = (value: string) => {
+    setFormatDokumentasi(value);
+    // Reset video_urls if switching from video to foto
+    if (value.toLowerCase() !== 'video') {
+      setData('video_urls', '');
+    }
+    // Clear files if switching from foto to video
+    if (value.toLowerCase() === 'video') {
+      setData('files', []);
+      setPreviewFileUrls([]);
     }
   };
 
@@ -65,10 +87,18 @@ export default function CreatePengumuman() {
       const totalFiles = data.files.length + newFiles.length;
 
       if (totalFiles > MAX_FILES) {
-        alert(`Maksimal hanya bisa upload ${MAX_FILES} foto`);
+        setFileError(`Maksimal hanya bisa upload ${MAX_FILES} foto`);
         return;
       }
 
+      // Validate file size (max 3MB per file)
+      const invalidFiles = newFiles.filter(file => file.size > 3 * 1024 * 1024); // 3MB in bytes
+      if (invalidFiles.length > 0) {
+        setFileError('Ukuran file maksimal 3MB per foto');
+        return;
+      }
+
+      setFileError('');
       const updatedFiles = [...data.files, ...newFiles];
       setData('files', updatedFiles);
       setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
@@ -111,14 +141,18 @@ export default function CreatePengumuman() {
             </div>
 
             <div>
-              <Label htmlFor="category">Kategori</Label>
+              <Label htmlFor="kategori">Kategori</Label>
               <Select value={data.category} onValueChange={(val) => setData('category', val)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Pilih Kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="foto">Foto</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
+                  <SelectItem value="Workshop">Workshop</SelectItem>
+                  <SelectItem value="Monitoring">Monitoring</SelectItem>
+                  <SelectItem value="Sosialisasi">Sosialisasi</SelectItem>
+                  <SelectItem value="Pelatihan">Pelatihan</SelectItem>
+                  <SelectItem value="Lomba">Lomba</SelectItem>
+                  <SelectItem value="Evaluasi">Evaluasi</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -133,17 +167,20 @@ export default function CreatePengumuman() {
               />
             </div>
 
-            {data.category.toLowerCase() !== 'foto' && (
-              <div>
-                <Label>Link Video</Label>
-                <Input
-                  type="url"
-                  placeholder="https://youtube.com/..."
-                  defaultValue={data.video_urls}
-                  onChange={(e) => setData('video_urls', e.target.value)}
-                />
-              </div>
-            )}
+
+            <div>
+              <Label htmlFor="format_dokumentasi">Format Dokumentasi</Label>
+              <Select value={formatDokumentasi} onValueChange={handleFormatChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Format Dokumentasi" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="foto">Foto</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
 
             <div>
               <Label htmlFor="instansi">Instansi</Label>
@@ -184,6 +221,7 @@ export default function CreatePengumuman() {
           <div className="space-y-2 rounded border p-4">
             <Label htmlFor="coverImage">Cover Image</Label>
             <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
+            {coverError && <p className="text-red-500 text-sm">{coverError}</p>}
             {previewCoverUrl ? (
               <div className="mt-2">
                 <img src={previewCoverUrl} alt="Preview Cover" className="h-30 w-46 rounded object-cover" />
@@ -206,12 +244,24 @@ export default function CreatePengumuman() {
               </div>
             )}
           </div>
+          
+          {formatDokumentasi.toLowerCase() === 'video' && (
+              <div>
+                <Label>Link Video</Label>
+                <Input
+                  type="url"
+                  placeholder="https://youtube.com/..."
+                  value={data.video_urls}
+                  onChange={(e) => setData('video_urls', e.target.value)}
+                />
+              </div>
+            )}
 
           {/* UPLOAD FOTO */}
-          {data.category.toLowerCase() !== 'video' && (
+          {formatDokumentasi.toLowerCase() !== 'video' && (
             <div className="space-y-2 rounded border p-4">
-              <Label className="mr-5">Upload Foto</Label>
-
+              <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
+              {fileError && <p className="text-red-500 text-sm">{fileError}</p>}
               {previewFileUrls.length > 0 ? (
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   {previewFileUrls.map((url, i) => (

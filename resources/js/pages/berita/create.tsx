@@ -36,8 +36,9 @@ export default function Index() {
         lokasi: '',
     });
 
-    const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
-    const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
+  const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
+  const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
+  const [formatDokumentasi, setFormatDokumentasi] = useState<string>('');
     // const [videoUrlInput, setVideoUrlInput] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -54,6 +55,19 @@ export default function Index() {
         setPreviewCoverUrl(URL.createObjectURL(file));
         }
     };
+
+  const handleFormatChange = (value: string) => {
+    setFormatDokumentasi(value);
+    // Reset video_urls if switching from video to foto
+    if (value.toLowerCase() !== 'video') {
+      setData('video_urls', '');
+    }
+    // Clear files if switching from foto to video
+    if (value.toLowerCase() === 'video') {
+      setData('files', []);
+      setPreviewFileUrls([]);
+    }
+  };
 
     const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -119,11 +133,17 @@ export default function Index() {
                                     <SelectValue placeholder="Pilih Kategori" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="foto">Foto</SelectItem>
-                                    <SelectItem value="video">Video</SelectItem>
+                                    <SelectItem value="Workshop">Workshop</SelectItem>
+                                    <SelectItem value="Monitoring">Monitoring</SelectItem>
+                                    <SelectItem value="Sosialisasi">Sosialisasi</SelectItem>
+                                    <SelectItem value="Pelatihan">Pelatihan</SelectItem>
+                                    <SelectItem value="Lomba">Lomba</SelectItem>
+                                    <SelectItem value="Evaluasi">Evaluasi</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
+
+                       
 
                         <div>
                             <Label htmlFor="deskripsi">Deskripsi</Label>
@@ -135,17 +155,19 @@ export default function Index() {
                             />
                         </div>
 
-                        {data.category.toLowerCase() !== 'foto' && (
-                            <div>
-                                <Label>Link Video</Label>
-                                <Input
-                                    type="url"
-                                    placeholder="https://youtube.com/..."
-                                    defaultValue={data.video_urls}
-                                    onChange={(e) => setData('video_urls', e.target.value)}
-                                />
-                            </div>
-                        )}
+                         <div>
+                            <Label htmlFor="format_dokumentasi">Format Dokumentasi</Label>
+                            <Select value={formatDokumentasi} onValueChange={handleFormatChange}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Pilih Format Dokumentasi" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="foto">Foto</SelectItem>
+                                    <SelectItem value="video">Video</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
 
                         <div>
                             <Label htmlFor="instansi">Instansi</Label>
@@ -205,8 +227,20 @@ export default function Index() {
                         )}
                     </div>
 
+                    {formatDokumentasi.toLowerCase() === 'video' && (
+                            <div>
+                                <Label>Link Video</Label>
+                                <Input
+                                    type="url"
+                                    placeholder="https://youtube.com/..."
+                                    value={data.video_urls}
+                                    onChange={(e) => setData('video_urls', e.target.value)}
+                                />
+                            </div>
+                        )}
+
                     {/* UPLOAD FOTO */}
-                    {data.category.toLowerCase() !== 'video' && (
+                    {formatDokumentasi.toLowerCase() !== 'video' && (
                         <div className="space-y-2 rounded border p-4">
                             <Label className="mr-5">Upload Foto</Label>
 

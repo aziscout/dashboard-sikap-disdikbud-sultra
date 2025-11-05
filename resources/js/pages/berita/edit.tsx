@@ -68,6 +68,13 @@ export default function Edit({ berita }: Props) {
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(
     berita.coverImage ? `/storage/${berita.coverImage}` : null,
   );
+  const [formatDokumentasi, setFormatDokumentasi] = useState<string>(
+    berita.medias?.file?.some((m) => m.type === 'video' && m.file.startsWith('http')) ? 'video' :
+    berita.medias?.file?.some((m) => m.type === 'foto') ? 'foto' : ''
+  );
+  const [fileError, setFileError] = useState<string>('');
+  const [coverError, setCoverError] = useState<string>('');
+
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
     (berita.medias?.file || [])
       .filter((m) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http')))
@@ -91,6 +98,12 @@ export default function Edit({ berita }: Props) {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 3MB)
+      if (file.size > 3 * 1024 * 1024) {
+        setCoverError('Ukuran file maksimal 3MB');
+        return;
+      }
+      setCoverError('');
       setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
     }
@@ -102,15 +115,39 @@ export default function Edit({ berita }: Props) {
 
       // limit total files
       if (data.files.length + incoming.length > MAX_FILES) {
-        alert(`Maksimal ${MAX_FILES} foto yang dapat diupload.`);
+        setFileError(`Maksimal ${MAX_FILES} foto yang dapat diupload.`);
         return;
       }
 
+      // Validate file size (max 3MB per file)
+      const invalidFiles = incoming.filter(file => file.size > 3 * 1024 * 1024); // 3MB in bytes
+      if (invalidFiles.length > 0) {
+        setFileError('Ukuran file maksimal 3MB per foto');
+        return;
+      }
+
+      setFileError('');
       const newFiles = [...data.files, ...incoming];
       setData('files', newFiles);
 
       const newPreview = [...previewFileUrls, ...incoming.map((f) => URL.createObjectURL(f))];
       setPreviewFileUrls(newPreview);
+    }
+  };
+
+  const handleFormatChange = (value: string) => {
+    setFormatDokumentasi(value);
+    // Reset video_urls if switching from video to foto
+    if (value.toLowerCase() !== 'video') {
+      setData('video_urls', '');
+    }
+    // Clear files if switching from foto to video
+    if (value.toLowerCase() === 'video') {
+      setData('files', []);
+      setPreviewFileUrls([]);
+      // Mark existing photos for deletion
+      const photoFiles = berita.medias?.file?.filter((m) => m.type === 'foto').map((m) => m.file) || [];
+      setData('deleted_files', [...data.deleted_files, ...photoFiles]);
     }
   };
 
@@ -168,6 +205,23 @@ export default function Edit({ berita }: Props) {
                       <SelectValue placeholder="Pilih Kategori" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="Workshop">Workshop</SelectItem>
+                      <SelectItem value="Monitoring">Monitoring</SelectItem>
+                      <SelectItem value="Sosialisasi">Sosialisasi</SelectItem>
+                      <SelectItem value="Pelatihan">Pelatihan</SelectItem>
+                      <SelectItem value="Lomba">Lomba</SelectItem>
+                      <SelectItem value="Evaluasi">Evaluasi</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="format_dokumentasi">Format Dokumentasi</Label>
+                  <Select value={formatDokumentasi} onValueChange={handleFormatChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Format Dokumentasi" />
+                    </SelectTrigger>
+                    <SelectContent>
                       <SelectItem value="foto">Foto</SelectItem>
                       <SelectItem value="video">Video</SelectItem>
                     </SelectContent>
@@ -183,13 +237,13 @@ export default function Edit({ berita }: Props) {
                   />
                 </div>
     
-                {data.category.toLowerCase() !== 'foto' && (
+                {formatDokumentasi.toLowerCase() === 'video' && (
                   <div>
                     <Label>Link Video</Label>
                     <Input
                       type="url"
                       placeholder="https://youtube.com/..."
-                      defaultValue={data.video_urls}
+                      value={data.video_urls}
                       onChange={(e) => setData('video_urls', e.target.value)}
                     />
                   </div>
@@ -245,6 +299,7 @@ export default function Edit({ berita }: Props) {
               <div className="space-y-2 rounded border p-4">
                 <Label htmlFor="coverImage">Cover Image</Label>
                 <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
+                {coverError && <p className="text-red-500 text-sm">{coverError}</p>}
                 {previewCoverUrl ? (
                   <img src={previewCoverUrl} alt="Preview Cover" className="mt-2 h-30 w-46 rounded object-cover" />
                 ) : (
@@ -255,9 +310,10 @@ export default function Edit({ berita }: Props) {
               </div>
     
               {/* UPLOAD FOTO */}
-              {data.category.toLowerCase() !== 'video' && (
+              {formatDokumentasi.toLowerCase() !== 'video' && (
                 <div className="space-y-2 rounded border p-4">
                   <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
+                  {fileError && <p className="text-red-500 text-sm">{fileError}</p>}
                   {previewFileUrls.length > 0 ? (
                     <div className="mt-2 grid grid-cols-3 gap-2">
                       {previewFileUrls.map((url, i) => (

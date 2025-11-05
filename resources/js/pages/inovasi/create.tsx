@@ -37,6 +37,8 @@ export default function CreateInovasi() {
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
   const [formatDokumentasi, setFormatDokumentasi] = useState<string>('');
+  const [fileError, setFileError] = useState<string>('');
+  const [coverError, setCoverError] = useState<string>('');
 
 
 
@@ -61,6 +63,12 @@ export default function CreateInovasi() {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 3MB)
+      if (file.size > 3 * 1024 * 1024) {
+        setCoverError('Ukuran file maksimal 3MB');
+        return;
+      }
+      setCoverError('');
       setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
     }
@@ -72,10 +80,18 @@ export default function CreateInovasi() {
       const totalFiles = data.files.length + newFiles.length;
 
       if (totalFiles > MAX_FILES) {
-        alert(`Maksimal hanya bisa upload ${MAX_FILES} foto`);
+        setFileError(`Maksimal hanya bisa upload ${MAX_FILES} foto`);
         return;
       }
 
+      // Validate file size (max 3MB per file)
+      const invalidFiles = newFiles.filter(file => file.size > 3 * 1024 * 1024); // 3MB in bytes
+      if (invalidFiles.length > 0) {
+        setFileError('Ukuran file maksimal 3MB per foto');
+        return;
+      }
+
+      setFileError('');
       const updatedFiles = [...data.files, ...newFiles];
       setData('files', updatedFiles);
       setPreviewFileUrls(updatedFiles.map((f) => URL.createObjectURL(f)));
@@ -204,6 +220,7 @@ export default function CreateInovasi() {
           <div className="space-y-2 rounded border p-4">
             <Label htmlFor="coverImage">Cover Image</Label>
             <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
+            {coverError && <p className="text-red-500 text-sm">{coverError}</p>}
             {previewCoverUrl ? (
               <div className="mt-2">
                 <img
@@ -234,6 +251,7 @@ export default function CreateInovasi() {
           {formatDokumentasi.toLowerCase() !== 'video' && (
             <div className="space-y-2 rounded border p-4">
               <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
+              {fileError && <p className="text-red-500 text-sm">{fileError}</p>}
               {previewFileUrls.length > 0 ? (
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   {previewFileUrls.map((url, i) => (

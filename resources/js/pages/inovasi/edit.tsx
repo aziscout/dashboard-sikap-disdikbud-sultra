@@ -82,14 +82,16 @@ export default function EditInovasi() {
    const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(
       inovasi.coverImage ? `/storage/${inovasi.coverImage}` : null,
     );
-    const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
-      (inovasi.medias?.file || [])
-        .filter((m) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http')))
-        .map((m) => `/storage/${m.file}`),
-    );
-    const localMediaIndices = useMemo(() => {
-      return (inovasi.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
-    }, [inovasi.medias]);
+  const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
+    (inovasi.medias?.file || [])
+      .filter((m) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http')))
+      .map((m) => `/storage/${m.file}`),
+  );
+  const localMediaIndices = useMemo(() => {
+    return (inovasi.medias?.file || []).map((m, idx) => ({m, idx})).filter(({m}) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http'))).map(({idx}) => idx);
+  }, [inovasi.medias]);
+  const [fileError, setFileError] = useState<string>('');
+  const [coverError, setCoverError] = useState<string>('');
     
     const MAX_FILES = 5;
 
@@ -104,6 +106,12 @@ export default function EditInovasi() {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 3MB)
+      if (file.size > 3 * 1024 * 1024) {
+        setCoverError('Ukuran file maksimal 3MB');
+        return;
+      }
+      setCoverError('');
       setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
     }
@@ -115,10 +123,18 @@ export default function EditInovasi() {
 
       // limit total files
       if (data.files.length + incoming.length > MAX_FILES) {
-        alert(`Maksimal ${MAX_FILES} foto yang dapat diupload.`);
+        setFileError(`Maksimal ${MAX_FILES} foto yang dapat diupload.`);
         return;
       }
 
+      // Validate file size (max 3MB per file)
+      const invalidFiles = incoming.filter(file => file.size > 3 * 1024 * 1024); // 3MB in bytes
+      if (invalidFiles.length > 0) {
+        setFileError('Ukuran file maksimal 3MB per foto');
+        return;
+      }
+
+      setFileError('');
       const newFiles = [...data.files, ...incoming];
       setData('files', newFiles);
 
@@ -339,6 +355,7 @@ export default function EditInovasi() {
           <div className="space-y-2 rounded border p-4">
             <Label>Cover Image</Label>
             <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
+            {coverError && <p className="text-red-500 text-sm">{coverError}</p>}
             {previewCoverUrl ? (
               <img src={previewCoverUrl} alt="Preview Cover" className="mt-2 h-30 w-46 rounded object-cover" />
             ) : (
@@ -352,6 +369,7 @@ export default function EditInovasi() {
           {formatDokumentasi.toLowerCase() !== 'video' && (
             <div className="space-y-2 rounded border p-4">
               <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
+              {fileError && <p className="text-red-500 text-sm">{fileError}</p>}
               {previewFileUrls.length > 0 ? (
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   {previewFileUrls.map((url, i) => (
