@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
 use App\Http\Controllers\Api\LayananApiController;
 use App\Http\Controllers\Api\DataDiriApiController;
+use App\Http\Controllers\Api\PpidApiController;
 
    Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
@@ -26,6 +27,12 @@ use App\Http\Controllers\Api\DataDiriApiController;
    // agenda detail
    Route::get('/agenda/{id}', [AgendaApiController::class, 'show']);
 
+   // ppid
+
+Route::get('/ppid', [PpidApiController::class, 'index']);
+Route::get('/ppid/{id}', [PpidApiController::class, 'show']);
+
+   Route::get('/ppid', [PpidApiController::class, 'index']);
    // produk hukum
    Route::get('/produk-hukum', [ProdukHukumApiController::class, 'index']);
    // berita

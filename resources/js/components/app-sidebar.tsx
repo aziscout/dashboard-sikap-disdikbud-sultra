@@ -31,7 +31,7 @@ import { NavPangkat } from './nav-pangkat';
 // ];
 
 
-export function AppSidebar() {
+export function     AppSidebar() {
     type AuthUser = {
     id: number;
     name: string;

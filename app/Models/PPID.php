@@ -7,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Ppid extends Model
 {
     protected $fillable = [
-        'medias_id',
         'judul',
-        'deskripsi',
-        'dokumen',
-        'file',
-        'cover_image',
-        'category',
-        'instansi',
-        'lokasi',
-        'tabel',
+        'dokumens_id',
+        'tahun',
+        'informasi',
     ];
+
+    public function dokumens()
+    {
+        return $this->belongsTo(Dokumen::class, 'dokumens_id');
+    }
 }
