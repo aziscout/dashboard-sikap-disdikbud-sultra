@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Middleware\HandleAppearance;
@@ -24,99 +23,69 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule) {
         $schedule->call(function () {
+            $delayIncrementSeconds = 180;
+            $notificationPeriods = [3, 2, 1]; // bulan sebelum 4 tahun TMT
             
-            // Definisikan periode notifikasi (dalam bulan sebelum TMT 4 tahun)
-            $notificationMonths = [3, 2, 1]; 
-            $today = Carbon::today()->startOfDay();
+            // Gunakan satu instance Carbon untuk delay kumulatif
+            $currentTime = now();
 
-            // 1. CARI PEGAWAI YANG MEMENUHI SYARAT HARI INI
-            $eligiblePegawais = DataDiri::whereNotNull('tmt_golongan')
-                ->get()
-                ->filter(function ($dataDiri) use ($notificationMonths, $today) {
-                    
-                    $tmtGolongan = Carbon::parse($dataDiri->tmt_golongan);
-                    // TMT + 4 tahun
-                    $fourYearDate = $tmtGolongan->copy()->addYears(4);
-                    
-                    foreach ($notificationMonths as $months) {
-                        // Hitung tanggal notifikasi untuk periode ini
+            foreach ($notificationPeriods as $months) {
+                $eligiblePegawais = DataDiri::whereNotNull('tmt_golongan')
+                    ->whereNotNull('pegawais_id')
+                    ->get()
+                    ->filter(function ($dataDiri) use ($months) {
+                        $tmtGolongan = Carbon::parse($dataDiri->tmt_golongan);
+                        $fourYearDate = $tmtGolongan->copy()->addYears(4);
                         $notificationDate = $fourYearDate->copy()->subMonths($months)->startOfDay();
-                        
-                        // Cek apakah Tanggal Notifikasi jatuh tepat hari ini
-                        if ($notificationDate->isSameDay($today)) {
-                            // Cek apakah notifikasi untuk periode ini ("pangkat_Xmonth") sudah pernah dikirim
-                            $notifTag = "pangkat_{$months}month";
-                            $alreadyNotified = Notifikasi::where('pegawais_id', $dataDiri->pegawais_id)
-                                                        ->where('status', $notifTag)
-                                                        ->exists();
-                                                        
-                            // Jika eligible hari ini dan BELUM pernah dikirim, maka dia eligible
-                            if (!$alreadyNotified) {
-                                $dataDiri->notification_months = $months; // Simpan data temp
-                                return true;
-                            }
-                        }
+
+                        return $notificationDate->isToday();
+                    });
+
+                // Urutkan pegawai berdasarkan ID agar konsisten
+                $eligiblePegawais = $eligiblePegawais->sortBy('pegawais_id');
+
+                $eligiblePegawais->each(function ($dataDiri) use (&$currentTime, $delayIncrementSeconds) {
+
+                    $pegawai = Pegawai::find($dataDiri->pegawais_id);
+
+                    if (!$pegawai || !$pegawai->nomor) {
+                        return;
                     }
-                    
-                    return false;
+
+                    $existingJob = Notifikasi::where('pegawais_id', $pegawai->id)
+                                            ->where('status', 'pangkat')
+                                            ->whereDate('created_at', today())
+                                            ->exists();
+
+                    if ($existingJob) {
+                        return;
+                    }
+
+                    // Buat pesan WA
+                    $message = "Halo {$pegawai->nama},\n\n"
+                        ."Kami ingin mengingatkan bahwa masa kenaikan pangkat Anda sudah dekat.\n"
+                        ."Silakan cek data dan dokumen Anda di sistem ASN:\n"
+                        ."👉 https://asndigital.bkn.go.id\n\n"
+                        ."Terima kasih 🙏";
+
+                    // Simpan notifikasi
+                    $notifikasi = Notifikasi::create([
+                        'pegawais_id' => $pegawai->id,
+                        'pesan' => $message,
+                        'status' => 'pangkat',
+                    ]);
+
+                    // Tambahkan delay kumulatif
+                    $currentTime->addSeconds($delayIncrementSeconds);
+
+                    // Dispatch job ke queue WA
+                    SendWaNotification::dispatch($pegawai, $notifikasi, $message)
+                        ->onConnection('database')
+                        ->onQueue('wa-messages')
+                        ->delay($currentTime);
                 });
-
-            // 2. DISPATCH JOB DENGAN SEQUENTIAL DELAY 
-            $delaySeconds = 60; // Jeda 60 detik antar pengiriman
-            
-            $eligiblePegawais->each(function ($dataDiri) use ($delaySeconds) {
-                $pegawai = Pegawai::find($dataDiri->pegawais_id);
-                $months = $dataDiri->notification_months ?? 3; // Ambil data temp
-                
-                if (!$pegawai || !$pegawai->nomor) {
-                    return;
-                }
-
-                // --- Kalkulasi Sequential Delay ---
-                $latestJob = DB::table('jobs')
-                                ->where('queue', 'wa-messages')
-                                ->orderByDesc('id') 
-                                ->first();
-
-                $delayUntil = now(); 
-
-                if ($latestJob) {
-                    $latestAvailableTime = Carbon::createFromTimestamp($latestJob->available_at);
-                    $scheduleTime = $latestAvailableTime->addSeconds($delaySeconds);
-                    
-                    if ($scheduleTime->greaterThan(now())) {
-                        $delayUntil = $scheduleTime;
-                    }
-                }
-                
-                // --- Buat Pesan dan Simpan Log Baru ---
-                $tmtGolongan = Carbon::parse($dataDiri->tmt_golongan);
-                $fourYearDate = $tmtGolongan->copy()->addYears(4);
-                
-                // Pesan mencantumkan sisa bulan sebelum jatuh tempo
-                $message = "Halo, *{$pegawai->nama}*!\n\n"
-                         . "Ini adalah **PENGINGAT PENTING** (Pengingat {$months} bulan sebelum jatuh tempo).\n"
-                         . "TMT Golongan Anda akan genap 4 tahun pada tanggal *{$fourYearDate->format('d F Y')}*.\n"
-                         . "Mohon segera cek kelengkapan berkas Anda di sistem ASN agar proses kenaikan pangkat berjalan lancar.";        
-
-                // Gunakan status unik untuk menandai periode notifikasi
-                $notifStatus = "pangkat_{$months}month"; 
-
-                $notifikasi = Notifikasi::create([
-                    'pegawais_id' => $pegawai->id, // Penting untuk cek uniqueness
-                    'pesan' => $message,
-                    'status' => $notifStatus, // Contoh: pangkat_3month
-                ]);
-
-                // --- Dispatch Job dengan Delay ---
-                SendWaNotification::dispatch($pegawai, $notifikasi, $message)
-                    ->onConnection('database') 
-                    ->onQueue('wa-messages') 
-                    ->delay($delayUntil); 
-            });
-            
-            // Jadwalkan agar berjalan setiap hari pukul 08:00 (dailyAt('08:00'))
-            })->dailyAt('08:00'); 
+            }
+        })->everyMinute(); // atau dailyAt('08:00') jika ingin jam tertentu
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

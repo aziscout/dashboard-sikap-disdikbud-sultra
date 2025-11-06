@@ -9,10 +9,11 @@ class Notifikasi extends Model
     protected $fillable = [
         'pesan',
         'status',
+        'pegawais_id',
     ];
 
     public function pegawai()
     {
-        return $this->hasMany(Pegawai::class, "notifikasis_id");
+        return $this->belongsTo(Pegawai::class, "pegawais_id");
     }
 }

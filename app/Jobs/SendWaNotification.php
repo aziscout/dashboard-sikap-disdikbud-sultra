@@ -11,22 +11,20 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache; // 🛑 Wajib ditambahkan
 
 class SendWaNotification implements ShouldQueue
 {
-    use Queueable,Dispatchable, InteractsWithQueue, SerializesModels;
+    use Queueable, Dispatchable, InteractsWithQueue, SerializesModels;
 
     protected $pegawai;
     protected $message;
-    protected $notifikasi; // Tambahkan properti untuk objek Notifikasi
+    protected $notifikasi;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(Pegawai $pegawai, Notifikasi $notifikasi, string $message)
     {
         $this->pegawai = $pegawai;
-        $this->notifikasi = $notifikasi; // Simpan objek Notifikasi
+        $this->notifikasi = $notifikasi;
         $this->message = $message;
     }
 
@@ -38,23 +36,33 @@ class SendWaNotification implements ShouldQueue
         $pegawai = $this->pegawai;
         $notifikasi = $this->notifikasi;
 
-        if ($pegawai->nomor) {
-            // 1. Kirim pesan WA melalui FonnteService
+        if (!$pegawai->nomor) {
+            Log::warning("Pengiriman WA dilewati: Nomor pegawai tidak ditemukan. ID Pegawai: {$pegawai->id}");
+            return;
+        }
+
+        try {
+            // 2. Kirim pesan WA melalui FonnteService
             $response = $fonnteService->sendMessage($pegawai->nomor, $this->message);
 
-            // 2. Cek status pengiriman (Asumsi Fonnte mengembalikan 'success' atau 'status' yang menandakan berhasil)
-            // Anda perlu menyesuaikan logika pengecekan respons Fonnte di sini.
-            $isSuccess = isset($response['status']) && $response['status'] === 'success';
+            // 3. Cek status pengiriman
+            $status = $response['status'] ?? null;
+            $isSuccess = $status === 'success' || $status === true;
 
             if ($isSuccess) {
-                // 3. HAPUS data dari tabel notifikasis jika berhasil
-                // $notifikasi->delete();
-                Log::info("Notifikasi WA berhasil dikirim. Pegawai ID: {$pegawai->id}");
+                // 4. Sukses: HAPUS data notifikasi (TIDAK PERLU UPDATE CACHE WAKTU DI SINI)
+                $notifikasi->delete(); 
+                Log::info("Notifikasi WA berhasil dikirim & Dihapus. Pegawai ID: {$pegawai->id}.");
 
             } else {
-                // Jika gagal, Job akan otomatis dicoba ulang (retry) atau gagal (failed job)
-                Log::error("Pengiriman WA GAGAL. Data NOTIFIKASI tidak dihapus. Pegawai ID: {$pegawai->id}");
+                // 5. Gagal: Catat error dan LEMPAR EXCEPTION
+                Log::error("Pengiriman WA GAGAL. Response Fonnte: " . json_encode($response));
+                throw new \Exception("Fonnte API GAGAL: " . ($response['reason'] ?? 'Unknown API Error'));
             }
+        } catch (\Exception $e) {
+            // 6. Exception Guzzle/Koneksi
+            Log::critical("Job Failed for Pegawai ID: {$pegawai->id}. Exception: " . $e->getMessage());
+            throw $e; 
         }
     }
 }

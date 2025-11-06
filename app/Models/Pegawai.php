@@ -22,7 +22,6 @@ class Pegawai extends Authenticatable
         'alamat',
         'tanggal_lahir',
         'tempat_lahir',
-        'notifikasis_id',
     ];
 
     protected static function booted()
@@ -41,7 +40,7 @@ class Pegawai extends Authenticatable
 
     public function notifikasis()
     {
-        return $this->belongsTo(Notifikasi::class,"notifikasis_id");
+        return $this->hasMany(Notifikasi::class,"pegawais_id");
     }
 
     public function dataDiri()
