@@ -83,7 +83,61 @@ return Application::configure(basePath: dirname(__DIR__))
                 });
             }
         // })->everyMinute(); 
-        })->dailyAt('07:00'); 
+        })->dailyAt('19:20'); 
+
+        $schedule->call(function () {
+            $delayIncrementSeconds = 180;
+            $currentTime = now();
+
+            $eligiblePegawais = DataDiri::whereNotNull('tmt_golongan')
+                ->whereNotNull('pegawais_id')
+                ->get()
+                ->filter(function ($dataDiri) {
+                    $tmtGolongan = Carbon::parse($dataDiri->tmt_golongan);
+                    // $nextKGB = $tmtGolongan->copy()->addYears(2);
+                    // return $nextKGB->isToday();
+                    $today = Carbon::today();
+                    $years = $tmtGolongan->diffInYears($today);
+
+                    return $years > 0 && $years % 2 == 0 &&
+                        $tmtGolongan->copy()->addYears($years)->isSameDay($today);
+                });
+
+            $eligiblePegawais = $eligiblePegawais->sortBy('pegawais_id');
+
+            $eligiblePegawais->each(function ($dataDiri) use (&$currentTime, $delayIncrementSeconds) {
+                $pegawai = Pegawai::find($dataDiri->pegawais_id);
+                if (!$pegawai || !$pegawai->nomor) return;
+
+                $existingJob = Notifikasi::where('pegawais_id', $pegawai->id)
+                    ->where('status', 'gaji')
+                    ->whereDate('created_at', today())
+                    ->exists();
+                if ($existingJob) return;
+
+                // Hitung gaji baru (contoh: naik 200.000)
+                $gajiBaru = $dataDiri->gaji_pokok + 200000;
+
+                $message = "Halo {$pegawai->nama},\n\n"
+                    ."Selamat! Anda telah memenuhi masa kerja 2 tahun sejak TMT Golongan terakhir.\n"
+                    ."Gaji pokok Anda mengalami kenaikan berkala menjadi Rp " . number_format($gajiBaru, 0, ',', '.') . ".\n\n"
+                    ."Terima kasih atas dedikasi Anda. 🙏";
+
+                $notifikasi = Notifikasi::create([
+                    'pegawais_id' => $pegawai->id,
+                    'pesan' => $message,
+                    'status' => 'gaji',
+                ]);
+
+                $currentTime->addSeconds($delayIncrementSeconds);
+
+                SendWaNotification::dispatch($pegawai, $notifikasi, $message)
+                    ->onConnection('database')
+                    ->onQueue('wa-messages')
+                    ->delay($currentTime);
+            });
+        // })->everyMinute();
+        })->dailyAt('19:23');
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
