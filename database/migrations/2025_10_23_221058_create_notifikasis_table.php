@@ -9,8 +9,8 @@ return new class extends Migration {
     {
         Schema::create('notifikasis', function (Blueprint $table) {
             $table->id();
-            $table->integer('notifikasi')->default(0);
             $table->string('pesan');
+            $table->enum('status',["gaji", "pangkat"]);
             $table->timestamps();
         });
     }

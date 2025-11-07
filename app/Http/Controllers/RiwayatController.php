@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Berkas;
+use App\Models\Pegawai;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,7 +12,7 @@ class RiwayatController extends Controller
 {
     public function index()
     {
-        $riwayat = Berkas::with(['pegawai'])
+        $riwayat = Berkas::with(['pegawai.dataDiri'])
             ->where('status', 'sk telah terbit')
             ->latest()
             ->get()
@@ -33,4 +34,27 @@ class RiwayatController extends Controller
             'riwayat' => $riwayat,
         ]);
     }
+
+    public function show($id)
+    {
+        $berkas = Berkas::with(['pegawai.dataDiri'])
+            ->where('status', 'sk telah terbit')
+            ->find($id);
+
+        if (!$berkas) {
+            return redirect()->route('pangkat.riwayat')->with('message', 'Data riwayat tidak ditemukan.');
+        }
+
+        $pegawai = $berkas->pegawai;
+
+        return Inertia::render('pangkat/riwayat/show', [
+            'pegawai' => $pegawai,
+            'data_diri' => $pegawai?->dataDiri,
+            'berkas' => $berkas,
+            'flash' => [
+                'message' => session('message'),
+            ],
+        ]);
+    }
+
 }

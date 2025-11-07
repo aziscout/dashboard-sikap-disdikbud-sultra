@@ -29,8 +29,8 @@ use App\Http\Controllers\Api\PpidApiController;
 
    // ppid
 
-Route::get('/ppid', [PpidApiController::class, 'index']);
-Route::get('/ppid/{id}', [PpidApiController::class, 'show']);
+   Route::get('/ppid', [PpidApiController::class, 'index']);
+   Route::get('/ppid/{id}', [PpidApiController::class, 'show']);
 
    Route::get('/ppid', [PpidApiController::class, 'index']);
    // produk hukum

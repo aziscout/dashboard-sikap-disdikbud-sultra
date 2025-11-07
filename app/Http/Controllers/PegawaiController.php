@@ -18,22 +18,31 @@ class PegawaiController extends Controller
         $pegawai->transform(function ($item) {
             $tmt = $item->dataDiri->tmt_golongan ?? null;
             $status = 'Belum Siap';
-            $siap = false;
+            $isActive = false;
 
             if ($tmt) {
+                // 1️⃣ Konversi TMT ke Carbon
                 $tmtDate = Carbon::parse($tmt);
-                $threeMonthsBefore = $tmtDate->copy()->subMonths(3);
 
+                // 2️⃣ Tambahkan 4 tahun dari TMT
+                $nextPromotionDate = $tmtDate->copy()->addYears(4);
+
+                // 3️⃣ Hitung 3 bulan sebelum tanggal kenaikan pangkat berikutnya
+                $threeMonthsBefore = $nextPromotionDate->copy()->subMonths(3);
+
+                // 4️⃣ Jika tanggal saat ini >= tiga bulan sebelum, maka Siap
                 if (Carbon::now()->greaterThanOrEqualTo($threeMonthsBefore)) {
                     $status = 'Siap';
-                    $siap = true;
                 }
             }
 
+            // 5️⃣ Pastikan berkas juga sudah lengkap
             $hasBerkas = $item->berkas && $item->berkas->count() > 0;
 
-            $isActive = $siap && $hasBerkas;
+            // 6️⃣ Aktif jika status siap dan berkas lengkap
+            $isActive = $status === 'Siap' && $hasBerkas;
 
+            // 7️⃣ Format data untuk dikirim ke frontend
             $item->status = $status;
             $item->tmt_golongan = $tmt ? Carbon::parse($tmt)->format('d/m/Y') : '-';
             $item->is_active = $isActive;
@@ -48,7 +57,6 @@ class PegawaiController extends Controller
             ],
         ]);
     }
-
 
     public function show($id)
     {
@@ -66,7 +74,7 @@ class PegawaiController extends Controller
                 'message' => session('message'),
             ],
         ]);
-    }   
+    }
 
     public function status($id)
     {

@@ -21,6 +21,7 @@ const informasiOptions = [
   { value: "Setiap Saat", label: "Setiap Saat" },
   { value: "Serta Merta", label: "Serta Merta" },
   { value: "Dikecualikan", label: "Dikecualikan" },
+  { value: "Publik", label: "Publik" },
 ];
 
 // Interface untuk data PPID

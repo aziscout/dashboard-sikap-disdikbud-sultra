@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('dokumens_id')->constrained('dokumens')->onDelete('cascade');
             $table->string('judul');
             $table->string('tahun');
-            $table->enum('informasi',['Berkala', 'Setiap Saat', 'Serta Merta', 'Dikecualikan',]);
+            $table->enum('informasi',['Berkala', 'Setiap Saat', 'Serta Merta', 'Dikecualikan','Publik']);
             $table->timestamps();
         });
     }

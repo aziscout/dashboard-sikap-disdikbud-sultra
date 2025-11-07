@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Notifikasi extends Model
 {
     protected $fillable = [
-        'notifikasi',
         'pesan',
+        'status',
     ];
 
     public function pegawai()

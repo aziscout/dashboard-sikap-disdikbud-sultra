@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendWaNotification;
 use App\Models\Berkas;
 use App\Models\DataDiri;
 use App\Models\Pegawai;
@@ -9,6 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use App\Models\Notifikasi;
+use App\Services\FonnteService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UsulanPangkatController extends Controller
 {
@@ -22,6 +27,7 @@ class UsulanPangkatController extends Controller
         // Filter pegawai yang:
         // 1. Sudah mendekati TMT (3 bulan sebelum)
         // 2. Sudah melengkapi seluruh berkas
+        // 3. Belum naik pangkat (status belum 'sk telah terbit')
         $filteredPegawai = $pegawai->filter(function ($item) use ($today) {
             $tmt = $item->dataDiri->tmt_golongan ?? null;
 
@@ -36,7 +42,7 @@ class UsulanPangkatController extends Controller
             $isEligibleByDate = $today->greaterThanOrEqualTo($threeMonthsBefore);
 
             // kondisi 2: cek berkas lengkap
-            $berkas = $item->berkas->first(); // ambil baris pertama (karena biasanya 1 pegawai = 1 kumpulan berkas)
+            $berkas = $item->berkas->first();
             $isBerkasComplete = $berkas &&
                 $berkas->sk_cpns &&
                 $berkas->sk_pns &&
@@ -44,14 +50,17 @@ class UsulanPangkatController extends Controller
                 $berkas->sk_jabatan &&
                 $berkas->sk_pangkat_terakhir;
 
-            // return true jika dua-duanya terpenuhi
-            return $isEligibleByDate && $isBerkasComplete;
+            // 🚫 kondisi 3: pastikan belum punya status SK telah terbit
+            $belumNaikPangkat = !$berkas || $berkas->status !== 'sk telah terbit';
+
+            return $isEligibleByDate && $isBerkasComplete && $belumNaikPangkat;
         })->values();
 
         return Inertia::render('pangkat/usulanPangkat/index', [
             'pegawai' => $filteredPegawai,
         ]);
     }
+
 
     public function status($id)
     {
@@ -158,16 +167,15 @@ class UsulanPangkatController extends Controller
                 $today = now();
                 $dataDiri->tanggal_sk = $today->toDateString();
 
-                // ⏩ TMT golongan = 4 tahun setelah SK terbit
-                $dataDiri->tmt_golongan = $today->copy()->addYears(4)->toDateString();
+                // ✅ TMT golongan = tanggal SK diterbitkan (bukan +4 tahun)
+                $dataDiri->tmt_golongan = $today->toDateString();
 
                 $dataDiri->save();
             }
 
             return redirect()->route('pangkat.usulanPangkat.status', $id)
-                ->with('message', 'File SK berhasil diunggah.')
+                ->with('message', 'File SK berhasil diunggah dan data pangkat diperbarui.')
                 ->with('error', false);
         }
-
     }
 }
