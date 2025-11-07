@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException; // 🛑 TAMBAHKAN INI
-use GuzzleHttp\Exception\ConnectException; // 🛑 TAMBAHKAN INI
+use GuzzleHttp\Exception\ClientException; 
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Facades\Log;
 
 class FonnteService
@@ -15,7 +15,6 @@ class FonnteService
 
     public function __construct()
     {
-        // 🛑 Perbaiki nama ENV jika di .env Anda adalah FONNTE_API_TOKEN
         $this->token = env('FONNTE_TOKEN'); 
         $this->client = new Client();
     }
@@ -28,7 +27,6 @@ class FonnteService
      */
     public function sendMessage(string $target, string $message): array
     {
-        // Logika format nomor telepon tetap sama
         $target = preg_replace('/[^0-9]/', '', $target);
         if (substr($target, 0, 2) !== '62') {
             if (substr($target, 0, 1) === '0') {
@@ -47,7 +45,7 @@ class FonnteService
                     'target' => $target, 
                     'message' => $message,
                 ],
-                'timeout' => 15, // 🛑 Diubah menjadi 15 detik (nilai yang wajar)
+                'timeout' => 15,
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
@@ -55,19 +53,16 @@ class FonnteService
             
             return $body;
         } catch (ClientException $e) {
-            // 🛑 Tangkap HTTP 4xx (misalnya 401 Invalid Token)
             $responseBody = $e->getResponse()->getBody()->getContents();
             $body = json_decode($responseBody, true) ?? ['status' => 'error', 'reason' => 'HTTP Client Error (4xx/5xx)'];
             Log::error("Fonnte WA failed (Client Error) to {$target}: " . ($body['reason'] ?? $e->getMessage()));
             return $body;
 
         } catch (ConnectException $e) {
-            // 🛑 Tangkap error koneksi (timeout, DNS error)
             Log::error("Fonnte WA failed (Connection Error) to {$target}: " . $e->getMessage());
             return ['status' => 'error', 'reason' => 'Connection Timeout or DNS Error'];
 
         } catch (\Exception $e) {
-            // Tangkap error umum lainnya
             Log::error("Fonnte WA failed to {$target}: " . $e->getMessage());
             return ['status' => 'error', 'reason' => 'General Error: ' . $e->getMessage()];
         }

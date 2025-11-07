@@ -11,7 +11,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -24,9 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->call(function () {
             $delayIncrementSeconds = 180;
-            $notificationPeriods = [3, 2, 1]; // bulan sebelum 4 tahun TMT
+            $notificationPeriods = [3, 2, 1];
             
-            // Gunakan satu instance Carbon untuk delay kumulatif
             $currentTime = now();
 
             foreach ($notificationPeriods as $months) {
@@ -41,7 +39,6 @@ return Application::configure(basePath: dirname(__DIR__))
                         return $notificationDate->isToday();
                     });
 
-                // Urutkan pegawai berdasarkan ID agar konsisten
                 $eligiblePegawais = $eligiblePegawais->sortBy('pegawais_id');
 
                 $eligiblePegawais->each(function ($dataDiri) use (&$currentTime, $delayIncrementSeconds) {
@@ -85,7 +82,8 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->delay($currentTime);
                 });
             }
-        })->everyMinute(); // atau dailyAt('08:00') jika ingin jam tertentu
+        // })->everyMinute(); 
+        })->dailyAt('07:00'); 
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
@@ -95,10 +93,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
-        $middleware->alias([
-        'permission' => \App\Http\Middleware\CheckPermission::class,
-        'role' => \App\Http\Middleware\CheckRole::class,
-    ]);
+            $middleware->alias([
+            'permission' => \App\Http\Middleware\CheckPermission::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

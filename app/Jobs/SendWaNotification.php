@@ -50,12 +50,12 @@ class SendWaNotification implements ShouldQueue
             $isSuccess = $status === 'success' || $status === true;
 
             if ($isSuccess) {
-                // 4. Sukses: HAPUS data notifikasi (TIDAK PERLU UPDATE CACHE WAKTU DI SINI)
+                // 4. Sukses: HAPUS data notifikasi
                 $notifikasi->delete(); 
                 Log::info("Notifikasi WA berhasil dikirim & Dihapus. Pegawai ID: {$pegawai->id}.");
 
             } else {
-                // 5. Gagal: Catat error dan LEMPAR EXCEPTION
+                // 5. Gagal
                 Log::error("Pengiriman WA GAGAL. Response Fonnte: " . json_encode($response));
                 throw new \Exception("Fonnte API GAGAL: " . ($response['reason'] ?? 'Unknown API Error'));
             }
