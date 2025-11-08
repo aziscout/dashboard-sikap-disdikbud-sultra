@@ -85,45 +85,66 @@ export default function Show() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Detail Riwayat - ${pegawai.nama}`} />
 
-            <div className="p-4">
+            <div className="container mx-auto p-6 space-y-6">
+                {/* Header Title */}
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent tracking-tight mb-2">
+                    Detail Riwayat Pegawai
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    Informasi lengkap riwayat kenaikan pangkat dan berkas {pegawai.nama}.
+                </p>
+
                 {/* Data Pegawai */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Data Pegawai</CardTitle>
+                <Card className="border border-indigo-200 dark:border-indigo-900/50 bg-white/70 dark:bg-gray-900/60 shadow-lg rounded-2xl backdrop-blur-md transition-all">
+                    <CardHeader className="border-indigo-100 dark:border-indigo-800/50 text-center">
+                        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            Data Pegawai
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <ul className="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
-                            <li className="grid grid-cols-2 px-4 py-2 sm:px-6">
-                                <span className="font-bold text-gray-700 dark:text-white">Nama</span>
-                                <span className="text-gray-900 dark:text-white">: {pegawai.nama}</span>
-                            </li>
-                            <li className="grid grid-cols-2 px-4 py-2 sm:px-6">
-                                <span className="font-bold text-gray-700 dark:text-white">Email</span>
-                                <span className="text-gray-900 dark:text-white">: {pegawai.email}</span>
-                            </li>
-                            <li className="grid grid-cols-2 px-4 py-2 sm:px-6">
-                                <span className="font-bold text-gray-700 dark:text-white">Jenis Kelamin</span>
-                                <span className="text-gray-900 dark:text-white capitalize">: {pegawai.jenis_kelamin}</span>
-                            </li>
-                            <li className="grid grid-cols-2 px-4 py-2 sm:px-6">
-                                <span className="font-bold text-gray-700 dark:text-white">Alamat</span>
-                                <span className="text-gray-900 dark:text-white">: {pegawai.alamat}</span>
-                            </li>
+                    <CardContent className="p-4 sm:p-6">
+                        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                            {[
+                                { label: 'Nama', value: pegawai.nama },
+                                { label: 'Email', value: pegawai.email },
+                                { label: 'Jenis Kelamin', value: pegawai.jenis_kelamin },
+                                { label: 'Alamat', value: pegawai.alamat },
+                            ].map((item, index) => (
+                                <li
+                                    key={index}
+                                    className="grid grid-cols-2 py-2 px-2 sm:px-4 text-sm sm:text-base hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 transition-all rounded-lg"
+                                >
+                                    <span className="font-medium text-sm text-gray-700 dark:text-indigo-300">
+                                        {item.label}
+                                    </span>
+                                    <span className="text-gray-900 text-sm dark:text-gray-200">
+                                        : {item.value || '-'}
+                                    </span>
+                                </li>
+                            ))}
                         </ul>
                     </CardContent>
                 </Card>
 
                 {/* Data Kenaikan Pangkat */}
-                <Card className="mt-6">
-                    <CardHeader>
-                        <CardTitle>Data Kenaikan Pangkat</CardTitle>
+                <Card className="border border-indigo-200 dark:border-indigo-900/50 bg-white/70 dark:bg-gray-900/60 shadow-lg rounded-2xl backdrop-blur-md transition-all">
+                    <CardHeader className=" border-indigo-100 dark:border-indigo-800/50 text-center">
+                        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            Data Kenaikan Pangkat
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <ul className="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
+                    <CardContent className="p-4 sm:p-6">
+                        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                             {dataDiriList.map((item, index) => (
-                                <li key={index} className="grid grid-cols-2 px-4 py-2 sm:px-6">
-                                    <span className="font-bold text-gray-700 dark:text-white">{item.label}</span>
-                                    <span className="text-gray-900 dark:text-white">: {item.value || '-'}</span>
+                                <li
+                                    key={index}
+                                    className="grid grid-cols-2 py-2 px-2 sm:px-4 text-sm sm:text-base hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 transition-all rounded-lg"
+                                >
+                                    <span className="font-medium text-sm text-gray-700 dark:text-indigo-300">
+                                        {item.label}
+                                    </span>
+                                    <span className="text-gray-900 text-sm dark:text-gray-200">
+                                        : {item.value || '-'}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
@@ -131,51 +152,81 @@ export default function Show() {
                 </Card>
 
                 {/* Daftar Berkas */}
-                <Card className="mt-6">
-                    <CardHeader>
-                        <CardTitle>Daftar Berkas</CardTitle>
+                <Card className="border border-indigo-200 dark:border-indigo-900/50 bg-white/70 dark:bg-gray-900/60 shadow-lg rounded-2xl backdrop-blur-md transition-all">
+                    <CardHeader className=" border-indigo-100 dark:border-indigo-800/50 text-center">
+                        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            Daftar Berkas
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4 sm:p-6">
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead>Jenis Dokumen</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-center">Aksi</TableHead>
+                                <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
+                                    <TableHead className="text-gray-700 dark:text-gray-300">
+                                        No
+                                    </TableHead>
+                                    <TableHead className="text-gray-700 dark:text-gray-300">
+                                        Jenis Dokumen
+                                    </TableHead>
+                                    <TableHead className="text-gray-700 dark:text-gray-300">
+                                        Status
+                                    </TableHead>
+                                    <TableHead className="text-center text-gray-700 dark:text-gray-300">
+                                        Aksi
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {daftarBerkas.map((item) => (
-                                    <TableRow key={item.key}>
-                                        <TableCell>{item.label}</TableCell>
-                                        <TableCell>
-                                            {berkas?.[item.key as keyof Berkas] ? 'Tersedia' : '-'}
-                                        </TableCell>
-                                        <TableCell className="flex justify-center gap-2">
-                                            {berkas?.[item.key as keyof Berkas] && (
-                                                <>
-                                                    <a
-                                                        href={`/storage/${berkas[item.key as keyof Berkas]}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
-                                                        title="Lihat"
-                                                    >
-                                                        <Eye className="h-4 w-4" />
-                                                    </a>
-                                                    <a
-                                                        href={`/storage/${berkas[item.key as keyof Berkas]}`}
-                                                        download
-                                                        className="rounded bg-green-500 p-2 text-white hover:bg-green-600"
-                                                        title="Download"
-                                                    >
-                                                        <Download className="h-4 w-4" />
-                                                    </a>
-                                                </>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {daftarBerkas.map((item, index) => {
+                                    const tersedia = berkas?.[item.key as keyof Berkas];
+                                    return (
+                                        <TableRow
+                                            key={index}
+                                            className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
+                                        >
+                                            <TableCell className="font-medium text-gray-800 dark:text-gray-200">
+                                                {index + 1}
+                                            </TableCell>
+                                            <TableCell className="font-medium text-gray-800 dark:text-gray-200">
+                                                {item.label}
+                                            </TableCell>
+                                            <TableCell>
+                                                <span
+                                                    className={`px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
+                                                        tersedia
+                                                            ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                                                            : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                                                    }`}
+                                                >
+                                                    {tersedia ? 'Tersedia' : 'Belum Ada'}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="flex justify-center gap-2">
+                                                {tersedia && (
+                                                    <>
+                                                        <a
+                                                            href={`/storage/${berkas[item.key as keyof Berkas]}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="p-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm transition-all"
+                                                            title="Lihat Dokumen"
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                        </a>
+                                                        <a
+                                                            href={`/storage/${berkas[item.key as keyof Berkas]}`}
+                                                            download
+                                                            className="p-2 rounded-lg bg-green-500 hover:bg-green-600 text-white shadow-sm transition-all"
+                                                            title="Download Dokumen"
+                                                        >
+                                                            <Download className="h-4 w-4" />
+                                                        </a>
+                                                    </>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </CardContent>

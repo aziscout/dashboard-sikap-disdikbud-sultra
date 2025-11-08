@@ -1,20 +1,20 @@
-// import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Download, Eye } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { 
-        title: 'Pegawai', 
-        href: '/pangkat/pegawai' 
-    },
-    { 
-        title: 'Detail Pegawai', 
-        href: '#' 
-    },
+    { title: 'Pegawai', href: '/pangkat/pegawai' },
+    { title: 'Detail Pegawai', href: '#' },
 ];
 
 interface DataDiri {
@@ -67,20 +67,23 @@ export default function Show() {
     const dataDiri = [
         { label: 'Golongan', value: data_diri?.golongan_ruang },
         { label: 'Jenis Kenaikan Pangkat (KP)', value: data_diri?.jenis_kp },
-        { label: 'Masa Kerja Golongan (Tahun)', value: data_diri?.masa_gk_tahunan },
-        { label: 'Masa Kerja Golongan (Bulan)', value: data_diri?.masa_gk_bulanan },
+        {
+            label: 'Masa Kerja Golongan',
+            value: data_diri?.masa_gk_tahunan || data_diri?.masa_gk_bulanan
+            ? `${data_diri.masa_gk_tahunan ?? 0} Tahun ${data_diri.masa_gk_bulanan ?? 0} Bulan`
+            : '-',
+        },
         { label: 'TMT Golongan', value: data_diri?.tmt_golongan },
         { label: 'Nomor Surat Keputusan (SK)', value: data_diri?.nomor_sk },
         { label: 'Tanggal Surat Keputusan (SK)', value: data_diri?.tanggal_sk },
         { label: 'Nomor Pertek BKN', value: data_diri?.nomor_pertek_bkn },
         { label: 'Tanggal Pertek BKN', value: data_diri?.tanggal_pertek_bkn },
         { label: 'Pangkat', value: data_diri?.pangkat },
-        // { label: 'Gaji Pokok', value: data_diri?.gaji_pokok },
-        { 
-        label: 'Gaji Pokok', 
-        value: data_diri?.gaji_pokok 
-            ? `Rp ${data_diri.gaji_pokok.toLocaleString('id-ID')}` 
-            : '-' 
+        {
+        label: 'Gaji Pokok',
+        value: data_diri?.gaji_pokok
+            ? `Rp ${data_diri.gaji_pokok.toLocaleString('id-ID')}`
+            : '-',
         },
     ];
 
@@ -88,82 +91,138 @@ export default function Show() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Detail Pegawai - ${pegawai.nama}`} />
 
-            <div className="p-4">
-                <Card>
-                    <CardHeader>
-                        <div className="mb-4 flex items-center justify-between">
-                            <CardTitle className="text-lg font-semibold">Detail</CardTitle>
-                            {/* <Link href={route('pangkat.usulanPangkat.status', pegawai.id)}>
-                                <Button className="bg-blue-500 text-white hover:bg-blue-600">Cek Status</Button>
-                            </Link> */}
-                        </div>
+            <div className="container mx-auto p-6 space-y-6">
+                {/* HEADER */}
+                <h1
+                className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 
+                bg-clip-text text-transparent tracking-tight mb-4"
+                >
+                Detail Pegawai
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    Informasi lengkap riwayat kenaikan pangkat dan berkas {pegawai.nama}.
+                </p>
+
+                {/* DETAIL CARD */}
+                <Card className="border border-indigo-200 dark:border-indigo-900/50 shadow-lg rounded-2xl bg-white/70 dark:bg-gray-900/60 backdrop-blur-lg transition-all">
+                    <CardHeader className="text-center border-indigo-100 dark:border-indigo-800/40">
+                        <CardTitle className="font-semibold text-gray-800 dark:text-gray-200">
+                        Data Diri {pegawai.nama}
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div>
-                            <ul className="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
-                                {dataDiri.map((item, index) => (
-                                    <li key={index} className="grid grid-cols-2 px-4 py-2 sm:px-6">
-                                        <span className="font-bold text-gray-700 dark:text-white">{item.label}</span>
-                                        <span className="text-gray-900 dark:text-white">: {item.value || '-'}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+
+                    <CardContent className="px-4 sm:px-6">
+                        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                        {dataDiri.map((item, i) => (
+                            <li
+                            key={i}
+                            className="grid grid-cols-2 py-2 text-sm sm:text-base hover:bg-indigo-50/40 dark:hover:bg-indigo-900/30 transition-all rounded-lg px-2"
+                            >
+                            <span className="font-medium text-sm text-gray-700 dark:text-indigo-300">
+                                {item.label}
+                            </span>
+                            <span className="text-gray-900 text-sm dark:text-gray-200">
+                                : {item.value || '-'}
+                            </span>
+                            </li>
+                        ))}
+                        </ul>
                     </CardContent>
                 </Card>
 
-                <Card className="mt-6">
-                    <CardHeader>
-                        <CardTitle>Daftar Berkas</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {berkas.length > 0 ? (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Jenis Dokumen</TableHead>
-                                        <TableHead>Status Dokumen</TableHead>
-                                        <TableHead className="text-center">Aksi</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {daftarBerkas.map((item) => (
-                                        <TableRow key={item.key}>
-                                            <TableCell>{item.label}</TableCell>
-                                            <TableCell>
-                                                {berkas[0]?.[item.key as keyof Berkas] ? 'Tersedia' : '-'}
+                {/* BERKAS TABLE */}
+                <Card className="border border-indigo-200 dark:border-indigo-900/50 shadow-lg rounded-2xl bg-white/70 dark:bg-gray-900/60 backdrop-blur-lg transition-all">
+                <CardHeader className="text-center border-indigo-100 dark:border-indigo-800/40">
+                    <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    Data Berkas {pegawai.nama}
+                    </CardTitle>
+                </CardHeader>
+
+                <CardContent className="px-4">
+                    {berkas.length > 0 ? (
+                    <div className="overflow-hidden rounded-xl">
+                        <Table className="w-full">
+                            <TableHeader>
+                                <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
+                                    <TableHead className="w-[5%] text-gray-700 dark:text-gray-300">
+                                        No
+                                    </TableHead>
+                                    <TableHead className="w-[35%] text-gray-700 dark:text-gray-300">
+                                        Jenis Dokumen
+                                    </TableHead>
+                                    <TableHead className="text-gray-700 dark:text-gray-300">
+                                        Status Dokumen
+                                    </TableHead>
+                                    <TableHead className="text-center text-gray-700 dark:text-gray-300">
+                                        Aksi
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+
+                            <TableBody>
+                                {daftarBerkas.map((item, index) => {
+                                    const tersedia = berkas[0]?.[item.key as keyof Berkas] !== undefined;
+                                    return (
+                                        <TableRow
+                                        key={item.key}
+                                        className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
+                                        >
+                                            <TableCell className="text-center text-gray-800 dark:text-gray-200 font-medium">
+                                                {index + 1}
                                             </TableCell>
-                                            <TableCell className="flex justify-center gap-2">
-                                                {berkas[0]?.[item.key as keyof Berkas] && (
-                                                    <>
-                                                        <a
-                                                            href={`/storage/${berkas[0][item.key as keyof Berkas]}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
-                                                            title="Lihat"
-                                                        >
-                                                            <Eye className="h-4 w-4" />
-                                                        </a>
-                                                        <a
-                                                            href={`/storage/${berkas[0][item.key as keyof Berkas]}`}
-                                                            download
-                                                            className="rounded bg-green-500 p-2 text-white hover:bg-green-600"
-                                                            title="Download"
-                                                        >
-                                                            <Download className="h-4 w-4" />
-                                                        </a>
-                                                    </>
+                                            <TableCell className="font-medium text-gray-800 dark:text-gray-200">
+                                                {item.label}
+                                            </TableCell>
+                                            <TableCell>
+                                                <span
+                                                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                                    tersedia
+                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                                                    : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                                                }`}
+                                                >
+                                                {tersedia ? 'Tersedia' : 'Belum Ada'}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                {tersedia && (
+                                                <div className="flex justify-center gap-2">
+                                                    <a
+                                                    href={`/storage/${berkas[0][
+                                                        item.key as keyof Berkas
+                                                    ]}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm transition-all"
+                                                    title="Lihat Dokumen"
+                                                    >
+                                                    <Eye className="w-4 h-4" />
+                                                    </a>
+                                                    <a
+                                                    href={`/storage/${berkas[0][
+                                                        item.key as keyof Berkas
+                                                    ]}`}
+                                                    download
+                                                    className="p-2 rounded-lg bg-green-500 hover:bg-green-600 text-white shadow-sm transition-all"
+                                                    title="Download Dokumen"
+                                                    >
+                                                    <Download className="w-4 h-4" />
+                                                    </a>
+                                                </div>
                                                 )}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        ) : (
-                            <p className="text-sm text-gray-500">Belum ada berkas yang diupload.</p>
-                        )}
-                    </CardContent>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    ) : (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Belum ada berkas yang diunggah.
+                    </p>
+                    )}
+                </CardContent>
                 </Card>
             </div>
         </AppLayout>

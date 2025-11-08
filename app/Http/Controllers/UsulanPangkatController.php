@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendWaNotification;
 use App\Models\Berkas;
 use App\Models\DataDiri;
 use App\Models\Pegawai;
@@ -10,10 +9,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use App\Models\Notifikasi;
-use App\Services\FonnteService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class UsulanPangkatController extends Controller
 {
@@ -21,7 +16,6 @@ class UsulanPangkatController extends Controller
     {
         $today = Carbon::today();
 
-        // Ambil semua pegawai dengan relasi data diri dan berkas
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])->get();
 
         // Filter pegawai yang:
