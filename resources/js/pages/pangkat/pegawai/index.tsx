@@ -38,9 +38,22 @@ interface Pegawai {
     created_at: string;
 }
 
+interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+interface PegawaiPagination {
+    data: Pegawai[];
+    links: PaginationLink[];
+    current_page: number;
+    per_page: number;
+}
+
 interface PageProps {
     flash: { message?: string };
-    pegawai: Pegawai[];
+    pegawai: PegawaiPagination;
 }
 
 export default function Index() {
@@ -49,7 +62,7 @@ export default function Index() {
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredPegawai = useMemo(() => {
-        return [...pegawai]
+        return [...pegawai.data]
             .filter((item) =>
             item.nama.toLowerCase().includes(searchQuery.toLowerCase())
         )
@@ -58,7 +71,7 @@ export default function Index() {
             const dateB = new Date(b.created_at).getTime();
             return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
         });
-    }, [pegawai, sortOrder, searchQuery]);
+    }, [pegawai.data, sortOrder, searchQuery]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -128,85 +141,110 @@ export default function Index() {
                     dark:border-indigo-900/50 shadow-md backdrop-blur-md transition-all"
                 >
                     <Table className="w-full">
-                    <TableHeader>
-                        <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
-                        <TableHead className="w-[60px] text-center">No</TableHead>
-                        <TableHead>Nama</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Jenis Kelamin</TableHead>
-                        <TableHead>Alamat</TableHead>
-                        <TableHead>TMT</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Aksi</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredPegawai.length > 0 ? (
-                        filteredPegawai.map((item, index) => (
-                            <TableRow
-                            key={item.id}
-                            className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
-                            >
-                            <TableCell className="text-center">{index + 1}</TableCell>
-                            <TableCell className="font-medium">{item.nama}</TableCell>
-                            <TableCell>{item.email}</TableCell>
-                            <TableCell className="capitalize">
-                                {item.jenis_kelamin}
-                            </TableCell>
-                            <TableCell className="capitalize">
-                                {item.alamat}
-                            </TableCell>
-                            <TableCell className="capitalize">
-                                {item.tmt_golongan}
-                            </TableCell>
-                            <TableCell>
-                                <span
-                                className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                    item.status === 'Siap'
-                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-                                    : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300'
-                                }`}
-                                >
-                                {item.status}
-                                </span>
-                            </TableCell>
-                            <TableCell>
-                                {item.is_active ? (
-                                <Link
-                                    href={route('pegawai.show', item.id)}
-                                    title="Detail"
-                                >
-                                    <Button
-                                    className="bg-gradient-to-r from-indigo-500 to-purple-500 
-                                    hover:from-indigo-600 hover:to-purple-600 text-white shadow-md 
-                                    hover:shadow-lg transition-all"
-                                    >
-                                    <Eye className="w-4 h-4" />
-                                    </Button>
-                                </Link>
-                                ) : (
-                                <Button
-                                    disabled
-                                    className="bg-gray-300 text-gray-600 cursor-not-allowed"
-                                >
-                                    <Eye />
-                                </Button>
-                                )}
-                            </TableCell>
+                        <TableHeader>
+                            <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
+                            <TableHead className="w-[60px] text-center">No</TableHead>
+                            <TableHead>Nama</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Jenis Kelamin</TableHead>
+                            <TableHead>Alamat</TableHead>
+                            <TableHead>TMT</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Aksi</TableHead>
                             </TableRow>
-                        ))
-                        ) : (
-                        <TableRow>
-                            <TableCell
-                            colSpan={8}
-                            className="text-center text-gray-500 py-6"
-                            >
-                            Tidak ada data pegawai.
-                            </TableCell>
-                        </TableRow>
-                        )}
-                    </TableBody>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredPegawai.length > 0 ? (
+                            filteredPegawai.map((item, index) => (
+                                <TableRow
+                                key={item.id}
+                                className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
+                                >
+                                {/* <TableCell className="text-center">{index + 1}</TableCell> */}
+                                <TableCell className="text-center">
+                                    {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
+                                </TableCell>
+                                <TableCell className="font-medium">{item.nama}</TableCell>
+                                <TableCell>{item.email}</TableCell>
+                                <TableCell className="capitalize">
+                                    {item.jenis_kelamin}
+                                </TableCell>
+                                <TableCell className="capitalize">
+                                    {item.alamat}
+                                </TableCell>
+                                <TableCell className="capitalize">
+                                    {item.tmt_golongan}
+                                </TableCell>
+                                <TableCell>
+                                    <span
+                                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                        item.status === 'Siap'
+                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                                        : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300'
+                                    }`}
+                                    >
+                                    {item.status}
+                                    </span>
+                                </TableCell>
+                                <TableCell>
+                                    {item.is_active ? (
+                                    <Link
+                                        href={route('pegawai.show', item.id)}
+                                        title="Detail"
+                                    >
+                                        <Button
+                                        className="bg-gradient-to-r from-indigo-500 to-purple-500 
+                                        hover:from-indigo-600 hover:to-purple-600 text-white shadow-md 
+                                        hover:shadow-lg transition-all"
+                                        >
+                                        <Eye className="w-4 h-4" />
+                                        </Button>
+                                    </Link>
+                                    ) : (
+                                    <Button
+                                        disabled
+                                        className="bg-gray-300 text-gray-600 cursor-not-allowed"
+                                    >
+                                        <Eye />
+                                    </Button>
+                                    )}
+                                </TableCell>
+                                </TableRow>
+                            ))
+                            ) : (
+                            <TableRow>
+                                <TableCell
+                                colSpan={8}
+                                className="text-center text-gray-500 py-6"
+                                >
+                                Tidak ada data pegawai.
+                                </TableCell>
+                            </TableRow>
+                            )}
+                        </TableBody>
                     </Table>
+                </div>
+                <div className="flex justify-end items-center gap-2 my-8 flex-wrap">
+                    {pegawai.links.map((link, i) => (
+                        <Button
+                        key={i}
+                        size="sm"
+                        variant={link.active ? 'default' : 'outline'}
+                        disabled={!link.url}
+                        onClick={() => link.url && (window.location.href = link.url)}
+                        dangerouslySetInnerHTML={{ __html: link.label }}
+                        className={`
+                            min-w-[40px] h-9 rounded-full text-sm font-medium
+                            transition-all duration-200 ease-in-out
+                            ${
+                            link.active
+                                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
+                                : 'border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                            }
+                            ${!link.url ? 'opacity-40 cursor-not-allowed' : ''}
+                        `}
+                        />
+                    ))}
                 </div>
             </div>
         </AppLayout>

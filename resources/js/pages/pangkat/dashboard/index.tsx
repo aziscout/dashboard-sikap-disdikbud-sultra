@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: '/pangkat/dashboard' },
+  { title: 'Dashboard Kenaikan Pangkat', href: '/pangkat/dashboard' },
 ];
 
 interface Pegawai {

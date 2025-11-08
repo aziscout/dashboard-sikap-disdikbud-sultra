@@ -12,11 +12,12 @@ class RiwayatController extends Controller
 {
     public function index()
     {
+        // Menggunakan paginate() alih-alih get()
         $riwayat = Berkas::with(['pegawai.dataDiri'])
             ->where('status', 'sk telah terbit')
             ->latest()
-            ->get()
-            ->map(function ($item) {
+            ->paginate(10) // Tambahkan pagination, misalnya 10 item per halaman
+            ->through(function ($item) { // Menggunakan through() untuk memetakan data berhalaman
                 return [
                     'id' => $item->id,
                     'nama' => $item->pegawai->nama ?? '-',
@@ -31,7 +32,7 @@ class RiwayatController extends Controller
             });
 
         return Inertia::render('pangkat/riwayat/index', [
-            'riwayat' => $riwayat,
+            'riwayat' => $riwayat, // 'riwayat' sekarang adalah objek pagination
         ]);
     }
 

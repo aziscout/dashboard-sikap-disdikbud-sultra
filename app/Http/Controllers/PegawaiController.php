@@ -13,7 +13,8 @@ class PegawaiController extends Controller
     {
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])
             ->select('id', 'nama', 'email', 'jenis_kelamin', 'alamat', 'created_at')
-            ->get();
+            // ->get();
+            ->paginate(20);
 
         $pegawai->transform(function ($item) {
             $tmt = $item->dataDiri->tmt_golongan ?? null;

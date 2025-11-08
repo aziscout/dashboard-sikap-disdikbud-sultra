@@ -32,6 +32,7 @@ interface Berkas {
     sk_gaji_berkala?: string;
     sk_pangkat_terakhir?: string;
     sk_jabatan?: string;
+    // Tambahkan properti lain yang mungkin ada di model Berkas jika diperlukan
 }
 
 interface Pegawai {
@@ -40,30 +41,56 @@ interface Pegawai {
     nama: string;
     nomor: string;
     created_at: string;
-    berkas?: Berkas[];
+    berkas?: Berkas[]; // Pastikan ini adalah array of Berkas atau ambil data berkas tunggal
+}
+
+// Interface untuk data Pagination dari Laravel
+interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+interface PegawaiPagination {
+    data: Pegawai[];
+    links: PaginationLink[];
+    current_page: number;
+    per_page: number;
+    from: number; // Untuk menghitung nomor urut
+    to: number; // Untuk menghitung nomor urut
 }
 
 interface PageProps {
     flash: { message?: string };
-    pegawai: Pegawai[];
+    pegawai: PegawaiPagination; // Ubah ke format pagination
 }
 
 export default function Index() {
-    const { pegawai, flash } = usePage().props as unknown as PageProps;
+    // Ambil data dari props, pastikan pegawai adalah objek pagination
+    const { pegawai, flash } = usePage().props as unknown as PageProps; 
     const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredPegawai = useMemo(() => {
-        return [...pegawai]
+    const filteredAndSortedPegawai = useMemo(() => {
+        // Lakukan filtering dan sorting HANYA pada data di halaman saat ini
+        // Filtering dan sorting menyeluruh (across all pages) harusnya dilakukan di backend, 
+        // tapi karena filtering kompleks sudah dilakukan di backend, kita hanya melakukan sorting/searching dari data yang diterima.
+        return [...pegawai.data]
         .filter((item) =>
-            item.nama.toLowerCase().includes(searchQuery.toLowerCase())
+            item.nama.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            item.nip.includes(searchQuery) // Tambahkan pencarian NIP
         )
         .sort((a, b) => {
             const dateA = new Date(a.created_at).getTime();
             const dateB = new Date(b.created_at).getTime();
             return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
         });
-    }, [pegawai, sortOrder, searchQuery]);
+    }, [pegawai.data, sortOrder, searchQuery]);
+
+    // Fungsi untuk mendapatkan data berkas yang relevan (misalnya yang pertama)
+    const getBerkas = (pegawai: Pegawai, key: keyof Berkas) => {
+        return pegawai.berkas?.[0]?.[key];
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -82,7 +109,7 @@ export default function Index() {
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
                 {/* 🔍 Search */}
                 <Input
-                placeholder="Cari nama pegawai..."
+                placeholder="Cari nama/NIP pegawai..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full md:w-64 border-indigo-200 dark:border-indigo-800 focus:ring-2 focus:ring-indigo-400"
@@ -129,10 +156,10 @@ export default function Index() {
 
             {/* Table Section */}
             <div
-            className="overflow-hidden rounded-xl border border-indigo-100 
+            className="overflow-x-auto rounded-xl border border-indigo-100 
             dark:border-indigo-900/50 shadow-md backdrop-blur-md transition-all"
             >
-            <Table className="w-full">
+            <Table className="w-full min-w-[900px]">
                 <TableHeader>
                 <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
                     <TableHead className="w-[60px] text-center">No</TableHead>
@@ -150,17 +177,19 @@ export default function Index() {
                 </TableHeader>
 
                 <TableBody>
-                {filteredPegawai.length > 0 ? (
-                    filteredPegawai.map((pegawai, index) => (
+                {filteredAndSortedPegawai.length > 0 ? (
+                    filteredAndSortedPegawai.map((item, index) => (
                     <TableRow
-                        key={pegawai.id}
+                        key={item.id}
                         className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
                     >
-                        <TableCell className="text-center">{index + 1}</TableCell>
-                        <TableCell className="font-medium capitalize">
-                        {pegawai.nama}
+                        <TableCell className="text-center">
+                            {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
                         </TableCell>
-                        <TableCell className="text-center">{pegawai.nip}</TableCell>
+                        <TableCell className="font-medium capitalize">
+                        {item.nama}
+                        </TableCell>
+                        <TableCell className="text-center">{item.nip}</TableCell>
 
                         {[
                         'sk_pns',
@@ -168,35 +197,36 @@ export default function Index() {
                         'sk_gaji_berkala',
                         'sk_jabatan',
                         'sk_pangkat_terakhir',
-                        ].map((key) => (
-                        <TableCell key={key} className="text-center">
-                            {pegawai.berkas?.[0]?.[key as keyof Berkas] ? (
-                            <a
-                                href={`/storage/${pegawai.berkas[0][
-                                key as keyof Berkas
-                                ]}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Button
-                                className="bg-gradient-to-r from-indigo-500 to-indigo-500 
-                                hover:from-indigo-600 hover:to-purple-600 text-white text-xs 
-                                px-3 py-1 shadow-md hover:shadow-lg transition-all"
-                                >
-                                Lihat Dokumen
-                                </Button>
-                            </a>
-                            ) : (
-                            <span className="text-gray-400 dark:text-gray-500">
-                                -
-                            </span>
-                            )}
-                        </TableCell>
-                        ))}
+                        ].map((key) => {
+                            const berkasFile = getBerkas(item, key as keyof Berkas);
+                            return (
+                                <TableCell key={key} className="text-center">
+                                    {berkasFile ? (
+                                        <a
+                                            href={`/storage/${berkasFile}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Button
+                                            className="bg-gradient-to-r from-indigo-500 to-indigo-500 
+                                            hover:from-indigo-600 hover:to-purple-600 text-white text-xs 
+                                            px-3 py-1 shadow-md hover:shadow-lg transition-all"
+                                            >
+                                            Lihat Dokumen
+                                            </Button>
+                                        </a>
+                                    ) : (
+                                        <span className="text-gray-400 dark:text-gray-500">
+                                            -
+                                        </span>
+                                    )}
+                                </TableCell>
+                            );
+                        })}
 
                         <TableCell className="text-center">
                         <Link
-                            href={route('pangkat.usulanPangkat.status', pegawai.id)}
+                            href={route('pangkat.usulanPangkat.status', item.id)}
                             title="Cek Status"
                         >
                             <Button
@@ -216,13 +246,41 @@ export default function Index() {
                         colSpan={9}
                         className="text-center text-gray-500 py-6 dark:text-gray-400"
                     >
-                        Tidak ada data pegawai.
+                        Tidak ada data pegawai yang memenuhi syarat usulan pangkat.
                     </TableCell>
                     </TableRow>
                 )}
                 </TableBody>
             </Table>
             </div>
+            
+            {/* Pagination Links */}
+            <div className="flex justify-end items-center gap-2 my-8 flex-wrap">
+                {pegawai.links.map((link, i) => (
+                    <Button
+                    key={i}
+                    size="sm"
+                    variant={link.active ? 'default' : 'outline'}
+                    disabled={!link.url}
+                    // Menggunakan Link Inertia atau window.location untuk navigasi pagination
+                    onClick={() => link.url && (window.location.href = link.url)}
+                    // Menggunakan dangerouslySetInnerHTML untuk menampilkan simbol navigasi (seperti << atau >>)
+                    dangerouslySetInnerHTML={{ __html: link.label }}
+                    className={`
+                        min-w-[40px] h-9 rounded-full text-sm font-medium
+                        transition-all duration-200 ease-in-out
+                        ${
+                        link.active
+                            ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
+                            : 'border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                        }
+                        ${!link.url ? 'opacity-40 cursor-not-allowed' : ''}
+                    `}
+                    />
+                ))}
+            </div>
+            {/* End Pagination Links */}
+
         </div>
         </AppLayout>
     );

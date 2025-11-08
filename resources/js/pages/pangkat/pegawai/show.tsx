@@ -105,9 +105,9 @@ export default function Show() {
 
                 {/* DETAIL CARD */}
                 <Card className="border border-indigo-200 dark:border-indigo-900/50 shadow-lg rounded-2xl bg-white/70 dark:bg-gray-900/60 backdrop-blur-lg transition-all">
-                    <CardHeader className="text-center border-indigo-100 dark:border-indigo-800/40">
+                    <CardHeader className="text-lg border-indigo-100 dark:border-indigo-800/40">
                         <CardTitle className="font-semibold text-gray-800 dark:text-gray-200">
-                        Data Diri {pegawai.nama}
+                            Data Diri
                         </CardTitle>
                     </CardHeader>
 
@@ -132,9 +132,9 @@ export default function Show() {
 
                 {/* BERKAS TABLE */}
                 <Card className="border border-indigo-200 dark:border-indigo-900/50 shadow-lg rounded-2xl bg-white/70 dark:bg-gray-900/60 backdrop-blur-lg transition-all">
-                <CardHeader className="text-center border-indigo-100 dark:border-indigo-800/40">
+                <CardHeader className="border-indigo-100 dark:border-indigo-800/40">
                     <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    Data Berkas {pegawai.nama}
+                        Daftar Berkas
                     </CardTitle>
                 </CardHeader>
 

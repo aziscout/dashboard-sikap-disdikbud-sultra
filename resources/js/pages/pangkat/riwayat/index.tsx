@@ -22,6 +22,11 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { Eye, ListFilterPlus, Megaphone } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+// Asumsi: Anda menggunakan komponen Pagination yang diimpor
+// import Pagination from '@/components/Pagination'; 
+// Karena Anda memberikan implementasi pagination inline di kode pegawai, 
+// saya akan mengikutinya.
+
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Riwayat', href: '/pangkat/riwayat' },
 ];
@@ -34,29 +39,55 @@ interface Riwayat {
     alamat: string;
     tmt_golongan: string;
     tanggal_naik_pangkat: string;
+    // Tambahkan properti lain yang mungkin diperlukan dari model Berkas/Pegawai
 }
 
+// 1. Interfaces untuk Pagination
+interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+interface RiwayatPagination {
+    data: Riwayat[];
+    links: PaginationLink[];
+    current_page: number;
+    per_page: number;
+}
+
+// 2. Perubahan PageProps
 interface PageProps {
     flash?: { message?: string };
-    riwayat: Riwayat[];
+    riwayat: RiwayatPagination; // Menggunakan tipe Pagination
 }
 
 export default function Index() {
+    // Mengubah riwayat menjadi objek pagination
     const { riwayat, flash } = usePage().props as unknown as PageProps;
     const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredRiwayat = useMemo(() => {
-        return [...riwayat]
+        // Menggunakan riwayat.data karena data sudah di-paginate oleh Controller
+        return [...riwayat.data]
             .filter((item) =>
                 item.nama.toLowerCase().includes(searchQuery.toLowerCase())
             )
             .sort((a, b) => {
-                const dateA = new Date(a.tanggal_naik_pangkat.split('/').reverse().join('-')).getTime();
-                const dateB = new Date(b.tanggal_naik_pangkat.split('/').reverse().join('-')).getTime();
+                // Pastikan format tanggal sudah diconvert dengan benar di controller (d/m/Y)
+                const parseDate = (dateString: string) => {
+                    const parts = dateString.split('/');
+                    // Format: YYYY-MM-DD
+                    return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
+                };
+                
+                const dateA = parseDate(a.tanggal_naik_pangkat);
+                const dateB = parseDate(b.tanggal_naik_pangkat);
+                
                 return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
             });
-    }, [riwayat, sortOrder, searchQuery]);
+    }, [riwayat.data, sortOrder, searchQuery]); // Menggunakan riwayat.data sebagai dependency
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -146,7 +177,11 @@ export default function Index() {
                                         key={item.id}
                                         className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
                                     >
-                                        <TableCell className="text-center">{index + 1}</TableCell>
+                                        {/* 3. Penyesuaian Penomoran */}
+                                        <TableCell className="text-center">
+                                            {(riwayat.current_page - 1) * riwayat.per_page + (index + 1)}
+                                        </TableCell>
+                                        {/* --------------------------- */}
                                         <TableCell className="font-medium">{item.nama}</TableCell>
                                         <TableCell>{item.email}</TableCell>
                                         <TableCell className="capitalize">
@@ -185,6 +220,32 @@ export default function Index() {
                             )}
                         </TableBody>
                     </Table>
+                </div>
+                
+                {/* 4. Implementasi Pagination (menggunakan style dari kode Pegawai Anda) */}
+                <div className="flex justify-end items-center gap-2 my-8 flex-wrap">
+                    {riwayat.links.map((link, i) => (
+                        <Button
+                            key={i}
+                            size="sm"
+                            // Menggunakan link.active untuk menentukan variant
+                            variant={link.active ? 'default' : 'outline'}
+                            disabled={!link.url}
+                            // Menggunakan window.location.href (seperti kode pegawai Anda)
+                            onClick={() => link.url && (window.location.href = link.url)}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                            className={`
+                                min-w-[40px] h-9 rounded-full text-sm font-medium
+                                transition-all duration-200 ease-in-out
+                                ${
+                                link.active
+                                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
+                                    : 'border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                                }
+                                ${!link.url ? 'opacity-40 cursor-not-allowed' : ''}
+                            `}
+                        />
+                    ))}
                 </div>
             </div>
         </AppLayout>

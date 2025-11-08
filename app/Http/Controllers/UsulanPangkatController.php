@@ -7,15 +7,15 @@ use App\Models\DataDiri;
 use App\Models\Pegawai;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class UsulanPangkatController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $today = Carbon::today();
-
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])->get();
 
         // Filter pegawai yang:
@@ -29,13 +29,14 @@ class UsulanPangkatController extends Controller
                 return false; // jika belum punya TMT, skip
             }
 
-            $tmtDate = Carbon::parse($tmt);
+            // Tambahkan 4 tahun untuk mencari TMT Kenaikan Pangkat berikutnya
+            $tmtDate = Carbon::parse($tmt)->addYears(4);
             $threeMonthsBefore = $tmtDate->copy()->subMonths(3);
 
-            // kondisi 1: waktu sekarang sudah melewati 3 bulan sebelum TMT
+            // Kondisi 1: waktu sekarang sudah melewati 3 bulan sebelum TMT
             $isEligibleByDate = $today->greaterThanOrEqualTo($threeMonthsBefore);
 
-            // kondisi 2: cek berkas lengkap
+            // Kondisi 2: cek berkas lengkap (ambil berkas terbaru/pertama)
             $berkas = $item->berkas->first();
             $isBerkasComplete = $berkas &&
                 $berkas->sk_cpns &&
@@ -44,17 +45,33 @@ class UsulanPangkatController extends Controller
                 $berkas->sk_jabatan &&
                 $berkas->sk_pangkat_terakhir;
 
-            // 🚫 kondisi 3: pastikan belum punya status SK telah terbit
+            // 🚫 Kondisi 3: pastikan belum punya status SK telah terbit
             $belumNaikPangkat = !$berkas || $berkas->status !== 'sk telah terbit';
 
             return $isEligibleByDate && $isBerkasComplete && $belumNaikPangkat;
-        })->values();
+        })->values(); 
+
+        $perPage = 20;
+        $currentPage = $request->get('page', 1);
+        $offset = ($currentPage * $perPage) - $perPage;
+
+        $items = $filteredPegawai->slice($offset, $perPage)->all();
+
+        $paginatedPegawai = new LengthAwarePaginator(
+            $items,
+            $filteredPegawai->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url()]
+        );
 
         return Inertia::render('pangkat/usulanPangkat/index', [
-            'pegawai' => $filteredPegawai,
+            'pegawai' => $paginatedPegawai,
+            'flash' => [
+                'message' => session('message'),
+            ],
         ]);
     }
-
 
     public function status($id)
     {
