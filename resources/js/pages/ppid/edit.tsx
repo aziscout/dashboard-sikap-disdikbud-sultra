@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,13 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage, router } from '@inertiajs/react';
-import { CircleAlert, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { getCustomErrors } from '@/lib/custom-errors';
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'PPID', href: '/ppid' },
-  { title: 'Edit PPID' },
+  { title: 'Edit PPID', href: '/ppid/edit' },
 ];
 
 // Dropdown options
@@ -43,6 +43,8 @@ export default function Edit() {
     informasi: ppid.informasi || '',
     file: null as File | null,
   });
+
+  const customErrors = getCustomErrors(errors);
 
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -103,21 +105,6 @@ export default function Edit() {
         {/* Bagian Kiri: Form */}
         <div className="w-full md:w-1/2 space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {(Object.keys(errors).length > 0 || fileError) && (
-              <Alert variant="destructive">
-                <CircleAlert className="h-4 w-4" />
-                <AlertTitle>Terjadi Kesalahan!</AlertTitle>
-                <AlertDescription>
-                  <ul>
-                    {Object.entries(errors).map(([key, message]) => (
-                      <li key={key}>{message as string}</li>
-                    ))}
-                    {fileError && <li>{fileError}</li>}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
-
             {/* Judul */}
             <div>
               <Label htmlFor="judul">Judul</Label>
@@ -128,6 +115,7 @@ export default function Edit() {
                 onChange={(e) => setData('judul', e.target.value)}
                 disabled={processing}
               />
+              {customErrors.judul && <p className="mt-1 text-sm text-red-600">{customErrors.judul}</p>}
             </div>
 
             {/* Tahun */}
@@ -141,6 +129,7 @@ export default function Edit() {
                 onChange={(e) => setData('tahun', e.target.value)}
                 disabled={processing}
               />
+              {customErrors.tahun && <p className="mt-1 text-sm text-red-600">{customErrors.tahun}</p>}
             </div>
 
             {/* Jenis Informasi */}
@@ -162,6 +151,7 @@ export default function Edit() {
                   ))}
                 </SelectContent>
               </Select>
+              {customErrors.informasi && <p className="mt-1 text-sm text-red-600">{customErrors.informasi}</p>}
             </div>
 
             {/* File Upload */}
@@ -174,6 +164,8 @@ export default function Edit() {
                 onChange={handleFileChange}
                 disabled={processing}
               />
+              {fileError && <p className="mt-1 text-sm text-red-600">{fileError}</p>}
+              {customErrors.file && <p className="mt-1 text-sm text-red-600">{customErrors.file}</p>}
             </div>
 
             {/* Progress Bar */}

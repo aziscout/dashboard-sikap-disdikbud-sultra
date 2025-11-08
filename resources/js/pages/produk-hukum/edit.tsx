@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,8 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { CircleAlert, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useState } from 'react';
+import { getCustomErrors } from '@/lib/custom-errors';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { 
@@ -62,7 +62,14 @@ export default function Edit({ produkHukum }: Props) {
         dokumen: undefined,
     });
 
-    const [filePreview, setFilePreview] = useState<string | null>(null);
+    // dokumen lama
+    const existingDoc = produkHukum.dokumens?.dokumen || null;
+
+    const customErrors = getCustomErrors(errors);
+
+    const [filePreview, setFilePreview] = useState<string | null>(
+        existingDoc ? (existingDoc.startsWith('http') ? existingDoc : `/storage/${existingDoc}`) : null
+    );
 
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,9 +80,6 @@ export default function Edit({ produkHukum }: Props) {
             onError: (errors) => console.error("Validation errors:", errors),
         });
     };
-
-    // dokumen lama
-    const existingDoc = produkHukum.dokumens?.dokumen || null;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -88,20 +92,6 @@ export default function Edit({ produkHukum }: Props) {
                         className="space-y-4"
                         encType="multipart/form-data"
                     >
-                        {Object.keys(errors).length > 0 && (
-                            <Alert>
-                                <CircleAlert className="h-4 w-4" />
-                                <AlertTitle>Errors!</AlertTitle>
-                                <AlertDescription>
-                                    <ul>
-                                        {Object.entries(errors).map(([key, message]) => (
-                                            <li key={key}>{message as string}</li>
-                                        ))}
-                                    </ul>
-                                </AlertDescription>
-                            </Alert>
-                        )}
-
                         <div>
                             <Label htmlFor="judul">Judul</Label>
                             <Input
@@ -111,6 +101,7 @@ export default function Edit({ produkHukum }: Props) {
                                 value={data.judul}
                                 onChange={(e) => setData("judul", e.target.value)}
                             />
+                            {customErrors.judul && <p className="mt-1 text-sm text-red-600">{customErrors.judul}</p>}
                         </div>
 
                         <div>
@@ -122,11 +113,12 @@ export default function Edit({ produkHukum }: Props) {
                                 value={data.deskripsi}
                                 onChange={(e) => setData("deskripsi", e.target.value)}
                             />
+                            {customErrors.deskripsi && <p className="mt-1 text-sm text-red-600">{customErrors.deskripsi}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="category">Kategori</Label>
-                            <Select 
+                            <Select
                                 value={data.category}
                                 onValueChange={(value) => setData('category', value)}
                             >
@@ -141,6 +133,7 @@ export default function Edit({ produkHukum }: Props) {
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {customErrors.category && <p className="mt-1 text-sm text-red-600">{customErrors.category}</p>}
                         </div>
 
                         <div>
@@ -156,6 +149,7 @@ export default function Edit({ produkHukum }: Props) {
                                     }
                                 }}
                             />
+                            {customErrors.dokumen && <p className="mt-1 text-sm text-red-600">{customErrors.dokumen}</p>}
                         </div>
 
                         {progress && (

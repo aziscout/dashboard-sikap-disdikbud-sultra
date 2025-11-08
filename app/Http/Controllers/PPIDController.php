@@ -15,11 +15,9 @@ class PpidController extends Controller
      */
     public function index()
     {
-        // Menggunakan 'dokumens' (plural) sesuai Model
         $ppid_data = Ppid::with('dokumens')->get();
 
         $ppid_data->transform(function ($item) {
-            // Sesuaikan pemanggilan relasi
             $item->dokumen_path = $item->dokumens->dokumen ?? null;
             return $item;
         });
@@ -43,8 +41,8 @@ class PpidController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'tahun' => 'required|digits:4',
-            'informasi' => 'required|in:Berkala,Setiap Saat,Serta Merta,Dikecualikan',
-            'file' => 'required|mimes:pdf|max:5120', // 5MB
+            'informasi' => 'required|in:Berkala,Setiap Saat,Serta Merta,Dikecualikan,Publik',
+            'file' => 'required|mimes:pdf|max:5120', 
         ]);
 
         $dokumenId = null;
@@ -74,11 +72,8 @@ class PpidController extends Controller
      */
     public function edit($id)
     {
-        // Menggunakan 'dokumens' (plural) sesuai Model
         $ppid = Ppid::with('dokumens')->findOrFail($id);
 
-        // Kirim path dokumen agar preview tampil
-        // Sesuaikan pemanggilan relasi
         $ppid->dokumen_path = $ppid->dokumens->dokumen ?? null;
 
         return Inertia::render('ppid/edit', compact('ppid'));
@@ -92,7 +87,7 @@ class PpidController extends Controller
         $request->validate([
             'judul' => 'nullable|string|max:255',
             'tahun' => 'nullable|digits:4',
-            'informasi' => 'nullable|in:Berkala,Setiap Saat,Serta Merta,Dikecualikan',
+            'informasi' => 'nullable|in:Berkala,Setiap Saat,Serta Merta,Dikecualikan,Publik',
             'file' => 'nullable|mimes:pdf|max:5120', // 5MB
         ]);
 

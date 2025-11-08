@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { CircleAlert, Plus, Save, SquarePen, Trash2 } from 'lucide-react';
+import { Plus, Save, SquarePen, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { getCustomErrors } from '@/lib/custom-errors';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Inovasi', href: '/inovasi' },
@@ -57,6 +57,8 @@ export default function EditInovasi() {
     deleted_files: [] as string[],
     _method: 'PUT',
   });
+
+  const customErrors = getCustomErrors(errors);
 
   const [formatDokumentasi, setFormatDokumentasi] = useState<string>(
     inovasi.medias?.file?.some((m) => m.type === 'video' && m.file.startsWith('http')) ? 'video' :
@@ -214,20 +216,6 @@ export default function EditInovasi() {
             </Alert>
           )} */}
 
-          {Object.keys(errors).length > 0 && (
-            <Alert>
-              <CircleAlert className="h-4 w-4" />
-              <AlertTitle>Errors!</AlertTitle>
-              <AlertDescription>
-                <ul>
-                  {Object.entries(errors).map(([key, message]) => (
-                    <li key={key}>{message as string}</li>
-                  ))}
-                </ul>
-              </AlertDescription>
-            </Alert>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
             <div>
               <Label htmlFor="judul">Judul</Label>
@@ -236,6 +224,7 @@ export default function EditInovasi() {
                 value={data.judul}
                 onChange={(e) => setData('judul', e.target.value)}
               />
+              {customErrors.judul && <p className="mt-1 text-sm text-red-600">{customErrors.judul}</p>}
             </div>
 
             <div>
@@ -245,6 +234,7 @@ export default function EditInovasi() {
                 value={data.penyelenggara}
                 onChange={(e) => setData('penyelenggara', e.target.value)}
               />
+              {customErrors.penyelenggara && <p className="mt-1 text-sm text-red-600">{customErrors.penyelenggara}</p>}
             </div>
 
             <div>
@@ -262,6 +252,7 @@ export default function EditInovasi() {
                   <SelectItem value="Evaluasi">Evaluasi</SelectItem>
                 </SelectContent>
               </Select>
+              {customErrors.category && <p className="mt-1 text-sm text-red-600">{customErrors.category}</p>}
             </div>
 
             <div>
@@ -272,6 +263,7 @@ export default function EditInovasi() {
                 value={data.deskripsi}
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
+              {customErrors.deskripsi && <p className="mt-1 text-sm text-red-600">{customErrors.deskripsi}</p>}
             </div>
 {/* 
             <div>
@@ -311,6 +303,7 @@ export default function EditInovasi() {
                   value={data.video_urls}
                   onChange={(e) => setData('video_urls', e.target.value)}
                 />
+                {customErrors.video_urls && <p className="mt-1 text-sm text-red-600">{customErrors.video_urls}</p>}
               </div>
             )}
 
@@ -327,6 +320,7 @@ export default function EditInovasi() {
                   <SelectItem value="slb">SLB</SelectItem>
                 </SelectContent>
               </Select>
+              {customErrors.instansi && <p className="mt-1 text-sm text-red-600">{customErrors.instansi}</p>}
             </div>
 
             <div>
@@ -336,6 +330,7 @@ export default function EditInovasi() {
                 value={data.lokasi}
                 onChange={(e) => setData('lokasi', e.target.value)}
               />
+              {customErrors.lokasi && <p className="mt-1 text-sm text-red-600">{customErrors.lokasi}</p>}
             </div>
 
             <div className="flex space-x-2">

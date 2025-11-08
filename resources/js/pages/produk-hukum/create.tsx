@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,8 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router } from '@inertiajs/react';
-import { CircleAlert, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useState } from 'react';
+import { getCustomErrors } from '@/lib/custom-errors';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -32,16 +32,58 @@ const categories = [
 
 export default function Index() {
     const { data, setData, post, errors } = useForm({
-        judul: '', 
-        deskripsi: '', 
-        category: '', 
+        judul: '',
+        deskripsi: '',
+        category: '',
         dokumen: null as File | null,
     });
 
+    const customErrors = getCustomErrors(errors);
+
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [dokumenError, setDokumenError] = useState<string>('');
+    const [judulError, setJudulError] = useState<string>('');
+    const [deskripsiError, setDeskripsiError] = useState<string>('');
+    const [kategoriError, setKategoriError] = useState<string>('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Client-side validation
+        let hasError = false;
+
+        if (!data.judul.trim()) {
+            setJudulError('Judul wajib diisi.');
+            hasError = true;
+        } else {
+            setJudulError('');
+        }
+
+        if (!data.deskripsi.trim()) {
+            setDeskripsiError('Deskripsi wajib diisi.');
+            hasError = true;
+        } else {
+            setDeskripsiError('');
+        }
+
+        if (!data.category) {
+            setKategoriError('Kategori wajib dipilih.');
+            hasError = true;
+        } else {
+            setKategoriError('');
+        }
+
+        if (!data.dokumen) {
+            setDokumenError('Dokumen wajib diisi. Silakan pilih file dokumen sebelum menyimpan.');
+            hasError = true;
+        } else {
+            setDokumenError('');
+        }
+
+        if (hasError) {
+            return;
+        }
+
         post(route('produk-hukum.store'), {
             forceFormData: true,
         })
@@ -52,6 +94,7 @@ export default function Index() {
         if (file) {
             setData('dokumen', file);
             setPreviewUrl(URL.createObjectURL(file));
+            setDokumenError(''); // Clear error when file is selected
         }
     };
 
@@ -62,27 +105,18 @@ export default function Index() {
                 {/* FORM */}
                 <div className="w-full md:w-1/2">
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {Object.keys(errors).length > 0 && (
-                            <Alert>
-                                <CircleAlert className="h-4 w-4" />
-                                <AlertTitle>Terjadi Kesalahan!</AlertTitle>
-                                <AlertDescription>
-                                    <ul>
-                                        {Object.entries(errors).map(([key, message]) => (
-                                            <li key={key}>{message as string}</li>
-                                        ))}
-                                    </ul>
-                                </AlertDescription>
-                            </Alert>
-                        )}
-
                         <div>
                             <Label htmlFor="judul">Judul</Label>
                             <Input
                                 placeholder="Masukkan Judul"
                                 value={data.judul}
-                                onChange={(e) => setData("judul", e.target.value)}
+                                onChange={(e) => {
+                                    setData("judul", e.target.value);
+                                    if (judulError) setJudulError('');
+                                }}
                             />
+                            {judulError && <p className="mt-1 text-sm text-red-600">{judulError}</p>}
+                            {customErrors.judul && <p className="mt-1 text-sm text-red-600">{customErrors.judul}</p>}
                         </div>
 
                         <div>
@@ -90,15 +124,23 @@ export default function Index() {
                             <Textarea
                                 placeholder="Deskripsi"
                                 value={data.deskripsi}
-                                onChange={(e) => setData("deskripsi", e.target.value)}
+                                onChange={(e) => {
+                                    setData("deskripsi", e.target.value);
+                                    if (deskripsiError) setDeskripsiError('');
+                                }}
                             />
+                            {deskripsiError && <p className="mt-1 text-sm text-red-600">{deskripsiError}</p>}
+                            {customErrors.deskripsi && <p className="mt-1 text-sm text-red-600">{customErrors.deskripsi}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="category">Kategori</Label>
-                            <Select 
+                            <Select
                                 value={data.category}
-                                onValueChange={(value) => setData('category', value)}
+                                onValueChange={(value) => {
+                                    setData('category', value);
+                                    if (kategoriError) setKategoriError('');
+                                }}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Pilih kategori" />
@@ -111,6 +153,8 @@ export default function Index() {
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {kategoriError && <p className="mt-1 text-sm text-red-600">{kategoriError}</p>}
+                            {customErrors.category && <p className="mt-1 text-sm text-red-600">{customErrors.category}</p>}
                         </div>
 
                         <div>
@@ -120,6 +164,8 @@ export default function Index() {
                                 accept="application/pdf"
                                 onChange={handleFileChange}
                             />
+                            {dokumenError && <p className="mt-1 text-sm text-red-600">{dokumenError}</p>}
+                            {customErrors.dokumen && <p className="mt-1 text-sm text-red-600">{customErrors.dokumen}</p>}
                         </div>
 
                         <div className=' flex space-x-2'>

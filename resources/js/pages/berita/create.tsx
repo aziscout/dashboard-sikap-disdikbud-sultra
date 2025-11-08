@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router } from '@inertiajs/react';
-import { CircleAlert, Plus, Save, Trash2 } from 'lucide-react';
+import { Plus, Save, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { getCustomErrors } from '@/lib/custom-errors';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -35,6 +35,8 @@ export default function Index() {
         instansi: '',
         lokasi: '',
     });
+
+    const customErrors = getCustomErrors(errors);
 
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(null);
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>([]);
@@ -100,23 +102,11 @@ export default function Index() {
                 {/* FORM KIRI */}
                 <div className="w-full md:w-1/2">
                     <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
-                        {Object.keys(errors).length > 0 && (
-                            <Alert>
-                                <CircleAlert className="h-4 w-4" />
-                                <AlertTitle>Errors!</AlertTitle>
-                                <AlertDescription>
-                                    <ul>
-                                        {Object.entries(errors).map(([key, message]) => (
-                                            <li key={key}>{message as string}</li>
-                                        ))}
-                                    </ul>
-                                </AlertDescription>
-                            </Alert>
-                        )}
 
                         <div>
                             <Label htmlFor="judul">Judul</Label>
                             <Input placeholder="Masukkan Judul" value={data.judul} onChange={(e) => setData('judul', e.target.value)} />
+                            {customErrors.judul && <p className="mt-1 text-sm text-red-600">{customErrors.judul}</p>}
                         </div>
                         <div>
                             <Label htmlFor="penyelenggara">Penyelenggara</Label>
@@ -125,6 +115,7 @@ export default function Index() {
                                 value={data.penyelenggara}
                                 onChange={(e) => setData('penyelenggara', e.target.value)}
                             />
+                            {customErrors.penyelenggara && <p className="mt-1 text-sm text-red-600">{customErrors.penyelenggara}</p>}
                         </div>
                         <div>
                             <Label htmlFor="kategori">Kategori</Label>
@@ -140,10 +131,11 @@ export default function Index() {
                                     <SelectItem value="Lomba">Lomba</SelectItem>
                                     <SelectItem value="Evaluasi">Evaluasi</SelectItem>
                                 </SelectContent>
+                            {customErrors.category && <p className="mt-1 text-sm text-red-600">{customErrors.category}</p>}
                             </Select>
                         </div>
 
-                       
+
 
                         <div>
                             <Label htmlFor="deskripsi">Deskripsi</Label>
@@ -153,9 +145,10 @@ export default function Index() {
                                 value={data.deskripsi}
                                 onChange={(e) => setData('deskripsi', e.target.value)}
                             />
+                            {customErrors.deskripsi && <p className="mt-1 text-sm text-red-600">{customErrors.deskripsi}</p>}
                         </div>
 
-                         <div>
+                        <div>
                             <Label htmlFor="format_dokumentasi">Format Dokumentasi</Label>
                             <Select value={formatDokumentasi} onValueChange={handleFormatChange}>
                                 <SelectTrigger>
@@ -166,6 +159,7 @@ export default function Index() {
                                     <SelectItem value="video">Video</SelectItem>
                                 </SelectContent>
                             </Select>
+                            {customErrors.format_dokumentasi && <p className="mt-1 text-sm text-red-600">{customErrors.format_dokumentasi}</p>}
                         </div>
 
 
@@ -182,11 +176,13 @@ export default function Index() {
                                     <SelectItem value="slb">SLB</SelectItem>
                                 </SelectContent>
                             </Select>
+                            {customErrors.instansi && <p className="mt-1 text-sm text-red-600">{customErrors.instansi}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="lokasi">Lokasi</Label>
                             <Input placeholder="Masukkan Lokasi" value={data.lokasi} onChange={(e) => setData('lokasi', e.target.value)} />
+                            {customErrors.lokasi && <p className="mt-1 text-sm text-red-600">{customErrors.lokasi}</p>}
                         </div>
 
                         <div className=' flex space-x-2'>
@@ -204,8 +200,9 @@ export default function Index() {
                 <div className="w-full space-y-6 md:w-1/2">
                     {/* COVER IMAGE */}
                     <div className="space-y-2 rounded border p-4">
-                        <Label htmlFor="coverImage">Cover Image</Label>
+                        <Label htmlFor="coverImage">Thumbnail </Label>
                         <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
+                        {customErrors.coverImage && <p className="mt-1 text-sm text-red-600">{customErrors.coverImage}</p>}
                         {previewCoverUrl ? (
                             <div className="mt-2">
                                 <img src={previewCoverUrl} alt="Preview Cover" className="h-30 w-46 rounded object-cover" />
@@ -223,7 +220,7 @@ export default function Index() {
                                 </div> */}
                             </div>
                         ) : (
-                            <div className="flex h-30 items-center justify-center rounded border text-gray-500">Belum ada cover dipilih</div>
+                            <div className="flex h-30 items-center justify-center rounded border text-gray-500">Belum ada thumbnail yang dipilih</div>
                         )}
                     </div>
 
@@ -236,6 +233,7 @@ export default function Index() {
                                     value={data.video_urls}
                                     onChange={(e) => setData('video_urls', e.target.value)}
                                 />
+                                {customErrors.video_urls && <p className="mt-1 text-sm text-red-600">{customErrors.video_urls}</p>}
                             </div>
                         )}
 
@@ -243,6 +241,7 @@ export default function Index() {
                     {formatDokumentasi.toLowerCase() !== 'video' && (
                         <div className="space-y-2 rounded border p-4">
                             <Label className="mr-5">Upload Foto</Label>
+                            {customErrors.files && <p className="mt-1 text-sm text-red-600">{customErrors.files}</p>}
 
                             {previewFileUrls.length > 0 ? (
                                 <div className="mt-2 grid grid-cols-3 gap-2">

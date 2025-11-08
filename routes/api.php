@@ -32,7 +32,6 @@ use App\Http\Controllers\Api\PpidApiController;
    Route::get('/ppid', [PpidApiController::class, 'index']);
    Route::get('/ppid/{id}', [PpidApiController::class, 'show']);
 
-   Route::get('/ppid', [PpidApiController::class, 'index']);
    // produk hukum
    Route::get('/produk-hukum', [ProdukHukumApiController::class, 'index']);
    // berita
@@ -47,7 +46,7 @@ use App\Http\Controllers\Api\PpidApiController;
    // gallery
    Route::get('/galeri', [AllGaleriApiController::class, 'index']);
    // layanan
-   // Route::post('/layanan', [LayananApiController::class, 'store']);
+   Route::post('/layanan', [LayananApiController::class, 'store']);
    Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);
    Route::middleware('auth:sanctum')->get('/layanan', [LayananApiController::class, 'index']);
    

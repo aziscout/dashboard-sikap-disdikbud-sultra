@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { CalendarDays, FileText, ListFilterPlus, Megaphone, Plus, Shield, SquarePen, Trash2 } from 'lucide-react';
+import { CalendarDays, FileText, ListFilterPlus, Megaphone,  PaperclipIcon, Plus, Shield, SquarePen, Trash2 } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { useMemo, useState } from 'react';
@@ -38,14 +38,21 @@ const informasiOptions = [
     { value: "Setiap Saat", label: "Setiap Saat" },
     { value: "Serta Merta", label: "Serta Merta" },
     { value: "Dikecualikan", label: "Dikecualikan" },
+    { value: "Publik", label: "Publik" },
 ];
 
+interface Dokumen {
+  id: number;
+  dokumen: string;
+  
+}
 interface Ppid {
     id: number;
     judul: string;
     tahun: string;
     informasi: string;
-    dokumens: string;
+    dokumens: string | null ;
+    dokumen_path: string | null ;
     created_at: string;
 }
 
@@ -193,7 +200,7 @@ export default function Index() {
                             {/* Info PPID */}
                             <div className="space-y-2 flex-1">
                                 <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                                    <Shield />
+                                    < FileText/>
                                     {ppid.judul}
                                 </h2>
                                 <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
@@ -215,8 +222,8 @@ export default function Index() {
                                 </p>
                                 {ppid.dokumens ? (
                                     <a
-                                        href={`/storage/${ppid.dokumens}`}
-                                        target="_blank"
+                                    href={`/storage/${ppid.dokumen_path}`}    
+                                    target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-blue-600 hover:underline text-sm flex gap-1 w-30"
                                     >

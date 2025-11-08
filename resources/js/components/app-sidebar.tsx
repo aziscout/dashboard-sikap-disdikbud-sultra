@@ -119,7 +119,7 @@ const { auth } = usePage<PageProps>().props;
         });
     }
     if (userPermissions.includes('PPID')) {
-        mainNavItems.push({
+        mainNavItems.push({ 
             title: 'PPID',
             href: '/ppid',
             icon: FileText,
