@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\PengumumanApiController;
 use App\Http\Controllers\Api\ProdukHukumApiController;
 use App\Http\Controllers\Api\LayananApiController;
 use App\Http\Controllers\Api\DataDiriApiController;
+use App\Http\Controllers\Api\PpidApiController;
 
    Route::get('/dashboard',[DashboardApiController::class,'index']);
 // pengumuman
@@ -25,6 +26,11 @@ use App\Http\Controllers\Api\DataDiriApiController;
    Route::get('/laporan',[LaporanApiController::class,'index']);
    // agenda detail
    Route::get('/agenda/{id}', [AgendaApiController::class, 'show']);
+
+   // ppid
+
+   Route::get('/ppid', [PpidApiController::class, 'index']);
+   Route::get('/ppid/{id}', [PpidApiController::class, 'show']);
 
    // produk hukum
    Route::get('/produk-hukum', [ProdukHukumApiController::class, 'index']);
@@ -40,7 +46,7 @@ use App\Http\Controllers\Api\DataDiriApiController;
    // gallery
    Route::get('/galeri', [AllGaleriApiController::class, 'index']);
    // layanan
-   // Route::post('/layanan', [LayananApiController::class, 'store']);
+   Route::post('/layanan', [LayananApiController::class, 'store']);
    Route::get('/layanan/status/{kode_tracking}', [LayananApiController::class, 'status']);
    Route::middleware('auth:sanctum')->get('/layanan', [LayananApiController::class, 'index']);
    

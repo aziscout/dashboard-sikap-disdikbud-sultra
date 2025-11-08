@@ -14,7 +14,7 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\UsulanPangkatController;
-use App\Models\Pegawai;
+use App\Http\Controllers\PpidController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -115,7 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/inovasi/{inovasi}/edit', [InovasiController::class, 'edit'])->name('inovasi.edit');
         Route::put('/inovasi/{inovasi}', [InovasiController::class, 'update'])->name('inovasi.update');
         Route::delete('/inovasi/{inovasi}', [InovasiController::class, 'destroy'])->name('inovasi.destroy');
-        
+
     });
     // layanan
     Route::middleware(['permission:Layanan'])->group(function(){
@@ -126,6 +126,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/layanan/{layanan}', [LayananController::class, 'update'])->name('layanan.update'); // update status
         Route::delete('/layanan/{layanan}', [LayananController::class, 'destroy'])->name('layanan.destroy'); // hapus
     });
+    Route::middleware(['permission:PPID'])->group(function () {
+    Route::get('/ppid', [PpidController::class, 'index'])->name('ppid.index');
+    Route::get('/ppid/create', [PpidController::class, 'create'])->name('ppid.create');
+    Route::post('/ppid', [PpidController::class, 'store'])->name('ppid.store');
+    Route::get('/ppid/{ppid}/edit', [PpidController::class, 'edit'])->name('ppid.edit');
+    Route::put('/ppid/{ppid}', [PpidController::class, 'update'])->name('ppid.update');
+    Route::delete('/ppid/{ppid}', [PpidController::class, 'destroy'])->name('ppid.destroy');
+});
+
 
     Route::middleware(['auth', 'verified'])->group(function() {
         Route::resource('/bidang/user', BidangController::class);

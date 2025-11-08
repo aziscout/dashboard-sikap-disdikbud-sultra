@@ -31,7 +31,7 @@ import { NavPangkat } from './nav-pangkat';
 // ];
 
 
-export function AppSidebar() {
+export function     AppSidebar() {
     type AuthUser = {
     id: number;
     name: string;
@@ -119,7 +119,7 @@ const { auth } = usePage<PageProps>().props;
         });
     }
     if (userPermissions.includes('PPID')) {
-        mainNavItems.push({
+        mainNavItems.push({ 
             title: 'PPID',
             href: '/ppid',
             icon: FileText,

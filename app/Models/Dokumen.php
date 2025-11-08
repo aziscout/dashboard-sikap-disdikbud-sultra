@@ -25,4 +25,9 @@ class Dokumen extends Model
     {
         return $this->hasMany(Layanan::class, 'dokumens_id');
     }
+
+    public function ppids()
+    {
+        return $this->hasMany(Ppid::class, 'dokumens_id');
+    }
 }

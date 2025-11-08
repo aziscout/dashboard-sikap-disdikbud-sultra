@@ -1,6 +1,13 @@
-- [x] Add state for notification modal: isNotificationModalOpen, notificationMessage, notificationType
-- [x] Replace showAlert function to set modal state instead of alert state
-- [x] Add custom notification modal component at the end of the component
-- [x] Remove the existing Alert component from the JSX
-- [x] Style modal appropriately for success/error notifications
-- [x] Test that modal doesn't cause layout shifts (build successful)
+ dev
+ # TODO: Ubah Teks Alert ke Bahasa Indonesia
+
+## File yang perlu diubah:
+- [ ] resources/js/pages/produk-hukum/edit.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
+- [ ] resources/js/pages/pengumuman/create.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
+- [ ] resources/js/pages/laporan/edit.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
+- [ ] resources/js/pages/inovasi/create.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
+- [ ] resources/js/pages/inovasi/edit.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
+
+## Followup:
+- [ ] Cek apakah ada teks lain yang perlu diubah setelah edit.
+- [ ] Test perubahan di browser jika perlu.

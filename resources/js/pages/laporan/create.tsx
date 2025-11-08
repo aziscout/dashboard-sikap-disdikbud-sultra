@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { CircleAlert, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useState } from 'react';
+import { getCustomErrors } from '@/lib/custom-errors';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -32,6 +32,8 @@ export default function Index() {
     peserta: '',
     dokumen: null as File | null,
   });
+
+  const customErrors = getCustomErrors(errors);
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -58,21 +60,6 @@ export default function Index() {
         {/* FORM KIRI */}
         <div className="w-full md:w-1/2">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* ERROR HANDLER */}
-            {Object.keys(errors).length > 0 && (
-              <Alert variant="destructive">
-                <CircleAlert className="h-4 w-4" />
-                <AlertTitle>Terjadi Kesalahan!</AlertTitle>
-                <AlertDescription>
-                  <ul className="ml-5 list-disc">
-                    {Object.entries(errors).map(([key, message]) => (
-                      <li key={key}>{message as string}</li>
-                    ))}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
-
             <div>
               <Label htmlFor="judul">Judul</Label>
               <Input
@@ -81,6 +68,7 @@ export default function Index() {
                 value={data.judul}
                 onChange={(e) => setData('judul', e.target.value)}
               />
+              {customErrors.judul && <p className="mt-1 text-sm text-red-600">{customErrors.judul}</p>}
             </div>
 
             <div>
@@ -91,6 +79,7 @@ export default function Index() {
                 value={data.deskripsi}
                 onChange={(e) => setData('deskripsi', e.target.value)}
               />
+              {customErrors.deskripsi && <p className="mt-1 text-sm text-red-600">{customErrors.deskripsi}</p>}
             </div>
 
             <div>
@@ -101,6 +90,7 @@ export default function Index() {
                 value={data.penyelenggara}
                 onChange={(e) => setData('penyelenggara', e.target.value)}
               />
+              {customErrors.penyelenggara && <p className="mt-1 text-sm text-red-600">{customErrors.penyelenggara}</p>}
             </div>
 
             <div>
@@ -111,6 +101,7 @@ export default function Index() {
                 value={data.peserta}
                 onChange={(e) => setData('peserta', e.target.value)}
               />
+              {customErrors.peserta && <p className="mt-1 text-sm text-red-600">{customErrors.peserta}</p>}
             </div>
 
             <div>
@@ -126,6 +117,7 @@ export default function Index() {
                   <SelectItem value="slb">SLB</SelectItem>
                 </SelectContent>
               </Select>
+              {customErrors.instansi && <p className="mt-1 text-sm text-red-600">{customErrors.instansi}</p>}
             </div>
 
             <div>
@@ -136,6 +128,7 @@ export default function Index() {
                 value={data.lokasi}
                 onChange={(e) => setData('lokasi', e.target.value)}
               />
+              {customErrors.lokasi && <p className="mt-1 text-sm text-red-600">{customErrors.lokasi}</p>}
             </div>
 
             <div>
@@ -145,6 +138,7 @@ export default function Index() {
                     accept="application/pdf"
                     onChange={handleFileChange}
                 />
+                {customErrors.dokumen && <p className="mt-1 text-sm text-red-600">{customErrors.dokumen}</p>}
             </div>
 
             <Button type="submit" disabled={processing}>

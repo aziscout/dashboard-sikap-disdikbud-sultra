@@ -68,6 +68,13 @@ export default function Edit({ berita }: Props) {
   const [previewCoverUrl, setPreviewCoverUrl] = useState<string | null>(
     berita.coverImage ? `/storage/${berita.coverImage}` : null,
   );
+  const [formatDokumentasi, setFormatDokumentasi] = useState<string>(
+    berita.medias?.file?.some((m) => m.type === 'video' && m.file.startsWith('http')) ? 'video' :
+    berita.medias?.file?.some((m) => m.type === 'foto') ? 'foto' : ''
+  );
+  const [fileError, setFileError] = useState<string>('');
+  const [coverError, setCoverError] = useState<string>('');
+
   const [previewFileUrls, setPreviewFileUrls] = useState<string[]>(
     (berita.medias?.file || [])
       .filter((m) => m.type === 'foto' || (m.type === 'video' && !m.file.startsWith('http')))
@@ -91,6 +98,12 @@ export default function Edit({ berita }: Props) {
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 3MB)
+      if (file.size > 3 * 1024 * 1024) {
+        setCoverError('Ukuran file maksimal 3MB');
+        return;
+      }
+      setCoverError('');
       setData('coverImage', file);
       setPreviewCoverUrl(URL.createObjectURL(file));
     }
@@ -102,15 +115,39 @@ export default function Edit({ berita }: Props) {
 
       // limit total files
       if (data.files.length + incoming.length > MAX_FILES) {
-        alert(`Maksimal ${MAX_FILES} foto yang dapat diupload.`);
+        setFileError(`Maksimal ${MAX_FILES} foto yang dapat diupload.`);
         return;
       }
 
+      // Validate file size (max 3MB per file)
+      const invalidFiles = incoming.filter(file => file.size > 3 * 1024 * 1024); // 3MB in bytes
+      if (invalidFiles.length > 0) {
+        setFileError('Ukuran file maksimal 3MB per foto');
+        return;
+      }
+
+      setFileError('');
       const newFiles = [...data.files, ...incoming];
       setData('files', newFiles);
 
       const newPreview = [...previewFileUrls, ...incoming.map((f) => URL.createObjectURL(f))];
       setPreviewFileUrls(newPreview);
+    }
+  };
+
+  const handleFormatChange = (value: string) => {
+    setFormatDokumentasi(value);
+    // Reset video_urls if switching from video to foto
+    if (value.toLowerCase() !== 'video') {
+      setData('video_urls', '');
+    }
+    // Clear files if switching from foto to video
+    if (value.toLowerCase() === 'video') {
+      setData('files', []);
+      setPreviewFileUrls([]);
+      // Mark existing photos for deletion
+      const photoFiles = berita.medias?.file?.filter((m) => m.type === 'foto').map((m) => m.file) || [];
+      setData('deleted_files', [...data.deleted_files, ...photoFiles]);
     }
   };
 
@@ -163,10 +200,32 @@ export default function Edit({ berita }: Props) {
                 </div>
                 <div>
                   <Label htmlFor="kategori">Kategori</Label>
-                  <Input
-                    defaultValue={data.category}
-                    onChange={(e) => setData('category', e.target.value)}
-                  />
+                  <Select value={data.category} onValueChange={(val) => setData('category', val)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Kategori" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Workshop">Workshop</SelectItem>
+                      <SelectItem value="Monitoring">Monitoring</SelectItem>
+                      <SelectItem value="Sosialisasi">Sosialisasi</SelectItem>
+                      <SelectItem value="Pelatihan">Pelatihan</SelectItem>
+                      <SelectItem value="Lomba">Lomba</SelectItem>
+                      <SelectItem value="Evaluasi">Evaluasi</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="format_dokumentasi">Format Dokumentasi</Label>
+                  <Select value={formatDokumentasi} onValueChange={handleFormatChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Format Dokumentasi" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="foto">Foto</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
     
                 <div>
@@ -178,15 +237,17 @@ export default function Edit({ berita }: Props) {
                   />
                 </div>
     
-                <div>
-                  <Label>Link Video</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://youtube.com/..."
-                    defaultValue={data.video_urls}
-                    onChange={(e) => setData('video_urls', e.target.value)}
-                  />
-                </div>
+                {formatDokumentasi.toLowerCase() === 'video' && (
+                  <div>
+                    <Label>Link Video</Label>
+                    <Input
+                      type="url"
+                      placeholder="https://youtube.com/..."
+                      value={data.video_urls}
+                      onChange={(e) => setData('video_urls', e.target.value)}
+                    />
+                  </div>
+                )}
     
                 {/* <div>
                   <Label htmlFor="category">Kategori</Label>
@@ -238,6 +299,7 @@ export default function Edit({ berita }: Props) {
               <div className="space-y-2 rounded border p-4">
                 <Label htmlFor="coverImage">Cover Image</Label>
                 <Input type="file" accept="image/*" onChange={handleCoverImageChange} />
+                {coverError && <p className="text-red-500 text-sm">{coverError}</p>}
                 {previewCoverUrl ? (
                   <img src={previewCoverUrl} alt="Preview Cover" className="mt-2 h-30 w-46 rounded object-cover" />
                 ) : (
@@ -248,94 +310,97 @@ export default function Edit({ berita }: Props) {
               </div>
     
               {/* UPLOAD FOTO */}
-              <div className="space-y-2 rounded border p-4">
-                <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
-                {previewFileUrls.length > 0 ? (
-                  <div className="mt-2 grid grid-cols-3 gap-2">
-                    {previewFileUrls.map((url, i) => (
-                      <div key={i} className="relative">
-                        <img src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
-                        <div className="mt-2 flex gap-2">
-                          {/* Ubah foto */}
-                          <Button
-                            type="button"
-                            className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
-                            onClick={() => {
-                              const input = document.createElement('input');
-                              input.type = 'file';
-                              input.accept = 'image/*';
-                              input.onchange = (e: Event) => {
-                                const file = (e.target as HTMLInputElement).files?.[0];
-                                if (file) {
-                                  handleChangePhoto(i, file);
+              {formatDokumentasi.toLowerCase() !== 'video' && (
+                <div className="space-y-2 rounded border p-4">
+                  <Label className="mr-5">Upload Foto (max {MAX_FILES})</Label>
+                  {fileError && <p className="text-red-500 text-sm">{fileError}</p>}
+                  {previewFileUrls.length > 0 ? (
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {previewFileUrls.map((url, i) => (
+                        <div key={i} className="relative">
+                          <img src={url} alt={`Preview File ${i}`} className="h-30 w-full rounded object-cover" />
+                          <div className="mt-2 flex gap-2">
+                            {/* Ubah foto */}
+                            <Button
+                              type="button"
+                              className="flex w-24 items-center gap-1 bg-blue-950 hover:bg-blue-900 text-white"
+                              onClick={() => {
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.accept = 'image/*';
+                                input.onchange = (e: Event) => {
+                                  const file = (e.target as HTMLInputElement).files?.[0];
+                                  if (file) {
+                                    handleChangePhoto(i, file);
+                                  }
+                                };
+                                input.click();
+                              }}
+                            >
+                              <SquarePen /> Ubah
+                            </Button>
+
+                            {/* Hapus foto */}
+                            <Button
+                              type="button"
+                              className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500 text-white  "
+                              onClick={() => {
+                                const originalIndex = localMediaIndices[i];
+                                const removedFile = berita.medias?.file[originalIndex]?.file;
+                                if (removedFile) {
+                                  setData("deleted_files", [...data.deleted_files, removedFile]);
                                 }
-                              };
-                              input.click();
-                            }}
-                          >
-                            <SquarePen /> Ubah
-                          </Button>
-    
-                          {/* Hapus foto */}
-                          <Button
-                            type="button"
-                            className="flex w-24 items-center gap-1 bg-red-600 hover:bg-red-500 text-white  "
-                            onClick={() => {
-                              const originalIndex = localMediaIndices[i];
-                              const removedFile = berita.medias?.file[originalIndex]?.file;
-                              if (removedFile) {
-                                setData("deleted_files", [...data.deleted_files, removedFile]);
-                              }
-    
-                              const newFiles = data.files.filter((_, idx) => idx !== i);
-                              const newPreview = previewFileUrls.filter((_, idx) => idx !== i);
-                              setData('files', newFiles);
-                              setPreviewFileUrls(newPreview);
-                            }}
-                          >
-                            <Trash2 /> Hapus
-                          </Button>
+
+                                const newFiles = data.files.filter((_, idx) => idx !== i);
+                                const newPreview = previewFileUrls.filter((_, idx) => idx !== i);
+                                setData('files', newFiles);
+                                setPreviewFileUrls(newPreview);
+                              }}
+                            >
+                              <Trash2 /> Hapus
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-    
-                    {/* Tambah foto card (only if less than MAX_FILES) */}
-                    {previewFileUrls.length < MAX_FILES && (
-                      <div
-                        className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                        onClick={() => {
-                          const input = document.createElement('input');
-                          input.type = 'file';
-                          input.accept = 'image/*';
-                          input.multiple = true;
-                          input.onchange = (e: Event) => {
-                            handleFilesChange((e.target as HTMLInputElement).files);
-                          };
-                          input.click();
-                        }}
-                      >
-                        <Plus /> Tambah Foto
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div
-                    className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.multiple = true;
-                      input.onchange = (e: Event) => {
-                        handleFilesChange((e.target as HTMLInputElement).files);
-                      };
-                      input.click();
-                    }}
-                  >
-                    <Plus /> Tambah Foto
-                  </div>
-                )}
-              </div>
+                      ))}
+
+                      {/* Tambah foto card (only if less than MAX_FILES) */}
+                      {previewFileUrls.length < MAX_FILES && (
+                        <div
+                          className="flex h-30 w-full cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'image/*';
+                            input.multiple = true;
+                            input.onchange = (e: Event) => {
+                              handleFilesChange((e.target as HTMLInputElement).files);
+                            };
+                            input.click();
+                          }}
+                        >
+                          <Plus /> Tambah Foto
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      className="flex h-40 cursor-pointer items-center justify-center rounded border border-dashed text-gray-500 hover:bg-gray-100"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.multiple = true;
+                        input.onchange = (e: Event) => {
+                          handleFilesChange((e.target as HTMLInputElement).files);
+                        };
+                        input.click();
+                      }}
+                    >
+                      <Plus /> Tambah Foto
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </AppLayout>
