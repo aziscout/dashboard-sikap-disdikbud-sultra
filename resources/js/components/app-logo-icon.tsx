@@ -1,5 +1,5 @@
 export default function AppLogoIcon() {
     return (
-        <img src="/logo.png" alt="App Logo" className="w-6 h-6" />
+        <img src="/logo-dikbud.png" alt="App Logo" className="w-8 h-8" />
     );
 }

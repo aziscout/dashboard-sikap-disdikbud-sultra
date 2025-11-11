@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { CalendarDays, FileText, ListFilterPlus, Megaphone, Plus, Scale, SquarePen, Trash2 , NotebookIcon } from 'lucide-react';
+import { CalendarDays, FileText, ListFilterPlus, Megaphone, Plus, Scale, SquarePen, Trash2 } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { useMemo, useState } from 'react';
