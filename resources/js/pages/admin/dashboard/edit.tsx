@@ -21,7 +21,7 @@ interface PageProps extends InertiaPageProps {
 const breadcrumbs: BreadcrumbItem[] = [
     { 
         title: 'Dashboard', 
-        href: '/dashboard' 
+        href: '/admin/dashboard' 
     },
     { 
         title: 'Ubah Logo & Hero Section', 

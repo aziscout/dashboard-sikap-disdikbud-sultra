@@ -50,7 +50,7 @@ class SendWaNotification implements ShouldQueue
 
             if ($isSuccess) {
                 // 4. Sukses: HAPUS data notifikasi
-                $notifikasi->delete(); 
+                // $notifikasi->delete(); 
                 Log::info("Notifikasi WA berhasil dikirim & Dihapus. Pegawai ID: {$pegawai->id}.");
 
             } else {
