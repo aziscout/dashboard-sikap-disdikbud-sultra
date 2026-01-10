@@ -19,7 +19,7 @@ interface PageProps extends InertiaPageProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     { 
-        title: 'Dashboard Admin', 
+        title: 'Dashboard Website', 
         href: '/dashboard' 
     },
 ];
