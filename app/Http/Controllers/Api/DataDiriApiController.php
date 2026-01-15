@@ -52,6 +52,7 @@ class DataDiriApiController extends Controller
             'jenis_kp' => 'required|string|max:20',
             'pangkat' => 'required|string',
             'gaji_pokok' => 'required|integer',
+            'kgb_terakhir' => 'required|string',
         ]);
 
         // Add pegawais_id from authenticated user
@@ -116,6 +117,7 @@ class DataDiriApiController extends Controller
             'jenis_kp' => 'sometimes|string|max:20',
             'pangkat' => 'sometimes|string',
             'gaji_pokok' => 'sometimes|integer',
+            'kgb_terakhir' => 'required|string',
         ]);
 
         $data->update($validated);

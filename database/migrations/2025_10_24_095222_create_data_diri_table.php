@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->string('jenis_kp');
             $table->string('pangkat');
             $table->integer('gaji_pokok');
+            $table->string('kgb_terakhir');
             $table->foreignId('pegawais_id')->unique()->constrained('pegawais')->onDelete('cascade');
             $table->timestamps();
         });
