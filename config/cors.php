@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:8080',
-        'https://kenaikanpangkat.btikpsultra.my.id',
+        'https://sikap.btikpsultra.my.id',
         'https://btikpsultra.my.id/',
     ],
 
