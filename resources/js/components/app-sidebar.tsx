@@ -1,9 +1,9 @@
-import { NavMain } from '@/components/nav-main';
+// import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen,Brain,CalendarDays,Crown,FileText, History, LayoutGrid, Megaphone, MessagesSquare, Newspaper, Scale, Users } from 'lucide-react';
+import { Crown, History, LayoutGrid, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 import { NavPangkat } from './nav-pangkat';
 
@@ -50,7 +50,7 @@ type PageProps = {
 const { auth } = usePage<PageProps>().props;
     const userPermissions = auth.permissions;
     
-    const mainNavItems: NavItem[] = [];
+    // const mainNavItems: NavItem[] = [];
 
     // if (userPermissions.includes('Dashboard')) {
     //     mainNavItems.push({
@@ -59,86 +59,86 @@ const { auth } = usePage<PageProps>().props;
     //         icon: LayoutGrid,
     //     });
     // }
-    if (userPermissions.includes('Dashboard')) {
-        const dashboardLink =
-            auth.user?.role === 'admin'
-                ? '/admin/dashboard'
-                : auth.user?.role === 'bidang'
-                ? '/bidang/dashboard'
-                : '/dashboard';
+    // if (userPermissions.includes('Dashboard')) {
+    //     const dashboardLink =
+    //         auth.user?.role === 'admin'
+    //             ? '/admin/dashboard'
+    //             : auth.user?.role === 'bidang'
+    //             ? '/bidang/dashboard'
+    //             : '/dashboard';
 
-        mainNavItems.push({
-            title: 'Dashboard',
-            href: dashboardLink,
-            icon: LayoutGrid,
-        });
-    }
+    //     mainNavItems.push({
+    //         title: 'Dashboard',
+    //         href: dashboardLink,
+    //         icon: LayoutGrid,
+    //     });
+    // }
 
-    if (userPermissions.includes('Bidang')) {
-        mainNavItems.push({
-            title: 'Bidang',
-            href: '/bidang/user',
-            icon: Users,
-        });
-    }
+    // if (userPermissions.includes('Bidang')) {
+    //     mainNavItems.push({
+    //         title: 'Bidang',
+    //         href: '/bidang/user',
+    //         icon: Users,
+    //     });
+    // }
 
-    if (userPermissions.includes('Layanan')) {
-        mainNavItems.push({
-            title: 'Layanan',
-            href: '/layanan',
-            icon: MessagesSquare,
-        });
-    }
+    // if (userPermissions.includes('Layanan')) {
+    //     mainNavItems.push({
+    //         title: 'Layanan',
+    //         href: '/layanan',
+    //         icon: MessagesSquare,
+    //     });
+    // }
 
-    if (userPermissions.includes('Agenda')) {
-        mainNavItems.push({
-            title: 'Agenda',
-            href: '/agenda',
-            icon: CalendarDays,
-        });
-    }
-    if (userPermissions.includes('Berita')) {
-        mainNavItems.push({
-            title: 'Berita',
-            href: '/berita',
-            icon: Newspaper,
-        });
-    }
-    if (userPermissions.includes('Pengumuman')) {
-        mainNavItems.push({
-            title: 'Pengumuman',
-            href: '/pengumuman',
-            icon: Megaphone,
-        });
-    }
-    if (userPermissions.includes('Laporan')) {
-        mainNavItems.push({
-            title: 'Laporan Kegiatan',
-            href: '/laporan',
-            icon: BookOpen,
-        });
-    }
-    if (userPermissions.includes('PPID')) {
-        mainNavItems.push({ 
-            title: 'PPID',
-            href: '/ppid',
-            icon: FileText,
-        });
-    }
-    if (userPermissions.includes('Inovasi')) {
-        mainNavItems.push({
-            title: 'Inovasi',
-            href: '/inovasi',
-            icon: Brain,
-        });
-    }
-    if (userPermissions.includes('Produk Hukum')) {
-        mainNavItems.push({
-            title: 'Produk Hukum',
-            href: '/produk-hukum',
-            icon: Scale,
-        });
-    }
+    // if (userPermissions.includes('Agenda')) {
+    //     mainNavItems.push({
+    //         title: 'Agenda',
+    //         href: '/agenda',
+    //         icon: CalendarDays,
+    //     });
+    // }
+    // if (userPermissions.includes('Berita')) {
+    //     mainNavItems.push({
+    //         title: 'Berita',
+    //         href: '/berita',
+    //         icon: Newspaper,
+    //     });
+    // }
+    // if (userPermissions.includes('Pengumuman')) {
+    //     mainNavItems.push({
+    //         title: 'Pengumuman',
+    //         href: '/pengumuman',
+    //         icon: Megaphone,
+    //     });
+    // }
+    // if (userPermissions.includes('Laporan')) {
+    //     mainNavItems.push({
+    //         title: 'Laporan Kegiatan',
+    //         href: '/laporan',
+    //         icon: BookOpen,
+    //     });
+    // }
+    // if (userPermissions.includes('PPID')) {
+    //     mainNavItems.push({ 
+    //         title: 'PPID',
+    //         href: '/ppid',
+    //         icon: FileText,
+    //     });
+    // }
+    // if (userPermissions.includes('Inovasi')) {
+    //     mainNavItems.push({
+    //         title: 'Inovasi',
+    //         href: '/inovasi',
+    //         icon: Brain,
+    //     });
+    // }
+    // if (userPermissions.includes('Produk Hukum')) {
+    //     mainNavItems.push({
+    //         title: 'Produk Hukum',
+    //         href: '/produk-hukum',
+    //         icon: Scale,
+    //     });
+    // }
 
     const mainNavPangkat: NavItem[] = [];
 
@@ -211,9 +211,9 @@ const { auth } = usePage<PageProps>().props;
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
-                {/* <NavPangkat items={mainNavPangkat} /> */}
-                {mainNavPangkat.length > 0 && <NavPangkat items={mainNavPangkat} />}
+                {/* <NavMain items={mainNavItems} /> */}
+                <NavPangkat items={mainNavPangkat} />
+                {/* {mainNavPangkat.length > 0 && <NavPangkat items={mainNavPangkat} />} */}
             </SidebarContent>
 
             <SidebarFooter>
