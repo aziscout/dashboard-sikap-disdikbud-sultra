@@ -22,7 +22,7 @@ Route::get('/', function () {
     if (Auth::check()) {
         $user = Auth::user();
         if ($user->role === 'admin') {
-            return redirect('admin/dashboard');
+            return redirect('pangkat/dashboard');
         }
         if ($user->role === 'bidang') {
             return redirect('bidang/dashboard');
@@ -43,11 +43,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['role:admin'])->group(function () {
         // admin website
-        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-        Route::get('/admin/dashboard/create', [AdminDashboardController::class, 'create'])->name('admin.dashboard.create');
-        Route::post('/admin/dashboard', [AdminDashboardController::class, 'store'])->name('admin.dashboard.store');
-        Route::get('/admin/dashboard/edit', [AdminDashboardController::class, 'edit'])->name('admin.dashboard.edit');
-        Route::post('/admin/dashboard/update', [AdminDashboardController::class, 'update'])->name('admin.dashboard.update');
+        // Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        // Route::get('/admin/dashboard/create', [AdminDashboardController::class, 'create'])->name('admin.dashboard.create');
+        // Route::post('/admin/dashboard', [AdminDashboardController::class, 'store'])->name('admin.dashboard.store');
+        // Route::get('/admin/dashboard/edit', [AdminDashboardController::class, 'edit'])->name('admin.dashboard.edit');
+        // Route::post('/admin/dashboard/update', [AdminDashboardController::class, 'update'])->name('admin.dashboard.update');
 
         // admin pangkat
         Route::get('pangkat/dashboard', [PangkatDashboardController::class, 'index'])->name('pangkat.dashboard');
