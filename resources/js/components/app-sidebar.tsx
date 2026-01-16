@@ -196,7 +196,7 @@ const { auth } = usePage<PageProps>().props;
                             <Link
                                 href={
                                     auth.user?.role === 'admin'
-                                        ? '/admin/dashboard'
+                                        ? '/pangkat/dashboard'
                                         : auth.user?.role === 'bidang'
                                         ? '/bidang/dashboard'
                                         : '/dashboard'

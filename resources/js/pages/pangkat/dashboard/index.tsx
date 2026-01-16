@@ -16,6 +16,7 @@ interface Pegawai {
   alamat: string;
   tmt_golongan: string;
   golongan_ruang: string;
+  nomor: number;
 }
 
 interface PageProps {
@@ -115,6 +116,7 @@ export default function Index() {
                 <TableHead>Golongan</TableHead>
                 <TableHead>Jenis Kelamin</TableHead>
                 <TableHead>Alamat</TableHead>
+                <TableHead>Nomor</TableHead>
                 <TableHead>TMT</TableHead>
               </TableRow>
             </TableHeader>
@@ -130,6 +132,7 @@ export default function Index() {
                     <TableCell>{p.golongan_ruang}</TableCell>
                     <TableCell className="capitalize">{p.jenis_kelamin}</TableCell>
                     <TableCell className="capitalize">{p.alamat}</TableCell>
+                    <TableCell className="capitalize">{p.nomor}</TableCell>
                     <TableCell>{p.tmt_golongan}</TableCell>
                   </TableRow>
                 ))

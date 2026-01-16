@@ -165,13 +165,12 @@ export default function Index() {
                     <TableHead className="w-[60px] text-center">No</TableHead>
                     <TableHead>Nama</TableHead>
                     <TableHead className="text-center">NIP</TableHead>
-                    <TableHead className="text-center">SK PNS</TableHead>
+                    <TableHead className="text-center">Nomor</TableHead>
                     <TableHead className="text-center">SK CPNS</TableHead>
+                    <TableHead className="text-center">SK PNS</TableHead>
+                    <TableHead className="text-center">SK Pangkat Terakhir</TableHead>
                     <TableHead className="text-center">SK Gaji Berkala</TableHead>
                     <TableHead className="text-center">SK Jabatan</TableHead>
-                    <TableHead className="text-center">
-                    SK Pangkat Terakhir
-                    </TableHead>
                     <TableHead className="text-center">Aksi</TableHead>
                 </TableRow>
                 </TableHeader>
@@ -190,6 +189,7 @@ export default function Index() {
                         {item.nama}
                         </TableCell>
                         <TableCell className="text-center">{item.nip}</TableCell>
+                        <TableCell className="text-center">{item.nomor}</TableCell>
 
                         {[
                         'sk_pns',

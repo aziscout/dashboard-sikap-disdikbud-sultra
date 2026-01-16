@@ -58,6 +58,7 @@ class PegawaiApiController extends Controller
             'alamat' => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
             'tempat_lahir' => 'required|string|max:255',
+            'unit_kerja' => 'required|string|max:255',
             'notifikasis_id' => 'nullable|integer',
         ]);
 
@@ -106,6 +107,4 @@ class PegawaiApiController extends Controller
             'message' => 'Logout berhasil!.',
         ]);
     }
-
-
 }

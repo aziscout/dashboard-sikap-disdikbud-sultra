@@ -22,6 +22,7 @@ class Pegawai extends Authenticatable
         'alamat',
         'tanggal_lahir',
         'tempat_lahir',
+        'unit_kerja',
     ];
 
     protected static function booted()

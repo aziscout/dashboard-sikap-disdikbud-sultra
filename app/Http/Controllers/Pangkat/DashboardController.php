@@ -58,6 +58,7 @@ class DashboardController extends Controller
                 'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
                 'alamat' => $item->pegawai->alamat ?? '-',
                 'tmt_golongan' => $tmt ? $tmt->format('d/m/Y') : '-',
+                'nomor' => $item->pegawai->nomor ?? '-',
                 'tanggal_siap' => $threeMonthsBefore ? $threeMonthsBefore->format('d/m/Y') : '-',
             ];
         })->values(); // values() agar index-nya rapi

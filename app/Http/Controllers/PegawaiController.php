@@ -12,7 +12,7 @@ class PegawaiController extends Controller
     public function index()
     {
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])
-            ->select('id', 'nama', 'email', 'jenis_kelamin', 'alamat', 'created_at')
+            ->select('id', 'nama', 'nomor', 'email', 'jenis_kelamin', 'alamat', 'created_at')
             // ->get();
             ->paginate(20);
 

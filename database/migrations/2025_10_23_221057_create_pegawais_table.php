@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('alamat');
             $table->date('tanggal_lahir');
             $table->string('tempat_lahir');
+            $table->string('unit_kerja');
             $table->timestamps();
         });
     }
