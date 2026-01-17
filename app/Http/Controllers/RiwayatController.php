@@ -21,6 +21,7 @@ class RiwayatController extends Controller
                 return [
                     'id' => $item->id,
                     'nama' => $item->pegawai->nama ?? '-',
+                    'nomor' => $item->pegawai->nomor ?? '-',
                     'email' => $item->pegawai->email ?? '-',
                     'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
                     'alamat' => $item->pegawai->alamat ?? '-',
