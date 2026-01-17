@@ -65,8 +65,9 @@ export default function Index() {
     const filteredPegawai = useMemo(() => {
         return [...pegawai.data]
             .filter((item) =>
-            item.nama.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+            // item.nama.toLowerCase().includes(searchQuery.toLowerCase())
+            (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()
+        ))
         .sort((a, b) => {
             const dateA = new Date(a.created_at).getTime();
             const dateB = new Date(b.created_at).getTime();

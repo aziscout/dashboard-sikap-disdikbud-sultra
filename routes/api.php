@@ -63,12 +63,14 @@ use App\Http\Controllers\Api\PpidApiController;
    // pegawai
    Route::post('/register', [PegawaiApiController::class, 'register']);
    Route::post('/login', [PegawaiApiController::class, 'login']);
-   Route::middleware('auth:pegawai')->get('/pegawai', [PegawaiApiController::class, 'index']);
-   Route::middleware('auth:pegawai')->post('/logout', [PegawaiApiController::class, 'logout']);
-
+   Route::middleware('auth:sanctum')->group(function () {
+      Route::get('/pegawai/profile', [PegawaiApiController::class, 'getProfile']);
+      Route::put('/pegawai/profile', [PegawaiApiController::class, 'updateProfile']);
+      Route::post('/logout', [PegawaiApiController::class, 'logout']);
+   });
 
    // pegawai data diri and berkas
-   Route::middleware('auth:pegawai')->group(function () {
+   Route::middleware('auth:sanctum')->group(function () {
       Route::get('/pegawai/data-diri', [DataDiriApiController::class, 'index']);
       Route::get('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'show']);
       Route::post('/pegawai/data-diri', [DataDiriApiController::class, 'store']);

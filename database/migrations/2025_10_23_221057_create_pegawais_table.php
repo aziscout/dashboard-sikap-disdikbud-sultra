@@ -9,17 +9,17 @@ return new class extends Migration {
     {
         Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('email');
+            $table->string('nama')->nullable();
+            $table->string('email')->nullable();
             $table->string('password');
             $table->char('nip', 18)->unique();
-            $table->enum('agama',['islam','kristen protestan','katolik','buddha', 'hindu', 'konghucu']);
-            $table->enum('jenis_kelamin',['laki-laki','perempuan']);
-            $table->char('nomor')->unique();
-            $table->string('alamat');
-            $table->date('tanggal_lahir');
-            $table->string('tempat_lahir');
-            $table->string('unit_kerja');
+            $table->enum('agama',['islam','kristen protestan','katolik','buddha', 'hindu', 'konghucu'])->nullable();
+            $table->enum('jenis_kelamin',['laki-laki','perempuan'])->nullable();
+            $table->char('nomor')->unique()->nullable();
+            $table->string('alamat')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('tempat_lahir')->nullable();
+            $table->string('unit_kerja')->nullable();
             $table->timestamps();
         });
     }

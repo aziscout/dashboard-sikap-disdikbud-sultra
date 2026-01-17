@@ -9,56 +9,20 @@ use Illuminate\Support\Facades\Hash;
 
 class PegawaiApiController extends Controller
 {
-    public function index()
-    {
-        $pegawaiAuth = auth('pegawai')->user() ?? auth('api')->user();
-
-        if (!$pegawaiAuth) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Token tidak valid atau belum login.',
-            ], 401);
-        }
-
-        if (isset($pegawaiAuth->role) && $pegawaiAuth->role === 'admin') {
-            $pegawais = Pegawai::all();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Data seluruh pegawai berhasil diambil (oleh admin).',
-                'data' => $pegawais,
-            ], 200);
-        }
-
-        if ($pegawaiAuth instanceof Pegawai) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Data pegawai berhasil diambil.',
-                'data' => $pegawaiAuth,
-            ], 200);
-        }
-
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Akses ditolak.',
-        ], 403);
-    }
-
-
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:pegawais,email',
+            'nama' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|unique:pegawais,email',
             'password' => 'required|string|min:8|confirmed',
             'nip' => 'required|integer|unique:pegawais,nip',
-            'nomor' => 'required|integer|unique:pegawais,nomor',
-            'agama' => 'required|in:islam,kristen protestan,katolik,buddha,hindu,konghucu',
-            'jenis_kelamin' => 'required|in:laki-laki,perempuan',
-            'alamat' => 'required|string|max:255',
-            'tanggal_lahir' => 'required|date',
-            'tempat_lahir' => 'required|string|max:255',
-            'unit_kerja' => 'required|string|max:255',
+            'nomor' => 'nullable|integer|unique:pegawais,nomor',
+            'agama' => 'nullable|in:islam,kristen protestan,katolik,buddha,hindu,konghucu',
+            'jenis_kelamin' => 'nullable|in:laki-laki,perempuan',
+            'alamat' => 'nullable|string|max:255',
+            'tanggal_lahir' => 'nullable|date',
+            'tempat_lahir' => 'nullable|string|max:255',
+            'unit_kerja' => 'nullable|string|max:255',
             'notifikasis_id' => 'nullable|integer',
         ]);
 
@@ -77,14 +41,14 @@ class PegawaiApiController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'nip' => 'required',
             'password' => 'required',
         ]);
 
-        $pegawai = Pegawai::where('email', $request->email)->first();
+        $pegawai = Pegawai::where('nip', $request->nip)->first();
 
         if (! $pegawai || ! Hash::check($request->password, $pegawai->password)) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
+            return response()->json(['message' => 'NIP atau password salah'], 401);
         }
 
         $pegawai->tokens()->delete();
@@ -93,9 +57,52 @@ class PegawaiApiController extends Controller
 
         return response()->json([
             'message' => 'Login berhasil',
-            'pegawai' => $pegawai,
+            // 'pegawai' => $pegawai,
             'token' => $token,
         ]);
+    }
+
+    public function getProfile(Request $request)
+    {
+        $pegawai = $request->user();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profil pegawai berhasil diambil.',
+            'data' => $pegawai,
+        ], 200);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $pegawai = $request->user();
+
+        $validated = $request->validate([
+            'nama' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:pegawais,email,' . $pegawai->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'nomor' => 'nullable|unique:pegawais,nomor,' . $pegawai->id,
+            'agama' => 'nullable|in:islam,kristen protestan,katolik,buddha,hindu,konghucu',
+            'jenis_kelamin' => 'nullable|in:laki-laki,perempuan',
+            'alamat' => 'nullable|string|max:255',
+            'tanggal_lahir' => 'nullable|date',
+            'tempat_lahir' => 'nullable|string|max:255',
+            'unit_kerja' => 'nullable|string|max:255',
+        ]);
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $pegawai->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profil pegawai berhasil diperbarui.',
+            'data' => $pegawai->fresh(),
+        ], 200);
     }
 
     public function logout(Request $request)
