@@ -13,7 +13,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Pegawai {
   nama: string;
   jenis_kelamin: string;
-  alamat: string;
+  unit_kerja: string;
   tmt_golongan: string;
   golongan_ruang: string;
   nomor: number;
@@ -115,7 +115,7 @@ export default function Index() {
                 <TableHead>Nama</TableHead>
                 <TableHead>Golongan</TableHead>
                 <TableHead>Jenis Kelamin</TableHead>
-                <TableHead>Alamat</TableHead>
+                <TableHead>Unit Kerja</TableHead>
                 <TableHead>Nomor</TableHead>
                 <TableHead>TMT</TableHead>
               </TableRow>
@@ -131,7 +131,7 @@ export default function Index() {
                     <TableCell className="font-medium">{p.nama}</TableCell>
                     <TableCell>{p.golongan_ruang}</TableCell>
                     <TableCell className="capitalize">{p.jenis_kelamin}</TableCell>
-                    <TableCell className="capitalize">{p.alamat}</TableCell>
+                    <TableCell className="capitalize">{p.unit_kerja}</TableCell>
                     <TableCell className="capitalize">{p.nomor}</TableCell>
                     <TableCell>{p.tmt_golongan}</TableCell>
                   </TableRow>

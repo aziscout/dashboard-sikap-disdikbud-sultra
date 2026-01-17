@@ -56,7 +56,7 @@ class DashboardController extends Controller
                 'nama' => $item->pegawai->nama ?? '-',
                 'golongan_ruang' => "{$currentGolongan} → {$nextGolongan}",
                 'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
-                'alamat' => $item->pegawai->alamat ?? '-',
+                'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
                 'tmt_golongan' => $tmt ? $tmt->format('d/m/Y') : '-',
                 'nomor' => $item->pegawai->nomor ?? '-',
                 'tanggal_siap' => $threeMonthsBefore ? $threeMonthsBefore->format('d/m/Y') : '-',

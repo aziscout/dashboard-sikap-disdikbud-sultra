@@ -12,7 +12,7 @@ class PegawaiApiController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'nullable|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'nullable|string|email|unique:pegawais,email',
             'password' => 'required|string|min:8|confirmed',
             'nip' => 'required|integer|unique:pegawais,nip',
@@ -78,7 +78,7 @@ class PegawaiApiController extends Controller
         $pegawai = $request->user();
 
         $validated = $request->validate([
-            'nama' => 'nullable|string|max:255',
+            'nama' => 'nullable|string|max:255,' . $pegawai->id,
             'email' => 'nullable|email|unique:pegawais,email,' . $pegawai->id,
             'password' => 'nullable|string|min:8|confirmed',
             'nomor' => 'nullable|unique:pegawais,nomor,' . $pegawai->id,

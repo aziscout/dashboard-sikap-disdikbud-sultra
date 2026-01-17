@@ -32,7 +32,7 @@ interface Pegawai {
     nomor: number;
     email: string;
     jenis_kelamin: string;
-    alamat: string;
+    unit_kerja: string;
     status: string;
     tmt_golongan: string;
     is_active: boolean;
@@ -150,7 +150,7 @@ export default function Index() {
                             <TableHead>Nomor</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Jenis Kelamin</TableHead>
-                            <TableHead>Alamat</TableHead>
+                            <TableHead>Unit Kerja</TableHead>
                             <TableHead>TMT</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Aksi</TableHead>
@@ -174,7 +174,7 @@ export default function Index() {
                                     {item.jenis_kelamin}
                                 </TableCell>
                                 <TableCell className="capitalize">
-                                    {item.alamat}
+                                    {item.unit_kerja}
                                 </TableCell>
                                 <TableCell className="capitalize">
                                     {item.tmt_golongan}

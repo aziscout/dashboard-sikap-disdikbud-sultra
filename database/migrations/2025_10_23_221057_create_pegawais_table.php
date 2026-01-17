@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
-            $table->string('nama')->nullable();
+            $table->string('nama');
             $table->string('email')->nullable();
             $table->string('password');
             $table->char('nip', 18)->unique();
