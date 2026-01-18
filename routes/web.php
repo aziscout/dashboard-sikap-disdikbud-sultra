@@ -8,6 +8,7 @@ use App\Http\Controllers\BidangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProdukHukumController;
 use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\ArsipPangkatController;
 use App\Http\Controllers\InovasiController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PegawaiController;
@@ -144,11 +145,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('/pangkat/pegawai', PegawaiController::class);
     });
 
-    Route::middleware(['permission:Usulan Pangkat'])->group(function() {
-        Route::get('/pangkat/usulanPangkat', [ UsulanPangkatController::class, 'index'])->name('pangkat.usulanPangkat');
-        Route::get('/pangkat/usulanPangkat/status/{id}', [UsulanPangkatController::class, 'status'])
-        ->name('pangkat.usulanPangkat.status');
-        Route::post('/pangkat/usulanPangkat/updateStatus/{id}', [UsulanPangkatController::class, 'updateStatus'])->name('pangkat.usulanPangkat.updateStatus');
+    Route::middleware(['permission:Kenaikan Pangkat'])->group(function() {
+        Route::get('/pangkat/usulan-pangkat', [ UsulanPangkatController::class, 'index'])->name('pangkat.usulan-pangkat');
+        Route::get('/pangkat/usulan-pangkat/status/{id}', [UsulanPangkatController::class, 'status'])
+        ->name('pangkat.usulan-pangkat.status');
+        Route::post('/pangkat/usulan-pangkat/updateStatus/{id}', [UsulanPangkatController::class, 'updateStatus'])->name('pangkat.usulan-pangkat.updateStatus');
+        Route::get('/pangkat/arsip-pangkat', [ArsipPangkatController::class, 'index'])->name('pangkat.arsip-pangkat');
+        Route::get('/pangkat/arsip-pangkat/show/{id}', [ArsipPangkatController::class, 'show'])->name('pangkat.arsip-pangkat.show');
     });
 
     Route::middleware(['permission:Riwayat'])->group(function() {

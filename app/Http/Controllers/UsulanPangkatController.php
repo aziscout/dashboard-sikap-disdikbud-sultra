@@ -65,7 +65,7 @@ class UsulanPangkatController extends Controller
             ['path' => $request->url()]
         );
 
-        return Inertia::render('pangkat/usulanPangkat/index', [
+        return Inertia::render('pangkat/usulan-pangkat/index', [
             'pegawai' => $paginatedPegawai,
             'flash' => [
                 'message' => session('message'),
@@ -78,14 +78,14 @@ class UsulanPangkatController extends Controller
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])->find($id);
 
         if (!$pegawai) {
-            return redirect()->route('pangkat.usulanPangkat')
+            return redirect()->route('pangkat.usulan-pangkat')
                 ->with('message', 'Data pegawai tidak ditemukan.');
         }
 
         // Ambil 1 berkas terbaru
         $berkas = $pegawai->berkas()->latest()->first();
 
-        return Inertia::render('pangkat/usulanPangkat/status', [
+        return Inertia::render('pangkat/usulan-pangkat/status', [
             'pegawai' => $pegawai,
             'data_diri' => $pegawai->dataDiri,
             'berkas' => $berkas,
@@ -184,7 +184,7 @@ class UsulanPangkatController extends Controller
                 $dataDiri->save();
             }
 
-            return redirect()->route('pangkat.usulanPangkat.status', $id)
+            return redirect()->route('pangkat.usulan-pangkat.status', $id)
                 ->with('message', 'File SK berhasil diunggah dan data pangkat diperbarui.')
                 ->with('error', false);
         }

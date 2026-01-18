@@ -15,8 +15,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Usulan Pangkat', href: '/pangkat/usulanPangkat' },
-  { title: 'Cek Status', href: '/pangkat/usulanPangkat/status' },
+  { title: 'Usulan Pangkat', href: '/pangkat/usulan-pangkat' },
+  { title: 'Cek Status', href: '/pangkat/usulan-pangkat/status' },
 ];
 
 interface Pegawai {
@@ -80,7 +80,7 @@ export default function Status() {
 
     setIsUpdating(true);
     router.post(
-      `/pangkat/usulanPangkat/updateStatus/${pegawai.id}`,
+      `/pangkat/usulan-pangkat/updateStatus/${pegawai.id}`,
       { status: value },
       {
         preserveScroll: true,
@@ -113,7 +113,7 @@ export default function Status() {
     formData.append('file_sk', file);
     setIsUpdating(true);
 
-    router.post(`/pangkat/usulanPangkat/updateStatus/${pegawai.id}`, formData, {
+    router.post(`/pangkat/usulan-pangkat/updateStatus/${pegawai.id}`, formData, {
       preserveScroll: true,
       onSuccess: () => {
         setFlashMessage('File SK berhasil diunggah dan status diperbarui!');

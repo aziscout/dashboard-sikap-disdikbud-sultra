@@ -171,7 +171,7 @@ export default function Index() {
                     <TableHead className="text-center">SK Pangkat Terakhir</TableHead>
                     <TableHead className="text-center">SK Gaji Berkala</TableHead>
                     <TableHead className="text-center">SK Jabatan</TableHead>
-                    <TableHead className="text-center">Aksi</TableHead>
+                    <TableHead className="text-center">Detail</TableHead>
                 </TableRow>
                 </TableHeader>
 
@@ -226,7 +226,7 @@ export default function Index() {
 
                         <TableCell className="text-center">
                         <Link
-                            href={route('pangkat.usulanPangkat.status', item.id)}
+                            href={route('pangkat.usulan-pangkat.status', item.id)}
                             title="Cek Status"
                         >
                             <Button

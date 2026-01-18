@@ -59,7 +59,7 @@ interface PageProps {
 
 export default function Index() {
     const { pegawai, flash } = usePage().props as unknown as PageProps;
-    const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
+    const [sortOrder, setSortOrder] = useState<'Terbaru' | 'Terlama'>('Terbaru');
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredPegawai = useMemo(() => {
@@ -71,7 +71,7 @@ export default function Index() {
         .sort((a, b) => {
             const dateA = new Date(a.created_at).getTime();
             const dateB = new Date(b.created_at).getTime();
-            return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
+            return sortOrder === 'Terbaru' ? dateB - dateA : dateA - dateB;
         });
     }, [pegawai.data, sortOrder, searchQuery]);
 
@@ -110,10 +110,10 @@ export default function Index() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-40 bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-800 shadow-lg backdrop-blur-md">
                         <DropdownMenuGroup>
-                            <DropdownMenuItem onClick={() => setSortOrder('terbaru')}>
+                            <DropdownMenuItem onClick={() => setSortOrder('Terbaru')}>
                             Terbaru
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setSortOrder('terlama')}>
+                            <DropdownMenuItem onClick={() => setSortOrder('Terlama')}>
                             Terlama
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
@@ -153,7 +153,7 @@ export default function Index() {
                             <TableHead>Unit Kerja</TableHead>
                             <TableHead>TMT</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead>Aksi</TableHead>
+                            <TableHead>Detail</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

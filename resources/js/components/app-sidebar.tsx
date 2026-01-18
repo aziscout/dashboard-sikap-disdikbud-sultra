@@ -175,7 +175,7 @@ const { auth } = usePage<PageProps>().props;
             subItems: [
                 {
                     title: 'Usulan Pangkat',
-                    href: '/pangkat/usulanPangkat',
+                    href: '/pangkat/usulan-pangkat',
                 },
                 {
                     title: 'Arsip',
