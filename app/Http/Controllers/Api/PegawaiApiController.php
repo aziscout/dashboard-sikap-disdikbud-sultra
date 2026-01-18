@@ -37,7 +37,6 @@ class PegawaiApiController extends Controller
             'token' => $token,
         ], 201);
     }
-
     public function login(Request $request)
     {
         $request->validate([

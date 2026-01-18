@@ -1,11 +1,12 @@
 // import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import { type MainNavItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Crown, History, LayoutGrid, Users } from 'lucide-react';
+import { Award, ChartNoAxesCombined, LayoutGrid, TrendingUp, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 import { NavPangkat } from './nav-pangkat';
+import { NavMain } from './nav-main';
 
 // const mainNavPangkat: NavItem[] = [
 //     {
@@ -140,7 +141,8 @@ const { auth } = usePage<PageProps>().props;
     //     });
     // }
 
-    const mainNavPangkat: NavItem[] = [];
+    const NavItem: NavItem[] = [];
+    const mainNavPangkat: MainNavItem[] = [];
 
     if (userPermissions.includes('Dashboard Pangkat')) {
         const dashboardLink =
@@ -150,7 +152,7 @@ const { auth } = usePage<PageProps>().props;
                 ? '/bidang/dashboard'
                 : '/dashboard';
 
-        mainNavPangkat.push({
+        NavItem.push({
             title: 'Dashboard',
             href: dashboardLink,
             icon: LayoutGrid,
@@ -159,29 +161,54 @@ const { auth } = usePage<PageProps>().props;
 
     
     if (userPermissions.includes('Pegawai')) {
-        mainNavPangkat.push({
+        NavItem.push({
             title: 'Pegawai',
             href: '/pangkat/pegawai',
             icon: Users,
         });
     }
     
-    if (userPermissions.includes('Usulan Pangkat')) {
+    if (userPermissions.includes('Kenaikan Pangkat')) {
         mainNavPangkat.push({
-            title: 'Usulan Pangkat',
-            href: '/pangkat/usulanPangkat',
-            icon: Crown,
+            title: 'Kenaikan Pangkat',
+            icon: ChartNoAxesCombined,
+            subItems: [
+                {
+                    title: 'Usulan Pangkat',
+                    href: '/pangkat/usulanPangkat',
+                },
+                {
+                    title: 'Arsip',
+                    href: '/pangkat/arsip-pangkat',
+                }
+            ]
         });
     }
 
-    if (userPermissions.includes('Riwayat')) {
+    
+    if (userPermissions.includes('Berkala')) {
         mainNavPangkat.push({
-            title: 'Riwayat',
-            href: '/pangkat/riwayat',
-            icon: History,
+            title: 'Berkala',
+            icon: TrendingUp,
+            subItems: [
+                {
+                    title: 'Usulan KGB',
+                    href: '/pangkat/usulan-kgb',
+                },
+                {
+                    title: 'Arsip KGB',
+                    href: '/pangkat/arsip-kgb',
+                }
+            ]
         });
     }
 
+    if (userPermissions.includes('Pensiun')) {
+        mainNavPangkat.push({
+            title: 'Pensiun',
+            icon: Award,
+        });
+    }
 
 
     return (
@@ -212,6 +239,7 @@ const { auth } = usePage<PageProps>().props;
 
             <SidebarContent>
                 {/* <NavMain items={mainNavItems} /> */}
+                <NavMain items={NavItem} />
                 <NavPangkat items={mainNavPangkat} />
                 {/* {mainNavPangkat.length > 0 && <NavPangkat items={mainNavPangkat} />} */}
             </SidebarContent>
