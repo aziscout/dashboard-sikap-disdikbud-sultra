@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AdminApiController;
 use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\AllGaleriApiController;
+use App\Http\Controllers\Api\ArsipApiController;
 use App\Http\Controllers\Api\BeritaApiController;
 use App\Http\Controllers\Api\BerkasApiController;
 use App\Http\Controllers\Api\BidangApiController;
@@ -80,7 +81,10 @@ use App\Http\Controllers\Api\PpidApiController;
       Route::get('/pegawai/berkas',[BerkasApiController::class,'index']);
       Route::post('/pegawai/berkas',[BerkasApiController::class,'store']);
       Route::delete('/pegawai/berkas/{id}',[BerkasApiController::class,'destroy']);
-      Route::post('/berkas/{id}/update',[BerkasApiController::class,'update']);      
+      Route::post('/berkas/{id}/update',[BerkasApiController::class,'update']);
+
+      Route::get('/pegawai/arsip-pangkat',[ArsipApiController::class,'index']);
+      Route::get('/pegawai/arsip-pangkat/show',[ArsipApiController::class,'show  ']);
    });
    
    // Route::get('/berkas',[BerkasApiController::class,'index']);
