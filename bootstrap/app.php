@@ -23,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->call(function () {
             $delayIncrementSeconds = 180;
-            $notificationPeriods = [3, 2, 1];
+            $notificationPeriods = [2, 1];
             
             $currentTime = now();
 
@@ -82,8 +82,8 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->delay($currentTime);
                 });
             }
-        // })->everyMinute(); 
-        })->dailyAt('19:20'); 
+        // })->everyMinute();
+        })->dailyAt('20:39');
 
         $schedule->call(function () {
             $delayIncrementSeconds = 180;
@@ -136,8 +136,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->onQueue('wa-messages')
                     ->delay($currentTime);
             });
-        })->everyMinute();
-        // })->dailyAt('19:23');
+        // })->everyMinute();
+        })->dailyAt('19:23');
 
         // $schedule->call(function () {
         //     $delayIncrementSeconds = 180;
