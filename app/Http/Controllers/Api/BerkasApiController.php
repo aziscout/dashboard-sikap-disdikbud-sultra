@@ -17,124 +17,142 @@ class BerkasApiController extends Controller
         $admin   = auth('sanctum')->user();
 
         if ($pegawai) {
-            $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                ->with('pegawai')
-                ->get();
+            $berkas = Berkas::where('pegawais_id', $pegawai->id)->with('pegawai')->get();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Data berkas pegawai yang sedang login',
+                'message' => 'Data berkas pegawai',
                 'data' => $berkas,
             ]);
         }
 
         if ($admin && $admin->role === 'admin') {
-            $berkas = Berkas::with(['pegawai'])->latest()->get();
-
             return response()->json([
                 'status' => 'success',
-                'message' => 'Data semua berkas pegawai',
-                'data' => $berkas,
+                'data' => Berkas::with('pegawai')->latest()->get(),
             ]);
         }
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Tidak diizinkan mengakses data berkas.',
-        ], 403);
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
-    
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'sk_cpns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'sk_pns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'sk_pangkat_terakhir' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'sk_gaji_berkala' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'sk_jabatan' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        ]);
+
+        $pegawai = auth('pegawai')->user();
+        $admin = User::where('role', 'admin')->first();
+
+        $berkas = Berkas::create([
+            'sk_cpns' => $request->hasFile('sk_cpns')
+                ? $request->file('sk_cpns')->store('berkas', 'public')
+                : null,
+
+            'sk_pns' => $request->hasFile('sk_pns')
+                ? $request->file('sk_pns')->store('berkas', 'public')
+                : null,
+
+            'sk_pangkat_terakhir' => $request->hasFile('sk_pangkat_terakhir')
+                ? [$request->file('sk_pangkat_terakhir')->store('berkas', 'public')]
+                : [],
+
+            'sk_gaji_berkala' => $request->hasFile('sk_gaji_berkala')
+                ? [$request->file('sk_gaji_berkala')->store('berkas', 'public')]
+                : [],
+
+            'sk_jabatan' => $request->hasFile('sk_jabatan')
+                ? [$request->file('sk_jabatan')->store('berkas', 'public')]
+                : [],
+
+            'status' => 'berkas terkirim',
+            'users_id' => $admin?->id,
+            'pegawais_id' => $pegawai->id,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $berkas,
+        ], 201);
+    }
+
 
 
     public function update(Request $request, $id)
     {
-        $berkas = Berkas::find($id);
-
-        if (!$berkas) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Data berkas tidak ditemukan',
-            ], 404);
-        }
-
+        $berkas = Berkas::findOrFail($id);
         $pegawai = auth('pegawai')->user();
-        $admin = Auth::guard('sanctum')->user() ?? Auth::user();
+        $admin = auth('sanctum')->user();
 
-        // Validasi input sesuai role
-        $rules = [
-            'sk_cpns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'sk_pns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'sk_gaji_berkala' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'sk_pangkat_terakhir' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'sk_jabatan' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-        ];
-
-        // Kalau admin, boleh juga upload file_sk + ubah status
-        if ($admin && $admin->role === 'admin') {
-            $rules['file_sk'] = 'nullable|file|mimes:pdf,doc,docx|max:5120';
-            $rules['status'] = 'nullable|in:berkas terkirim,telah dikirim ke bkd,telah dikirim ke bkn,sk telah terbit';
-        }
-
-        $validated = $request->validate($rules);
-
-        // Cek hak akses
+        // =====================
+        // AKSES
+        // =====================
         if ($pegawai && $berkas->pegawais_id !== $pegawai->id) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Anda tidak diizinkan mengubah berkas ini',
-            ], 403);
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
         if (!$pegawai && (!$admin || $admin->role !== 'admin')) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Akses ditolak.',
-            ], 403);
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        // Jika pegawai update: hanya ubah file-file miliknya
+        // =====================
+        // PEGAWAI
+        // =====================
         if ($pegawai) {
-            foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan'] as $field) {
+
+            // REPLACE (STRING)
+            foreach (['sk_cpns', 'sk_pns'] as $field) {
                 if ($request->hasFile($field)) {
-                    if ($berkas->$field && Storage::disk('public')->exists($berkas->$field)) {
+
+                    if ($berkas->$field) {
                         Storage::disk('public')->delete($berkas->$field);
                     }
-                    $path = $request->file($field)->store('berkas', 'public');
-                    $berkas->$field = $path;
+
+                    $berkas->$field = $request->file($field)
+                        ->store('berkas', 'public');
+                }
+            }
+
+            // APPEND (JSON)
+            foreach (['sk_pangkat_terakhir', 'sk_gaji_berkala', 'sk_jabatan'] as $field) {
+                if ($request->hasFile($field)) {
+                    $files = $berkas->$field ?? [];
+                    $files[] = $request->file($field)->store('berkas', 'public');
+                    $berkas->$field = $files;
                 }
             }
         }
 
-        // Jika admin update
+        // =====================
+        // ADMIN
+        // =====================
         if ($admin && $admin->role === 'admin') {
 
-            // Upload file_sk jika ada
             if ($request->hasFile('file_sk')) {
-                if ($berkas->file_sk && Storage::disk('public')->exists($berkas->file_sk)) {
-                    Storage::disk('public')->delete($berkas->file_sk);
-                }
-                $path = $request->file('file_sk')->store('berkas', 'public');
-                $berkas->file_sk = $path;
+                $files = $berkas->file_sk ?? [];
+                $files[] = $request->file('file_sk')->store('berkas', 'public');
+                $berkas->file_sk = $files;
             }
 
-            // Update status berurutan
-            $allowedTransitions = [
-                'berkas terkirim' => 'telah dikirim ke bkd',
-                'telah dikirim ke bkd' => 'telah dikirim ke bkn',
-                'telah dikirim ke bkn' => 'sk telah terbit',
-            ];
-
             if ($request->filled('status')) {
-                $current = $berkas->status;
-                $next = $allowedTransitions[$current] ?? null;
+                $flow = [
+                    'berkas terkirim' => 'telah dikirim ke bkd',
+                    'telah dikirim ke bkd' => 'telah dikirim ke bkn',
+                    'telah dikirim ke bkn' => 'sk telah terbit',
+                ];
 
-                if ($request->status === $next || $request->status === $current) {
+                if (
+                    $request->status === $berkas->status ||
+                    $request->status === ($flow[$berkas->status] ?? null)
+                ) {
                     $berkas->status = $request->status;
                 } else {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => "Status tidak valid. Urutan perubahan harus sesuai: $current → $next",
-                    ], 422);
+                    return response()->json(['message' => 'Status tidak valid'], 422);
                 }
             }
         }
@@ -143,148 +161,68 @@ class BerkasApiController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Berkas berhasil diperbarui',
             'data' => $berkas->fresh(),
-        ], 200);
+        ]);
     }
 
 
-    public function store(Request $request)
+    public function destroy($id)
     {
-        $validated = $request->validate([
-            'sk_cpns' => 'required|file|mimes:pdf,doc,docx|max:5120',
-            'sk_pns' => 'required|file|mimes:pdf,doc,docx|max:5120',
-            'sk_gaji_berkala' => 'required|file|mimes:pdf,doc,docx|max:5120',
-            'sk_pangkat_terakhir' => 'required|file|mimes:pdf,doc,docx|max:5120',
-            'sk_jabatan' => 'required|file|mimes:pdf,doc,docx|max:5120',
-            // 'file_sk' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-        ]);
-
-        // Simpan semua file ke storage
-        $paths = [];
-        foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan', 'file_sk'] as $field) {
-            if ($request->hasFile($field)) {
-                $paths[$field] = $request->file($field)->store('berkas', 'public');
-            }
-        }
-
+        $berkas = Berkas::findOrFail($id);
         $pegawai = auth('pegawai')->user();
-
-        // Cari user admin (bisa juga pakai firstWhere)
-        $admin = User::where('role', 'admin')->first();
-
-        // Buat data berkas baru
-        $berkas = Berkas::create([
-            'sk_cpns' => $paths['sk_cpns'] ?? null,
-            'sk_pns' => $paths['sk_pns'] ?? null,
-            'sk_gaji_berkala' => $paths['sk_gaji_berkala'] ?? null,
-            'sk_pangkat_terakhir' => $paths['sk_pangkat_terakhir'] ?? null,
-            'sk_jabatan' => $paths['sk_jabatan'] ?? null,
-            // 'file_sk' => $paths['file_sk'] ?? null,
-            'status' => 'berkas terkirim', // default status
-            'users_id' => $admin?->id ?? null,
-            'pegawais_id' => $pegawai->id,
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Berkas berhasil diupload!',
-            'data' => $berkas,
-        ], 201);
-    }
-
-    public function destroy($id) 
-    {
-        $pegawai = auth('pegawai')->user();
-        $admin   = auth('sanctum')->user();
-
-        $berkas = Berkas::find($id);
-
-        if (!$berkas) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Data berkas tidak ditemukan',
-            ], 404);
-        }
+        $admin = auth('sanctum')->user();
 
         if ($pegawai && $berkas->pegawais_id !== $pegawai->id) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Anda tidak diizinkan menghapus berkas ini',
-            ], 403);
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        if ($pegawai || ($admin && $admin->role === 'admin')) {
-            foreach (['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan', 'file_sk'] as $field) {
-                if ($berkas->$field && Storage::disk('public')->exists($berkas->$field)) {
-                    Storage::disk('public')->delete($berkas->$field);
-                }
+        // string
+        foreach (['sk_cpns','sk_pns'] as $field) {
+            if ($berkas->$field) {
+                Storage::disk('public')->delete($berkas->$field);
             }
-
-            $berkas->delete();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Berkas berhasil dihapus',
-            ]);
         }
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Tidak diizinkan menghapus berkas.',
-        ], 403);
+        // json
+        foreach (['sk_pangkat_terakhir','sk_gaji_berkala','sk_jabatan','file_sk'] as $field) {
+            foreach ($berkas->$field ?? [] as $file) {
+                Storage::disk('public')->delete($file);
+            }
+        }
+
+        $berkas->delete();
+
+        return response()->json(['status' => 'success']);
     }
+
 
     public function show($id)
     {
+        $berkas = Berkas::with('pegawai')->findOrFail($id);
         $pegawai = auth('pegawai')->user();
-        $admin   = auth('sanctum')->user();
+        $admin = auth('sanctum')->user();
 
-        // Cari data berkas berdasarkan ID
-        $berkas = Berkas::with('pegawai')->find($id);
-
-        if (!$berkas) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Data berkas tidak ditemukan.',
-            ], 404);
-        }
-
-        // Hanya admin atau pegawai pemilik berkas yang boleh melihat
         if ($pegawai && $berkas->pegawais_id !== $pegawai->id) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Anda tidak diizinkan melihat berkas ini.',
-            ], 403);
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
         if (!$pegawai && (!$admin || $admin->role !== 'admin')) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Akses ditolak.',
-            ], 403);
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        // Buat URL publik untuk setiap file yang tersedia
-        $fields = ['sk_cpns', 'sk_pns', 'sk_gaji_berkala', 'sk_pangkat_terakhir', 'sk_jabatan', 'file_sk'];
         $files = [];
-
-        foreach ($fields as $field) {
-            $files[$field] = $berkas->$field ? asset('storage/' . $berkas->$field) : null;
+        foreach (['sk_cpns','sk_pns','sk_pangkat_terakhir','sk_gaji_berkala','sk_jabatan','file_sk'] as $field) {
+            $files[$field] = collect($berkas->$field ?? [])
+                ->map(fn ($f) => asset('storage/' . $f));
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Detail berkas berhasil diambil.',
             'data' => [
-                'id' => $berkas->id,
                 'pegawai' => $berkas->pegawai?->nama,
                 'status' => $berkas->status,
-                'created_at' => $berkas->created_at,
-                'updated_at' => $berkas->updated_at,
                 'files' => $files,
             ],
-        ], 200);
+        ]);
     }
-
 }

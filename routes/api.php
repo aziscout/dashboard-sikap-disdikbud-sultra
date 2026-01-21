@@ -78,10 +78,10 @@ use App\Http\Controllers\Api\PpidApiController;
       Route::put('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'update']);
       Route::delete('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
 
-      Route::get('/pegawai/berkas',[BerkasApiController::class,'index']);
-      Route::post('/pegawai/berkas',[BerkasApiController::class,'store']);
-      Route::delete('/pegawai/berkas/{id}',[BerkasApiController::class,'destroy']);
-      Route::post('/berkas/{id}/update',[BerkasApiController::class,'update']);
+      Route::get('/berkas/kenaikan-pangkat',[BerkasApiController::class,'index']);
+      Route::post('/berkas/kenaikan-pangkat',[BerkasApiController::class,'store']);
+      Route::delete('/berkas/kenaikan-pangkat/{id}',[BerkasApiController::class,'destroy']);
+      Route::post('/berkas/kenaikan-pangkat/{id}',[BerkasApiController::class,'update']);
 
       Route::get('/pegawai/arsip-pangkat',[ArsipApiController::class,'index']);
       Route::get('/pegawai/arsip-pangkat/show',[ArsipApiController::class,'show  ']);
