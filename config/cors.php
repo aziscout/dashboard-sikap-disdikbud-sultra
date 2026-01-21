@@ -23,6 +23,7 @@ return [
         'http://localhost:8080',
         'https://sikap.btikpsultra.my.id',
         'https://btikpsultra.my.id/',
+        'https://dashboardsikap.btikpsultra.my.id/',
     ],
 
     'allowed_origins_patterns' => [],
