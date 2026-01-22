@@ -6,6 +6,11 @@ use App\Http\Controllers\Api\AgendaApiController;
 use App\Http\Controllers\Api\AllGaleriApiController;
 use App\Http\Controllers\Api\ArsipApiController;
 use App\Http\Controllers\Api\BeritaApiController;
+use App\Http\Controllers\Api\Berkas\SkCpnsController;
+use App\Http\Controllers\Api\Berkas\SkGajiBerkalaController;
+use App\Http\Controllers\Api\Berkas\SkJabatanController;
+use App\Http\Controllers\Api\Berkas\SkPangkatTerakhirController;
+use App\Http\Controllers\Api\Berkas\SkPnsController;
 use App\Http\Controllers\Api\BerkasApiController;
 use App\Http\Controllers\Api\BidangApiController;
 use App\Http\Controllers\Api\DashboardApiController;
@@ -78,13 +83,33 @@ use App\Http\Controllers\Api\PpidApiController;
       Route::put('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'update']);
       Route::delete('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
 
-      Route::get('/berkas/kenaikan-pangkat',[BerkasApiController::class,'index']);
-      Route::post('/berkas/kenaikan-pangkat',[BerkasApiController::class,'store']);
-      Route::delete('/berkas/kenaikan-pangkat/{id}',[BerkasApiController::class,'destroy']);
-      Route::post('/berkas/kenaikan-pangkat/{id}',[BerkasApiController::class,'update']);
-
       Route::get('/pegawai/arsip-pangkat',[ArsipApiController::class,'index']);
       Route::get('/pegawai/arsip-pangkat/show',[ArsipApiController::class,'show  ']);
+      
+      // cpns
+      Route::post('/berkas/kenaikan-pangkat/sk-cpns', [SkCpnsController::class, 'store']);
+      Route::post('/berkas/kenaikan-pangkat/sk-cpns/update', [SkCpnsController::class, 'update']);
+      Route::get('/berkas/kenaikan-pangkat/sk-cpns', [SkCpnsController::class, 'show']);
+
+      // pns
+      Route::post('/berkas/kenaikan-pangkat/sk-pns', [SkPnsController::class, 'store']);
+      Route::post('/berkas/kenaikan-pangkat/sk-pns/update', [SkPnsController::class, 'update']);
+      Route::get('/berkas/kenaikan-pangkat/sk-pns', [SkPnsController::class, 'show']);
+
+      // gaji berkala
+      Route::post('/berkas/kenaikan-pangkat/sk-gaji-berkala', [SkGajiBerkalaController::class, 'store']);
+      Route::post('/berkas/kenaikan-pangkat/sk-gaji-berkala/update', [SkGajiBerkalaController::class, 'update']);
+      Route::get('/berkas/kenaikan-pangkat/sk-gaji-berkala', [SkGajiBerkalaController::class, 'show']);
+
+      // pangkat terakhir
+      Route::post('berkas/kenaikan-pangkat/sk-pangkat-terakhir', [SkPangkatTerakhirController::class, 'store']);
+      Route::post('berkas/kenaikan-pangkat/sk-pangkat-terakhir/update', [SkPangkatTerakhirController::class, 'update']);
+      Route::get('berkas/kenaikan-pangkat/sk-pangkat-terakhir', [SkPangkatTerakhirController::class, 'show']);
+
+      // jabatan
+      Route::post('/berkas/kenaikan-pangkat/sk-jabatan', [SkJabatanController::class, 'store']);
+      Route::post('/berkas/kenaikan-pangkat/sk-jabatan/update', [SkJabatanController::class, 'update']);
+      Route::get('/berkas/kenaikan-pangkat/sk-jabatan', [SkJabatanController::class, 'show']);
    });
    
    // Route::get('/berkas',[BerkasApiController::class,'index']);
