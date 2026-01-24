@@ -61,7 +61,7 @@ class SkJabatanController extends Controller
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'SK Gaji Berkala berhasil diupload',
+            'message' => 'SK Jabatan berhasil diupload',
             'data'    => asset('storage/' . $path),
         ], 201);
     }

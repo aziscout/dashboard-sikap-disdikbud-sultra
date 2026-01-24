@@ -82,8 +82,8 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->delay($currentTime);
                 });
             }
-        })->everyMinute(); 
-        // })->dailyAt('19:20'); 
+        // })->everyMinute(); 
+        })->dailyAt('09:00'); 
 
         $schedule->call(function () {
 
@@ -95,19 +95,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->get()
                 ->filter(function ($dataDiri) {
 
-                    try {
-                        // SESUAIKAN FORMAT DENGAN DATA ASLI
-                        $kgbTerakhir = Carbon::createFromFormat(
-                            'd-m-Y', 
-                            $dataDiri->kgb_terakhir
-                        );
-                    } catch (\Exception $e) {
-                        return false; // data rusak → skip
+                    if (!$dataDiri->kgb_terakhir) {
+                        return false;
                     }
 
-                    $nextKgb = $kgbTerakhir->copy()->addYears(2);
-                    $notificationDate = $nextKgb
+                    $kgbTerakhir = Carbon::parse($dataDiri->kgb_terakhir);
+
+                    $notificationDate = $kgbTerakhir
                         ->copy()
+                        ->addYears(2)
                         ->subMonths(2)
                         ->startOfDay();
 
@@ -151,9 +147,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->onQueue('wa-messages')
                     ->delay($currentTime);
             }); 
-
-        })->everyMinute();
-        // })->dailyAt('19:23');
+        // })->everyMinute();
+        })->dailyAt('09:00');
 
     })
     ->withMiddleware(function (Middleware $middleware) {
