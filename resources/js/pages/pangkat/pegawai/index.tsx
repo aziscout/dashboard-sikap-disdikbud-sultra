@@ -66,8 +66,9 @@ export default function Index() {
         return [...pegawai.data]
             .filter((item) =>
             // item.nama.toLowerCase().includes(searchQuery.toLowerCase())
-            (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()
-        ))
+            (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.unit_kerja ?? '').toLowerCase().includes(searchQuery.toLowerCase())
+        )
         .sort((a, b) => {
             const dateA = new Date(a.created_at).getTime();
             const dateB = new Date(b.created_at).getTime();
@@ -92,7 +93,7 @@ export default function Index() {
                     <div className="flex flex-col gap-2 md:flex-row md:items-center">
                     {/* 🔍 Search */}
                     <Input
-                        placeholder="Cari nama pegawai..."
+                        placeholder="Cari nama atau unit kerja..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full md:w-64 border-indigo-200 dark:border-indigo-800 focus:ring-2 focus:ring-indigo-400"
