@@ -91,7 +91,7 @@ export default function Index() {
                     </h1>
 
                     <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                    {/* 🔍 Search */}
+                    {/*  Search */}
                     <Input
                         placeholder="Cari nama atau unit kerja..."
                         value={searchQuery}
@@ -99,7 +99,7 @@ export default function Index() {
                         className="w-full md:w-64 border-indigo-200 dark:border-indigo-800 focus:ring-2 focus:ring-indigo-400"
                     />
 
-                    {/* 🔽 Sort */}
+                    {/*  Sort */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                         <Button
