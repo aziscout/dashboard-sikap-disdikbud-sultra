@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -19,7 +18,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Eye, ListFilterPlus, Megaphone } from 'lucide-react';
+import { Eye, ListFilterPlus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -29,11 +28,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Pegawai {
     id: number;
     nama: string;
+    nip: string;
     nomor: number;
     email: string;
-    jenis_kelamin: string;
     unit_kerja: string;
-    status: string;
     tmt_golongan: string;
     is_active: boolean;
     created_at: string;
@@ -58,7 +56,7 @@ interface PageProps {
 }
 
 export default function Index() {
-    const { pegawai, flash } = usePage().props as unknown as PageProps;
+    const { pegawai } = usePage().props as unknown as PageProps;
     const [sortOrder, setSortOrder] = useState<'Terbaru' | 'Terlama'>('Terbaru');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -67,6 +65,7 @@ export default function Index() {
             .filter((item) =>
             // item.nama.toLowerCase().includes(searchQuery.toLowerCase())
             (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.nip ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
             (item.unit_kerja ?? '').toLowerCase().includes(searchQuery.toLowerCase())
         )
         .sort((a, b) => {
@@ -76,6 +75,9 @@ export default function Index() {
         });
     }, [pegawai.data, sortOrder, searchQuery]);
 
+    const renderValue = (value?: string | number | null) =>
+    value !== null && value !== undefined && value !== '' ? value : '-';
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
         <Head title="Data Pegawai" />
@@ -84,8 +86,8 @@ export default function Index() {
                 {/* Header Section */}
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <h1
-                    className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 
-                    bg-clip-text text-transparent tracking-tight"
+                    className="text-2xl font-bold bg-gradient-to-r text-indigo-500 
+                    bg-clip-text tracking-tight"
                     >
                     Daftar Pegawai
                     </h1>
@@ -93,7 +95,7 @@ export default function Index() {
                     <div className="flex flex-col gap-2 md:flex-row md:items-center">
                     {/*  Search */}
                     <Input
-                        placeholder="Cari nama atau unit kerja..."
+                        placeholder="Cari nama,nip, atau unit kerja..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full md:w-64 border-indigo-200 dark:border-indigo-800 focus:ring-2 focus:ring-indigo-400"
@@ -123,24 +125,9 @@ export default function Index() {
                     </div>
                 </div>
 
-                {/* Notifikasi */}
-                {flash?.message && (
-                    <div className="w-full md:w-1/2">
-                    <Alert className="border-l-4 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/50">
-                        <Megaphone className="h-4 w-4 text-indigo-500" />
-                        <AlertTitle className="text-indigo-700 dark:text-indigo-300">
-                        Notifikasi
-                        </AlertTitle>
-                        <AlertDescription className="text-gray-700 dark:text-gray-300">
-                        {flash.message}
-                        </AlertDescription>
-                    </Alert>
-                    </div>
-                )}
-
                 {/* Table Section */}
                 <div
-                    className="overflow-hidden rounded-xl border border-indigo-100 
+                    className="overflow-hidden rounded-lg border border-indigo-100 
                     dark:border-indigo-900/50 shadow-md backdrop-blur-md transition-all"
                 >
                     <Table className="w-full">
@@ -148,12 +135,11 @@ export default function Index() {
                             <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
                             <TableHead className="w-[60px] text-center">No</TableHead>
                             <TableHead>Nama</TableHead>
+                            <TableHead>NIP</TableHead>
                             <TableHead>Nomor</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Jenis Kelamin</TableHead>
                             <TableHead>Unit Kerja</TableHead>
-                            <TableHead>TMT</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead>TMT Golongan</TableHead>
                             <TableHead>Detail</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -164,56 +150,34 @@ export default function Index() {
                                 key={item.id}
                                 className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
                                 >
-                                {/* <TableCell className="text-center">{index + 1}</TableCell> */}
-                                <TableCell className="text-center">
-                                    {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
-                                </TableCell>
-                                <TableCell>{item.nama}</TableCell>
-                                <TableCell>{item.nomor}</TableCell>
-                                <TableCell>{item.email}</TableCell>
-                                <TableCell className="capitalize">
-                                    {item.jenis_kelamin}
-                                </TableCell>
-                                <TableCell className="capitalize">
-                                    {item.unit_kerja}
-                                </TableCell>
-                                <TableCell className="capitalize">
-                                    {item.tmt_golongan}
-                                </TableCell>
-                                <TableCell>
-                                    <span
-                                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                        item.status === 'Siap'
-                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-                                        : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300'
-                                    }`}
-                                    >
-                                    {item.status}
-                                    </span>
-                                </TableCell>
-                                <TableCell>
-                                    {item.is_active ? (
-                                    <Link
-                                        href={route('pegawai.show', item.id)}
-                                        title="Detail"
-                                    >
-                                        <Button
-                                        className="bg-gradient-to-r from-indigo-500 to-purple-500 
-                                        hover:from-indigo-600 hover:to-purple-600 text-white shadow-md 
-                                        hover:shadow-lg transition-all"
+                                    {/* <TableCell className="text-center">{index + 1}</TableCell> */}
+                                    <TableCell className="text-center">
+                                        {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
+                                    </TableCell>
+                                    <TableCell>{item.nama}</TableCell>
+                                    <TableCell>{renderValue(item.nip)}</TableCell>
+                                    <TableCell>{renderValue(item.nomor)}</TableCell>
+                                    <TableCell>{renderValue(item.email)}</TableCell>
+                                    <TableCell className="capitalize">
+                                        {renderValue(item.unit_kerja)}
+                                    </TableCell>
+                                    <TableCell className="capitalize">
+                                        {renderValue(item.tmt_golongan)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Link
+                                            href={route('pegawai.show', item.id)}
+                                            title="Detail"
                                         >
-                                        <Eye className="w-4 h-4" />
-                                        </Button>
-                                    </Link>
-                                    ) : (
-                                    <Button
-                                        disabled
-                                        className="bg-gray-300 text-gray-600 cursor-not-allowed"
-                                    >
-                                        <Eye />
-                                    </Button>
-                                    )}
-                                </TableCell>
+                                            <Button
+                                            className="bg-indigo-500 
+                                            hover:bg-indigo-600 text-white shadow-md 
+                                            hover:shadow-lg transition-all"
+                                            >
+                                            <Eye className="w-4 h-4" />
+                                            </Button>
+                                        </Link>
+                                    </TableCell>
                                 </TableRow>
                             ))
                             ) : (
@@ -243,7 +207,7 @@ export default function Index() {
                             transition-all duration-200 ease-in-out
                             ${
                             link.active
-                                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
+                                ? 'bg-indigo-500 hover:bg-indigo-600 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
                                 : 'border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
                             }
                             ${!link.url ? 'opacity-40 cursor-not-allowed' : ''}

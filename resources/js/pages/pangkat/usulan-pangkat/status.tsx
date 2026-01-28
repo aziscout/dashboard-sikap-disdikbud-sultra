@@ -1,278 +1,352 @@
-import AppLayout from '@/layouts/app-layout';
-import { Head, router, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Upload, Megaphone, FileText } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { Head, router, usePage } from '@inertiajs/react';
+import { ArrowUpCircle, BadgeCheck, Calendar, Download, Eye, FileText, Hash, History, Layers, Timer, Upload, User, Wallet } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Usulan Pangkat', href: '/pangkat/usulan-pangkat' },
-  { title: 'Cek Status', href: '/pangkat/usulan-pangkat/status' },
+    { title: 'Usulan Pangkat', href: '/pangkat/usulan-pangkat' },
+    { title: 'Status Kenaikan Pangkat', href: '/pangkat/usulan-pangkat/status' },
 ];
 
 interface Pegawai {
-  id: number;
-  nip: string;
-  nama: string;
-  jenis_kelamin: string;
+    id: number;
+    nip: string;
+    nama: string;
+    jenis_kelamin: string;
 }
 
 interface DataDiri {
-  golongan_ruang: string;
-  tmt_golongan: string;
-  nomor_sk: string;
-  masa_gk_tahunan: number;
-  masa_gk_bulanan: string;
-  pangkat: string;
-  gaji_pokok: number;
+    golongan_ruang: string;
+    tmt_golongan: string;
+    nomor_sk: string;
+    tanggal_sk: string;
+    masa_gk_tahunan: number;
+    masa_gk_bulanan: string;
+    pangkat: string;
+    gaji_pokok: number;
+    kgb_terakhir: string;
+    nomor_pertek_bkn: string;
+    tanggal_pertek_bkn: string;
+    jenis_kp: string;
 }
 
 interface Berkas {
-  status: string;
-  file_sk?: string | null;
+    status: string;
+    file_sk?: Array<{
+        file: string;
+        created_at: string;
+    }> | null;
 }
 
 interface FlashData {
-  message?: string;
-  error?: boolean;
+    message?: string;
+    error?: boolean;
 }
 
 interface PageProps {
-  pegawai: Pegawai;
-  data_diri: DataDiri;
-  berkas: Berkas;
-  flash?: FlashData;
+    pegawai: Pegawai;
+    data_diri: DataDiri;
+    berkas: Berkas;
+    flash?: FlashData;
 }
 
 export default function Status() {
-  const { pegawai, data_diri, berkas, flash } = usePage().props as unknown as PageProps;
-  const [status, setStatus] = useState(berkas?.status || 'berkas terkirim');
-  const [file, setFile] = useState<File | null>(null);
-  const [flashMessage, setFlashMessage] = useState<string | null>(flash?.message || null);
-  const [isUpdating, setIsUpdating] = useState(false);
+    const { pegawai, data_diri, berkas } = usePage().props as unknown as PageProps;
+    const [status, setStatus] = useState(berkas?.status || 'berkas terkirim');
+    const [file, setFile] = useState<File | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const { toast } = useToast();
 
-  const formatRupiah = (value?: number) => {
-    if (!value) return '-';
-    return 'Rp ' + value.toLocaleString('id-ID');
-  };
+    const formatRupiah = (value?: number) => {
+        if (!value) return '-';
+        return 'Rp ' + value.toLocaleString('id-ID');
+    };
 
-  useEffect(() => {
-    if (flash?.message) setFlashMessage(flash.message);
-  }, [flash]);
-
-  const handleStatusChange = (value: string) => {
-    const prevStatus = status;
-    setStatus(value);
-
-    if (value === 'sk telah terbit') {
-      setFlashMessage('Silakan upload file SK untuk menyelesaikan proses ini.');
-      return;
-    }
-
-    setIsUpdating(true);
-    router.post(
-      `/pangkat/usulan-pangkat/updateStatus/${pegawai.id}`,
-      { status: value },
-      {
-        preserveScroll: true,
-        onSuccess: () => {
-          setFlashMessage('Status berhasil diperbarui!');
-          router.reload({ only: ['pegawai', 'data_diri', 'berkas'] });
+    const dataDiri = [
+        {
+            label: 'Nama',
+            value: pegawai.nama,
+            icon: User,
         },
-        onError: () => {
-          setStatus(prevStatus);
-          setFlashMessage('Status hanya bisa diubah secara berurutan!');
+        {
+            label: 'NIP',
+            value: pegawai.nip,
+            icon: Hash,
         },
-        onFinish: () => setIsUpdating(false),
-      }
-    );
-  };
+        {
+            label: 'Golongan/Ruang',
+            value: data_diri.golongan_ruang,
+            icon: Layers,
+        },
+        {
+            label: 'Jenis Kenaikan Pangkat (KP)',
+            value: data_diri?.jenis_kp,
+            icon: ArrowUpCircle,
+        },
+        {
+            label: 'Masa Kerja Golongan',
+            value: `${data_diri.masa_gk_tahunan} tahun ${data_diri.masa_gk_bulanan} bulan`,
+            icon: Timer,
+        },
+        {
+            label: 'TMT Golongan',
+            value: data_diri.tmt_golongan,
+            icon: Calendar,
+        },
+        {
+            label: 'Jenis Kelamin',
+            value: pegawai.jenis_kelamin,
+            icon: User,
+        },
+        {
+            label: 'Nomor Surat Keputusan (SK)',
+            value: data_diri.nomor_sk,
+            icon: FileText,
+        },
+        {
+            label: 'Tanggal Surat Keputusan (SK)',
+            value: data_diri.tanggal_sk,
+            icon: Calendar,
+        },
+        {
+            label: 'Nomor Pertek BKN',
+            value: data_diri.nomor_pertek_bkn,
+            icon: Hash,
+        },
+        {
+            label: 'Tanggal Pertek BKN',
+            value: data_diri.tanggal_pertek_bkn,
+            icon: Calendar,
+        },
+        {
+            label: 'Pangkat',
+            value: data_diri.pangkat,
+            icon: BadgeCheck,
+        },
+        {
+            label: 'Gaji Pokok',
+            value: formatRupiah(data_diri.gaji_pokok),
+            icon: Wallet,
+        },
+        {
+            label: 'KGB Terakhir',
+            value: data_diri.kgb_terakhir,
+            icon: History,
+        },
+        {
+            label: 'File SK',
+            value: berkas?.file_sk && Array.isArray(berkas.file_sk) && berkas.file_sk.length > 0 ? 'Tersedia' : 'Belum Ada',
+            icon: FileText,
+            hasFile: berkas?.file_sk && Array.isArray(berkas.file_sk) && berkas.file_sk.length > 0,
+            latestFile: berkas?.file_sk && Array.isArray(berkas.file_sk) && berkas.file_sk.length > 0 ? berkas.file_sk[berkas.file_sk.length - 1].file : null,
+        },
+    ];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (status !== 'sk telah terbit') {
-      setFlashMessage('Upload hanya bisa dilakukan jika status SK telah terbit.');
-      return;
-    }
-    if (!file) {
-      setFlashMessage('Silakan upload file SK terlebih dahulu.');
-      return;
-    }
+    const handleStatusChange = (value: string) => {
+        const prevStatus = status;
+        setStatus(value);
 
-    const formData = new FormData();
-    formData.append('status', status);
-    formData.append('file_sk', file);
-    setIsUpdating(true);
+        if (value === 'sk telah terbit') {
+            toast({
+                title: 'Info',
+                description: 'Silakan upload file SK terbaru pegawai.',
+            });
+            return;
+        }
 
-    router.post(`/pangkat/usulan-pangkat/updateStatus/${pegawai.id}`, formData, {
-      preserveScroll: true,
-      onSuccess: () => {
-        setFlashMessage('File SK berhasil diunggah dan status diperbarui!');
-        setFile(null);
-        router.reload({ only: ['pegawai', 'data_diri', 'berkas'] });
-      },
-      onError: (errors) => {
-        setFlashMessage(Object.values(errors).join('\n'));
-      },
-      onFinish: () => setIsUpdating(false),
-    });
-  };
+        setIsUpdating(true);
+        router.post(
+            `/pangkat/usulan-pangkat/updateStatus/${pegawai.id}`,
+            { status: value },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: 'Berhasil',
+                        description: 'Status berhasil diperbarui!',
+                    });
+                    router.reload({ only: ['pegawai', 'data_diri', 'berkas'] });
+                },
+                onError: (errors) => {
+                    setStatus(prevStatus);
+                    toast({
+                        title: 'Error',
+                        description: errors?.message || 'Status hanya bisa diubah secara berurutan!',
+                        variant: 'destructive',
+                    });
+                },
+                onFinish: () => setIsUpdating(false),
+            },
+        );
+    };
 
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Cek Status Pengajuan" />
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (status !== 'sk telah terbit') {
+            toast({
+                title: 'Error',
+                description: 'Upload hanya bisa dilakukan jika status SK telah terbit.',
+                variant: 'destructive',
+            });
+            return;
+        }
+        if (!file) {
+            toast({
+                title: 'Error',
+                description: 'Silakan upload file SK terlebih dahulu.',
+                variant: 'destructive',
+            });
+            return;
+        }
 
-      <div className="p-6 space-y-6">
-        {/* 🔔 Notifikasi */}
-        {flashMessage && (
-          <div className="w-full md:w-1/2">
-            <Alert className="border-l-4 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/50">
-              <Megaphone className="h-4 w-4 text-indigo-500" />
-              <AlertTitle className="text-indigo-700 dark:text-indigo-300">
-                Notifikasi
-              </AlertTitle>
-              <AlertDescription className="text-gray-700 dark:text-gray-300">
-                {flashMessage}
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
+        const formData = new FormData();
+        formData.append('status', status);
+        formData.append('file_sk', file);
+        setIsUpdating(true);
 
-        {/* 💼 Card Status */}
-        <Card className="border border-indigo-200 dark:border-indigo-900/50 shadow-lg rounded-2xl bg-white/70 dark:bg-gray-900/60 backdrop-blur-lg transition-all">
-          <CardHeader className="text-center border-indigo-100 dark:border-indigo-800/40">
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-              Cek Status Pengajuan Pangkat
-            </CardTitle>
-          </CardHeader>
+        router.post(`/pangkat/usulan-pangkat/updateStatus/${pegawai.id}`, formData, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast({
+                    title: 'Success',
+                    description: 'File SK berhasil diunggah dan status diperbarui!',
+                });
+                setFile(null);
+                router.reload({ only: ['pegawai', 'data_diri', 'berkas'] });
+            },
+            onError: (errors) => {
+                toast({
+                    title: 'Error',
+                    description: Object.values(errors).join('\n'),
+                    variant: 'destructive',
+                });
+            },
+            onFinish: () => setIsUpdating(false),
+        });
+    };
 
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-            {/* 👤 Data Pegawai */}
-            <div className="space-y-2">
-              <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                {[
-                  { label: 'NIP', value: pegawai.nip },
-                  { label: 'Nama', value: pegawai.nama },
-                  { label: 'Jenis Kelamin', value: pegawai.jenis_kelamin },
-                  {
-                    label: 'Masa Kerja Golongan',
-                    value: `${data_diri.masa_gk_tahunan} tahun ${data_diri.masa_gk_bulanan} bulan`,
-                  },
-                  { label: 'Nomor Surat', value: data_diri.nomor_sk },
-                  { label: 'TMT Golongan', value: data_diri.tmt_golongan },
-                  { label: 'Pangkat', value: data_diri.pangkat },
-                  { label: 'Golongan/Ruang', value: data_diri.golongan_ruang },
-                  { label: 'Gaji Pokok', value: formatRupiah(data_diri.gaji_pokok) },
-                ].map((item, i) => (
-                  <li
-                    key={i}
-                    className="grid grid-cols-2 py-2 text-sm sm:text-base hover:bg-indigo-50/40 dark:hover:bg-indigo-900/30 transition-all rounded-lg px-2"
-                  >
-                    <span className="font-medium text-sm text-gray-700 dark:text-indigo-300">
-                      {item.label}
-                    </span>
-                    <span className="text-gray-900 text-sm dark:text-gray-200">
-                      : {item.value || '-'}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Cek Status Pengajuan" />
 
-              {berkas?.file_sk && (
-                <div className="mt-4">
-                  <a
-                    href={`/storage/berkas/${berkas.file_sk}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:underline"
-                  >
-                    <FileText className="w-4 h-4" /> Lihat File SK
-                  </a>
+            <div className="space-y-6 p-6">
+                <div>
+                    <div>
+                        <h1 className="mb-4 bg-clip-text text-2xl font-bold tracking-tight text-indigo-500">
+                            Perbarui status kenaikan pangkat
+                        </h1>
+                        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Informasi lengkap data diri {pegawai.nama}.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {dataDiri.map((item, i) => {
+                            const Icon = item.icon;
+                            return (
+                                <div
+                                    key={i}
+                                    className="flex min-h-[120px] items-center gap-4 rounded-2xl border border-indigo-200 bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:border-indigo-800/50 dark:bg-gray-900"
+                                >
+                                    {/* ICON */}
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400">
+                                        {Icon && <Icon className="h-6 w-6" />}
+                                    </div>
+
+                                    {/* CONTENT */}
+                                    <div className="flex flex-col justify-center flex-1">
+                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">{item.label}</p>
+
+                                        <p className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">{item.value || '-'}</p>
+                                    </div>
+
+                                    {/* ACTIONS */}
+                                    {item.hasFile && item.latestFile && (
+                                        <div className="flex gap-2">
+                                            <a
+                                                href={`/storage/${item.latestFile}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="rounded-lg bg-indigo-500 p-2 text-white shadow-sm transition-all hover:bg-indigo-600"
+                                                title="Lihat Dokumen"
+                                            >
+                                                <Eye className="h-4 w-4" />
+                                            </a>
+                                            <a
+                                                href={`/storage/${item.latestFile}`}
+                                                download
+                                                className="rounded-lg bg-green-500 p-2 text-white shadow-sm transition-all hover:bg-green-600"
+                                                title="Download Dokumen"
+                                            >
+                                                <Download className="h-4 w-4" />
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Form Update Status */}
+                    <form
+                        onSubmit={handleSubmit}
+                        className="mt-5 flex flex-col items-center justify-center gap-4 rounded-xl border border-indigo-100 bg-indigo-50/40 p-6 backdrop-blur-md dark:border-indigo-800/50 dark:bg-indigo-900/30"
+                    >
+                        <Select value={status} onValueChange={handleStatusChange} disabled={isUpdating}>
+                            <SelectTrigger className="w-full border-indigo-200 dark:border-indigo-800">
+                                <SelectValue placeholder="Pilih Status" />
+                            </SelectTrigger>
+                            <SelectContent className="border border-indigo-100 bg-white dark:border-indigo-800 dark:bg-gray-900">
+                                <SelectItem value="berkas terkirim">Berkas Terkirim</SelectItem>
+                                <SelectItem value="telah dikirim ke bkd">Telah Dikirim Ke BKD</SelectItem>
+                                <SelectItem value="telah dikirim ke bkn">Telah Dikirim Ke BKN</SelectItem>
+                                <SelectItem value="sk telah terbit">SK Telah Terbit</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        {/* Upload Box */}
+                        <label
+                            className={`flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-all ${
+                                status === 'sk telah terbit'
+                                    ? 'border-indigo-400 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/40'
+                                    : 'cursor-not-allowed border-gray-300 text-gray-400'
+                            }`}
+                        >
+                            <Upload className="mb-2 h-6 w-6" />
+                            <span className="text-sm">
+                                {status === 'sk telah terbit' ? 'Upload File SK (PDF maks 2MB)' : 'Upload aktif jika status SK telah terbit'}
+                            </span>
+                            <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={(e) => {
+                                    const selectedFile = e.target.files?.[0];
+                                    if (selectedFile) setFile(selectedFile);
+                                }}
+                                className="hidden"
+                                disabled={status !== 'sk telah terbit'}
+                            />
+                            {file && (
+                                <p className="mt-3 text-sm text-gray-600 italic dark:text-gray-300">
+                                    File dipilih: <span className="font-medium text-indigo-600 dark:text-indigo-400">{file.name}</span>
+                                </p>
+                            )}
+                        </label>
+
+                        {status === 'sk telah terbit' && (
+                            <Button
+                                type="submit"
+                                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white shadow-md transition-all hover:from-indigo-600 hover:to-purple-600 hover:shadow-lg"
+                                disabled={isUpdating}
+                            >
+                                Upload SK
+                            </Button>
+                        )}
+                    </form>
                 </div>
-              )}
             </div>
-
-            {/* 📤 Form Update Status */}
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col gap-4 items-center justify-center border border-indigo-100 dark:border-indigo-800/50 rounded-xl p-6 bg-indigo-50/40 dark:bg-indigo-900/30 backdrop-blur-md"
-            >
-              <Select
-                value={status}
-                onValueChange={handleStatusChange}
-                disabled={isUpdating}
-              >
-                <SelectTrigger className="w-full border-indigo-200 dark:border-indigo-800">
-                  <SelectValue placeholder="Pilih Status" />
-                </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-800">
-                  <SelectItem value="berkas terkirim">Berkas Terkirim</SelectItem>
-                  <SelectItem value="telah dikirim ke bkd">
-                    Telah Dikirim Ke BKD
-                  </SelectItem>
-                  <SelectItem value="telah dikirim ke bkn">
-                    Telah Dikirim Ke BKN
-                  </SelectItem>
-                  <SelectItem value="sk telah terbit">SK Telah Terbit</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Upload Box */}
-              <label
-                className={`w-full cursor-pointer border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center transition-all ${
-                  status === 'sk telah terbit'
-                    ? 'border-indigo-400 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/40'
-                    : 'border-gray-300 text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                <Upload className="w-6 h-6 mb-2" />
-                <span className="text-sm">
-                  {status === 'sk telah terbit'
-                    ? 'Upload File SK (PDF maks 2MB)'
-                    : 'Upload aktif jika status SK telah terbit'}
-                </span>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => {
-                    const selectedFile = e.target.files?.[0];
-                    if (selectedFile) setFile(selectedFile);
-                  }}
-                  className="hidden"
-                  disabled={status !== 'sk telah terbit'}
-                />
-                {file && (
-                  <p className="mt-3 text-sm text-gray-600 italic dark:text-gray-300">
-                    File dipilih:{' '}
-                    <span className="font-medium text-indigo-600 dark:text-indigo-400">
-                      {file.name}
-                    </span>
-                  </p>
-                )}
-              </label>
-
-              {status === 'sk telah terbit' && (
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-md hover:shadow-lg transition-all"
-                  disabled={isUpdating}
-                >
-                  Upload SK
-                </Button>
-              )}
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </AppLayout>
-  );
+        </AppLayout>
+    );
 }

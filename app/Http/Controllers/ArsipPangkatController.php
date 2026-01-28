@@ -11,6 +11,8 @@ class ArsipPangkatController extends Controller
 {
     public function index()
     {
+        Carbon::setLocale('id');
+
         $arsip = Berkas::with(['pegawai.dataDiri'])
             ->where('status', 'sk telah terbit')
             ->latest()
@@ -20,13 +22,15 @@ class ArsipPangkatController extends Controller
                     'id' => $item->id,
                     'nama' => $item->pegawai->nama ?? '-',
                     'nomor' => $item->pegawai->nomor ?? '-',
+                    'nip' => $item->pegawai->nip ?? '-',
                     'email' => $item->pegawai->email ?? '-',
-                    'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
-                    'alamat' => $item->pegawai->alamat ?? '-',
-                    'tmt_golongan' => optional($item->pegawai->dataDiri)->tmt_golongan
-                        ? Carbon::parse($item->pegawai->dataDiri->tmt_golongan)->format('d/m/Y')
+                    'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
+                    'kgb_terakhir' => optional($item->pegawai->dataDiri)->kgb_terakhir
+                        ? Carbon::parse($item->pegawai->dataDiri->kgb_terakhir)->translatedFormat('d F Y')
                         : '-',
-                    'tanggal_naik_pangkat' => Carbon::parse($item->updated_at)->format('d/m/Y'),
+                    'tmt_golongan' => optional($item->pegawai->dataDiri)->tmt_golongan
+                        ? Carbon::parse($item->pegawai->dataDiri->tmt_golongan)->translatedFormat('d F Y')
+                        : '-',
                 ];
             });
 

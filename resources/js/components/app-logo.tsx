@@ -7,7 +7,7 @@ export default function AppLogo() {
                 <AppLogoIcon />
             </div>
             <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">Dashboard SIKAP</span>
+                <span className="mb-0.5 truncate leading-tight font-semibold">SIKAPDIK SULTRA</span>
             </div>
         </>
     );

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('berkas', function (Blueprint $table) {
             $table->id();
-            $table->string('sk_cpns')->nullable();
-            $table->string('sk_pns')->nullable();
+            $table->json('sk_cpns')->nullable();
+            $table->json('sk_pns')->nullable();
             $table->json('sk_gaji_berkala')->nullable();
             $table->json('sk_pangkat_terakhir')->nullable();
             $table->json('sk_jabatan')->nullable();

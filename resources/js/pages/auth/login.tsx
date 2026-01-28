@@ -36,7 +36,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <AuthLayout title="Masuk ke akun Anda" description="Masukkan alamat email dan kata sandi Anda di bawah ini untuk masuk.">
+        <AuthLayout title=" SIKAPDIK SULTRA" description=" Portal Dashboard">
             <Head title="Masuk" />
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
@@ -90,7 +90,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         <Label htmlFor="remember">Ingat Saya</Label>
                     </div>
 
-                    <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing}>
+                    <Button type="submit" className="mt-4 w-full bg-indigo-500 hover:bg-indigo-600 dark:text-white" tabIndex={4} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                         Masuk
                     </Button>

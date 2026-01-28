@@ -1,48 +1,32 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Eye, ListFilterPlus, Megaphone } from 'lucide-react';
+import { Eye, ListFilterPlus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-// Asumsi: Anda menggunakan komponen Pagination yang diimpor
-// import Pagination from '@/components/Pagination'; 
-// Karena Anda memberikan implementasi pagination inline di kode pegawai, 
-// saya akan mengikutinya.
-
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Arsip', href: '/pangkat/arsip-pangkat' },
+    { 
+        title: 'Arsip Kenaikan Pangkat', 
+        href: '/pangkat/arsip-pangkat' 
+    }
 ];
 
 interface Arsip {
     id: number;
     nama: string;
-    nomor: string;
+    nomor: number;
+    nip: string;
     email: string;
-    jenis_kelamin: string;
-    alamat: string;
+    unit_kerja: string;
     tmt_golongan: string;
-    tanggal_naik_pangkat: string;
+    is_active: boolean;
+    created_at: string;
 }
 
-// 1. Interfaces untuk Pagination
 interface PaginationLink {
     url: string | null;
     label: string;
@@ -56,155 +40,103 @@ interface ArsipPagination {
     per_page: number;
 }
 
-// 2. Perubahan PageProps
 interface PageProps {
-    flash?: { message?: string };
-    arsip: ArsipPagination; // Menggunakan tipe Pagination
+    arsip: ArsipPagination; 
 }
 
 export default function Index() {
-    // Mengubah riwayat menjadi objek pagination
-    const { arsip, flash } = usePage().props as unknown as PageProps;
-    const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
+    const { arsip } = usePage().props as unknown as PageProps;
+    const [sortOrder, setSortOrder] = useState<'Terbaru' | 'Terlama'>('Terbaru');
     const [searchQuery, setSearchQuery] = useState('');
 
+    const renderValue = (value?: string | number | null) => (value !== null && value !== undefined && value !== '' ? value : '-');
+
     const filteredArsip = useMemo(() => {
-        // Menggunakan riwayat.data karena data sudah di-paginate oleh Controller
         return [...arsip.data]
-            .filter((item) =>
-                item.nama.toLowerCase().includes(searchQuery.toLowerCase())
+            .filter(
+                (item) =>
+                    // item.nama.toLowerCase().includes(searchQuery.toLowerCase())
+                    (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (item.nip ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (item.unit_kerja ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (item.tmt_golongan ?? '').toLowerCase().includes(searchQuery.toLowerCase()),
             )
             .sort((a, b) => {
-                // Pastikan format tanggal sudah diconvert dengan benar di controller (d/m/Y)
-                const parseDate = (dateString: string) => {
-                    const parts = dateString.split('/');
-                    // Format: YYYY-MM-DD
-                    return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
-                };
-                
-                const dateA = parseDate(a.tanggal_naik_pangkat);
-                const dateB = parseDate(b.tanggal_naik_pangkat);
-                
-                return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
+                const dateA = new Date(a.created_at).getTime();
+                const dateB = new Date(b.created_at).getTime();
+                return sortOrder === 'Terbaru' ? dateB - dateA : dateA - dateB;
             });
-    }, [arsip.data, sortOrder, searchQuery]); // Menggunakan riwayat.data sebagai dependency
+    }, [arsip.data, sortOrder, searchQuery]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Arsip Naik Pangkat" />
 
-            <div className="container mx-auto p-6 space-y-6">
+            <div className="container mx-auto space-y-6 p-6">
                 {/* Header Section */}
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <h1
-                        className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 
-                        bg-clip-text text-transparent tracking-tight"
-                    >
-                        Arsip Naik Pangkat
-                    </h1>
+                    <h1 className="bg-gradient-to-r bg-clip-text text-2xl font-bold tracking-tight text-indigo-500">Arsip Naik Pangkat</h1>
 
                     <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                        {/* 🔍 Search */}
+                        {/*  Search */}
                         <Input
-                            placeholder="Cari nama pegawai..."
+                            placeholder="Cari nama,nip, atau unit kerja..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full md:w-64 border-indigo-200 dark:border-indigo-800 focus:ring-2 focus:ring-indigo-400"
+                            className="w-full border-indigo-200 focus:ring-2 focus:ring-indigo-400 md:w-64 dark:border-indigo-800"
                         />
 
-                        {/* 🔽 Sort */}
+                        {/*  Sort */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="outline"
-                                    className="flex items-center gap-2 border-indigo-200 dark:border-indigo-800 
-                                    text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all"
+                                    className="flex items-center gap-2 border-indigo-200 text-indigo-600 transition-all hover:bg-indigo-50 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-900/30"
                                 >
-                                    <ListFilterPlus className="w-4 h-4" /> {sortOrder}
+                                    <ListFilterPlus className="h-4 w-4" /> {sortOrder}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-40 bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-800 shadow-lg backdrop-blur-md">
+                            <DropdownMenuContent className="w-40 border border-indigo-100 bg-white shadow-lg backdrop-blur-md dark:border-indigo-800 dark:bg-gray-900">
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem onClick={() => setSortOrder('terbaru')}>
-                                        Terbaru
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setSortOrder('terlama')}>
-                                        Terlama
-                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSortOrder('Terbaru')}>Terbaru</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSortOrder('Terlama')}>Terlama</DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </div>
 
-                {/* 🔔 Notifikasi */}
-                {flash?.message && (
-                    <div className="w-full md:w-1/2">
-                        <Alert className="border-l-4 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/50">
-                            <Megaphone className="h-4 w-4 text-indigo-500" />
-                            <AlertTitle className="text-indigo-700 dark:text-indigo-300">
-                                Notifikasi
-                            </AlertTitle>
-                            <AlertDescription className="text-gray-700 dark:text-gray-300">
-                                {flash.message}
-                            </AlertDescription>
-                        </Alert>
-                    </div>
-                )}
-
                 {/* 📋 Table Section */}
-                <div
-                    className="overflow-hidden rounded-xl border border-indigo-100 
-                    dark:border-indigo-900/50 shadow-md backdrop-blur-md transition-all"
-                >
+                <div className="overflow-hidden rounded-lg border border-indigo-100 shadow-md backdrop-blur-md transition-all dark:border-indigo-900/50">
                     <Table className="w-full">
                         <TableHeader>
                             <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
                                 <TableHead className="w-[60px] text-center">No</TableHead>
                                 <TableHead>Nama</TableHead>
+                                <TableHead>NIP</TableHead>
                                 <TableHead>Nomor</TableHead>
                                 <TableHead>Email</TableHead>
-                                <TableHead>Jenis Kelamin</TableHead>
-                                <TableHead>Alamat</TableHead>
-                                <TableHead>Tanggal Naik Pangkat</TableHead>
+                                <TableHead>Unit Kerja</TableHead>
                                 <TableHead>TMT Golongan</TableHead>
-                                <TableHead className="text-center">Detail</TableHead>
+                                <TableHead>Detail</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredArsip.length > 0 ? (
                                 filteredArsip.map((item, index) => (
-                                    <TableRow
-                                        key={item.id}
-                                        className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
-                                    >
-                                        {/* 3. Penyesuaian Penomoran */}
-                                        <TableCell className="text-center">
-                                            {(arsip.current_page - 1) * arsip.per_page + (index + 1)}
-                                        </TableCell>
-                                        {/* --------------------------- */}
+                                    <TableRow key={item.id} className="transition-all hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40">
+                                        {/* <TableCell className="text-center">{index + 1}</TableCell> */}
+                                        <TableCell className="text-center">{(arsip.current_page - 1) * arsip.per_page + (index + 1)}</TableCell>
                                         <TableCell>{item.nama}</TableCell>
-                                        <TableCell>{item.nomor}</TableCell>
-                                        <TableCell>{item.email}</TableCell>
-                                        <TableCell className="capitalize">
-                                            {item.jenis_kelamin}
-                                        </TableCell>
-                                        <TableCell className="capitalize">
-                                            {item.alamat}
-                                        </TableCell>
-                                        <TableCell>{item.tanggal_naik_pangkat}</TableCell>
-                                        <TableCell>{item.tmt_golongan}</TableCell>
-                                        <TableCell className="text-center">
-                                            <Link
-                                                href={route('pangkat.arsip-pangkat.show', item.id)}
-                                                title="Detail"
-                                            >
-                                                <Button
-                                                    className="bg-gradient-to-r from-indigo-500 to-purple-500 
-                                                    hover:from-indigo-600 hover:to-purple-600 text-white shadow-md 
-                                                    hover:shadow-lg transition-all"
-                                                >
-                                                    <Eye className="w-4 h-4" />
+                                        <TableCell>{renderValue(item.nip)}</TableCell>
+                                        <TableCell>{renderValue(item.nomor)}</TableCell>
+                                        <TableCell>{renderValue(item.email)}</TableCell>
+                                        <TableCell className="capitalize">{renderValue(item.unit_kerja)}</TableCell>
+                                        <TableCell className="capitalize">{renderValue(item.tmt_golongan)}</TableCell>
+                                        <TableCell>
+                                            <Link href={route('pangkat.arsip-pangkat.show', item.id)} title="Detail">
+                                                <Button className="bg-indigo-500 text-white shadow-md transition-all hover:bg-indigo-600 hover:shadow-lg">
+                                                    <Eye className="h-4 w-4" />
                                                 </Button>
                                             </Link>
                                         </TableCell>
@@ -212,10 +144,7 @@ export default function Index() {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell
-                                        colSpan={8}
-                                        className="text-center text-gray-500 dark:text-gray-400 py-6"
-                                    >
+                                    <TableCell colSpan={8} className="py-6 text-center text-gray-500">
                                         Tidak ada data arsip naik pangkat.
                                     </TableCell>
                                 </TableRow>
@@ -223,9 +152,9 @@ export default function Index() {
                         </TableBody>
                     </Table>
                 </div>
-                
+
                 {/* 4. Implementasi Pagination (menggunakan style dari kode Pegawai Anda) */}
-                <div className="flex justify-end items-center gap-2 my-8 flex-wrap">
+                <div className="my-8 flex flex-wrap items-center justify-end gap-2">
                     {arsip.links.map((link, i) => (
                         <Button
                             key={i}
@@ -236,16 +165,11 @@ export default function Index() {
                             // Menggunakan window.location.href (seperti kode pegawai Anda)
                             onClick={() => link.url && (window.location.href = link.url)}
                             dangerouslySetInnerHTML={{ __html: link.label }}
-                            className={`
-                                min-w-[40px] h-9 rounded-full text-sm font-medium
-                                transition-all duration-200 ease-in-out
-                                ${
+                            className={`h-9 min-w-[40px] rounded-full text-sm font-medium transition-all duration-200 ease-in-out ${
                                 link.active
-                                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
-                                    : 'border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
-                                }
-                                ${!link.url ? 'opacity-40 cursor-not-allowed' : ''}
-                            `}
+                                    ? 'scale-105 bg-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-600 dark:shadow-purple-800/40'
+                                    : 'border border-indigo-200 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-300 dark:hover:bg-indigo-900/30'
+                            } ${!link.url ? 'cursor-not-allowed opacity-40' : ''} `}
                         />
                     ))}
                 </div>

@@ -29,8 +29,9 @@ export function NavPangkat({ items = [] }: { items: MainNavItem[] }) {
                             <SidebarMenuSub>
                             {item.subItems?.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton asChild isActive={false}>
+                                <SidebarMenuSubButton asChild isActive={page.url === subItem.href}>
                                     <Link href={subItem.href} prefetch>
+                                    {subItem.icon && <subItem.icon className="h-4 w-4" />}
                                     <span>{subItem.title}</span>
                                     </Link>
                                 </SidebarMenuSubButton>

@@ -16,46 +16,35 @@ class UsulanPangkatController extends Controller
     public function index(Request $request)
     {
         $today = Carbon::today();
+
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])->get();
 
-        // Filter pegawai yang:
-        // 1. Sudah mendekati TMT (3 bulan sebelum)
-        // 2. Sudah melengkapi seluruh berkas
-        // 3. Belum naik pangkat (status belum 'sk telah terbit')
         $filteredPegawai = $pegawai->filter(function ($item) use ($today) {
             $tmt = $item->dataDiri->tmt_golongan ?? null;
 
             if (!$tmt) {
-                return false; // jika belum punya TMT, skip
+                return false;
             }
 
-            // Tambahkan 4 tahun untuk mencari TMT Kenaikan Pangkat berikutnya
-            $tmtDate = Carbon::parse($tmt)->addYears(4);
-            $threeMonthsBefore = $tmtDate->copy()->subMonths(3);
+            $tmtKenaikan = Carbon::parse($tmt)->addYears(4);
 
-            // Kondisi 1: waktu sekarang sudah melewati 3 bulan sebelum TMT
-            $isEligibleByDate = $today->greaterThanOrEqualTo($threeMonthsBefore);
+            $duaBulanSebelum = $tmtKenaikan->copy()->subMonths(2);
 
-            // Kondisi 2: cek berkas lengkap (ambil berkas terbaru/pertama)
+            $isEligibleByDate = $today->greaterThanOrEqualTo($duaBulanSebelum);
+
             $berkas = $item->berkas->first();
-            $isBerkasComplete = $berkas &&
-                $berkas->sk_cpns &&
-                $berkas->sk_pns &&
-                $berkas->sk_gaji_berkala &&
-                $berkas->sk_jabatan &&
-                $berkas->sk_pangkat_terakhir;
 
-            // 🚫 Kondisi 3: pastikan belum punya status SK telah terbit
             $belumNaikPangkat = !$berkas || $berkas->status !== 'sk telah terbit';
 
-            return $isEligibleByDate && $isBerkasComplete && $belumNaikPangkat;
-        })->values(); 
+            return $isEligibleByDate && $belumNaikPangkat;
+        })->values();
 
+        
         $perPage = 20;
         $currentPage = $request->get('page', 1);
-        $offset = ($currentPage * $perPage) - $perPage;
+        $offset = ($currentPage - 1) * $perPage;
 
-        $items = $filteredPegawai->slice($offset, $perPage)->all();
+        $items = $filteredPegawai->slice($offset, $perPage)->values();
 
         $paginatedPegawai = new LengthAwarePaginator(
             $items,
@@ -73,6 +62,7 @@ class UsulanPangkatController extends Controller
         ]);
     }
 
+
     public function status($id)
     {
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])->find($id);
@@ -82,7 +72,6 @@ class UsulanPangkatController extends Controller
                 ->with('message', 'Data pegawai tidak ditemukan.');
         }
 
-        // Ambil 1 berkas terbaru
         $berkas = $pegawai->berkas()->latest()->first();
 
         return Inertia::render('pangkat/usulan-pangkat/status', [
@@ -141,22 +130,22 @@ class UsulanPangkatController extends Controller
                     ->with('error', true);
             }
 
-            // Hapus file lama jika ada
-            if ($berkas->file_sk && Storage::disk('public')->exists('berkas/' . $berkas->file_sk)) {
-                Storage::disk('public')->delete('berkas/' . $berkas->file_sk);
-            }
+            $existingFiles = $berkas->file_sk ?? [];
 
-            // Simpan file baru
             $file = $request->file('file_sk');
-            $filename = 'sk_' . $id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('berkas', $filename, 'public');
 
-            // Update status + file bersamaan
+            $path = $file->store('berkas/file_sk', 'public');
+
+            $existingFiles[] = [
+                'file' => $path,
+                'created_at' => Carbon::now()->format('d/m/Y'),
+            ];
+
             $berkas->status = 'sk telah terbit';
-            $berkas->file_sk = $filename;
+            $berkas->file_sk = $existingFiles;
             $berkas->save();
 
-            // 🟩 Otomatis naikkan golongan pegawai 1 tingkat
+
             $dataDiri = DataDiri::where('pegawais_id', $id)->first();
             if ($dataDiri) {
                 $urutanGolongan = [
@@ -174,11 +163,9 @@ class UsulanPangkatController extends Controller
                     $dataDiri->golongan_ruang = $nextGolongan;
                 }
 
-                // 📅 Tanggal SK = hari ini
                 $today = now();
                 $dataDiri->tanggal_sk = $today->toDateString();
 
-                // ✅ TMT golongan = tanggal SK diterbitkan (bukan +4 tahun)
                 $dataDiri->tmt_golongan = $today->toDateString();
 
                 $dataDiri->save();

@@ -26,7 +26,7 @@ class BerkasApiController extends Controller
             ]);
         }
 
-        if ($admin && $admin->role === 'admin') {
+        if ($admin && $admin->role === 'admin_sikap') {
             return response()->json([
                 'status' => 'success',
                 'data' => Berkas::with('pegawai')->latest()->get(),
@@ -47,7 +47,7 @@ class BerkasApiController extends Controller
         ]);
 
         $pegawai = auth('pegawai')->user();
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::where('role', 'admin_sikap')->first();
 
         $berkas = Berkas::create([
             'sk_cpns' => $request->hasFile('sk_cpns')
@@ -96,16 +96,12 @@ class BerkasApiController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        if (!$pegawai && (!$admin || $admin->role !== 'admin')) {
+        if (!$pegawai && (!$admin || $admin->role !== 'admin_sikap')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        // =====================
-        // PEGAWAI
-        // =====================
         if ($pegawai) {
 
-            // REPLACE (STRING)
             foreach (['sk_cpns', 'sk_pns'] as $field) {
                 if ($request->hasFile($field)) {
 
@@ -118,7 +114,6 @@ class BerkasApiController extends Controller
                 }
             }
 
-            // APPEND (JSON)
             foreach (['sk_pangkat_terakhir', 'sk_gaji_berkala', 'sk_jabatan'] as $field) {
                 if ($request->hasFile($field)) {
                     $files = $berkas->$field ?? [];
@@ -128,10 +123,7 @@ class BerkasApiController extends Controller
             }
         }
 
-        // =====================
-        // ADMIN
-        // =====================
-        if ($admin && $admin->role === 'admin') {
+        if ($admin && $admin->role === 'admin_sikap') {
 
             if ($request->hasFile('file_sk')) {
                 $files = $berkas->file_sk ?? [];
@@ -206,7 +198,7 @@ class BerkasApiController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        if (!$pegawai && (!$admin || $admin->role !== 'admin')) {
+        if (!$pegawai && (!$admin || $admin->role !== 'admin_sikap')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 

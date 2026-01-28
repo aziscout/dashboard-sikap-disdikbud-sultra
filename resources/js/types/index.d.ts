@@ -27,14 +27,11 @@ export interface MainNavItem {
     href?: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
-    subItems?: SubItems[];
-}
-
-export interface SubItems {
-    title: string;
-    href: string;
-    icon?: LucideIcon | null;
-    isActive?: boolean;
+    subItems?: {
+        title: string;
+        href: string;
+        icon?: LucideIcon;
+    }[];
 }
 
 export interface SharedData {

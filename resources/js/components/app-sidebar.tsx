@@ -3,34 +3,10 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type MainNavItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Award, ChartNoAxesCombined, LayoutGrid, TrendingUp, Users } from 'lucide-react';
+import { Archive, Award, ChartNoAxesCombined, FilePlus, LayoutGrid, TrendingUp, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 import { NavPangkat } from './nav-pangkat';
 import { NavMain } from './nav-main';
-
-// const mainNavPangkat: NavItem[] = [
-//     {
-//         title: 'Dashboard',
-//         href: '/admin/dashboardPangkat',
-//         icon: LayoutGrid,
-//     },
-//     {
-//         title: 'Usulan Pangkat',
-//         href: '/berita',
-//         icon: Newspaper,
-//     },
-//     {
-//         title: 'Pegawai',
-//         href: '/laporan',
-//         icon: BookOpen ,
-//     },
-//     {
-//         title: 'Riwayat',
-//         href: '/ppid',
-//         icon: FileText ,
-//     },
-// ];
-
 
 export function     AppSidebar() {
     type AuthUser = {
@@ -38,122 +14,31 @@ export function     AppSidebar() {
     name: string;
     email: string;
     role: string;
-  // add other user fields if needed
 };
 
 type PageProps = {
-  auth: {
-    user: AuthUser | null;
-    permissions: string[];
-  };
+    auth: {
+        user: AuthUser | null;
+        permissions: string[];
+    };
 };
 
 const { auth } = usePage<PageProps>().props;
     const userPermissions = auth.permissions;
-    
-    // const mainNavItems: NavItem[] = [];
-
-    // if (userPermissions.includes('Dashboard')) {
-    //     mainNavItems.push({
-    //         title: 'Dashboard',
-    //         href: '/dashboard',
-    //         icon: LayoutGrid,
-    //     });
-    // }
-    // if (userPermissions.includes('Dashboard')) {
-    //     const dashboardLink =
-    //         auth.user?.role === 'admin'
-    //             ? '/admin/dashboard'
-    //             : auth.user?.role === 'bidang'
-    //             ? '/bidang/dashboard'
-    //             : '/dashboard';
-
-    //     mainNavItems.push({
-    //         title: 'Dashboard',
-    //         href: dashboardLink,
-    //         icon: LayoutGrid,
-    //     });
-    // }
-
-    // if (userPermissions.includes('Bidang')) {
-    //     mainNavItems.push({
-    //         title: 'Bidang',
-    //         href: '/bidang/user',
-    //         icon: Users,
-    //     });
-    // }
-
-    // if (userPermissions.includes('Layanan')) {
-    //     mainNavItems.push({
-    //         title: 'Layanan',
-    //         href: '/layanan',
-    //         icon: MessagesSquare,
-    //     });
-    // }
-
-    // if (userPermissions.includes('Agenda')) {
-    //     mainNavItems.push({
-    //         title: 'Agenda',
-    //         href: '/agenda',
-    //         icon: CalendarDays,
-    //     });
-    // }
-    // if (userPermissions.includes('Berita')) {
-    //     mainNavItems.push({
-    //         title: 'Berita',
-    //         href: '/berita',
-    //         icon: Newspaper,
-    //     });
-    // }
-    // if (userPermissions.includes('Pengumuman')) {
-    //     mainNavItems.push({
-    //         title: 'Pengumuman',
-    //         href: '/pengumuman',
-    //         icon: Megaphone,
-    //     });
-    // }
-    // if (userPermissions.includes('Laporan')) {
-    //     mainNavItems.push({
-    //         title: 'Laporan Kegiatan',
-    //         href: '/laporan',
-    //         icon: BookOpen,
-    //     });
-    // }
-    // if (userPermissions.includes('PPID')) {
-    //     mainNavItems.push({ 
-    //         title: 'PPID',
-    //         href: '/ppid',
-    //         icon: FileText,
-    //     });
-    // }
-    // if (userPermissions.includes('Inovasi')) {
-    //     mainNavItems.push({
-    //         title: 'Inovasi',
-    //         href: '/inovasi',
-    //         icon: Brain,
-    //     });
-    // }
-    // if (userPermissions.includes('Produk Hukum')) {
-    //     mainNavItems.push({
-    //         title: 'Produk Hukum',
-    //         href: '/produk-hukum',
-    //         icon: Scale,
-    //     });
-    // }
 
     const NavItem: NavItem[] = [];
     const mainNavPangkat: MainNavItem[] = [];
 
     if (userPermissions.includes('Dashboard Pangkat')) {
         const dashboardLink =
-            auth.user?.role === 'admin'
+            auth.user?.role === 'admin_sikap'
                 ? '/pangkat/dashboard'
                 : auth.user?.role === 'bidang'
                 ? '/bidang/dashboard'
                 : '/dashboard';
 
         NavItem.push({
-            title: 'Dashboard',
+            title: 'Beranda',
             href: dashboardLink,
             icon: LayoutGrid,
         });
@@ -176,28 +61,31 @@ const { auth } = usePage<PageProps>().props;
                 {
                     title: 'Usulan Pangkat',
                     href: '/pangkat/usulan-pangkat',
+                    icon: FilePlus
                 },
                 {
-                    title: 'Arsip',
+                    title: 'Arsip Pangkat',
                     href: '/pangkat/arsip-pangkat',
+                    icon: Archive
                 }
             ]
         });
     }
-
     
     if (userPermissions.includes('Berkala')) {
         mainNavPangkat.push({
-            title: 'Berkala',
+            title: 'Kenaikan Gaji Berkala',
             icon: TrendingUp,
             subItems: [
                 {
                     title: 'Usulan KGB',
                     href: '/pangkat/usulan-kgb',
+                    icon: FilePlus
                 },
                 {
                     title: 'Arsip KGB',
                     href: '/pangkat/arsip-kgb',
+                    icon: Archive
                 }
             ]
         });
@@ -210,26 +98,13 @@ const { auth } = usePage<PageProps>().props;
         });
     }
 
-
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            {/* <Link href="/dashboard" prefetch>
-                                <AppLogo />
-                            </Link> */}
-                            <Link
-                                href={
-                                    auth.user?.role === 'admin'
-                                        ? '/pangkat/dashboard'
-                                        : auth.user?.role === 'bidang'
-                                        ? '/bidang/dashboard'
-                                        : '/dashboard'
-                                }
-                                prefetch
-                            >
+                            <Link href="/pangkat/dashboard" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -238,10 +113,8 @@ const { auth } = usePage<PageProps>().props;
             </SidebarHeader>
 
             <SidebarContent>
-                {/* <NavMain items={mainNavItems} /> */}
                 <NavMain items={NavItem} />
                 <NavPangkat items={mainNavPangkat} />
-                {/* {mainNavPangkat.length > 0 && <NavPangkat items={mainNavPangkat} />} */}
             </SidebarContent>
 
             <SidebarFooter>

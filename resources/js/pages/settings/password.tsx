@@ -108,7 +108,7 @@ export default function Password() {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <Button disabled={processing}>simpan kata sandi</Button>
+                            <Button disabled={processing} className='bg-indigo-500 hover:bg-indigo-600'>simpan kata sandi</Button>
 
                             <Transition
                                 show={recentlySuccessful}

@@ -21,8 +21,8 @@ export default function AppearanceToggleTab({ className = '', ...props }: HTMLAt
                     className={cn(
                         'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
                         appearance === value
-                            ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
-                            : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
+                            ? 'bg-indigo-500 text-neutral-100 shadow-xs dark:bg-indigo-500 dark:text-neutral-100'
+                            : 'text-neutral-500 hover:bg-indigo-500 hover:text-neutral-100 dark:text-neutral-200 dark:hover:bg-indigo-500',
                     )}
                 >
                     <Icon className="-ml-1 h-4 w-4" />

@@ -13,6 +13,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        Carbon::setLocale('id');
+        
         $totalPegawai = Pegawai::count();
         $tahunSekarang = Carbon::now()->year;
         $today = Carbon::now();
@@ -26,10 +28,10 @@ class DashboardController extends Controller
 
             $tmt = Carbon::parse($item->tmt_golongan);
             $nextPromotion = $tmt->copy()->addYears(4);
-            $threeMonthsBefore = $nextPromotion->copy()->subMonths(3);
+            $twoMonthsBefore = $nextPromotion->copy()->subMonths(2);
 
-            // Pegawai dianggap siap jika sudah masuk 3 bulan sebelum masa 4 tahun
-            return $today->greaterThanOrEqualTo($threeMonthsBefore);
+            // Pegawai dianggap siap jika sudah masuk 2 bulan sebelum masa 4 tahun
+            return $today->greaterThanOrEqualTo($twoMonthsBefore);
         });
 
         // --- 2️⃣ Hitung pegawai yang sudah SK terbit tahun berjalan ---
@@ -50,16 +52,18 @@ class DashboardController extends Controller
 
             $tmt = $item->tmt_golongan ? Carbon::parse($item->tmt_golongan) : null;
             $nextPromotion = $tmt ? $tmt->copy()->addYears(4) : null;
-            $threeMonthsBefore = $nextPromotion ? $nextPromotion->copy()->subMonths(3) : null;
+            $twoMonthsBefore = $nextPromotion ? $nextPromotion->copy()->subMonths(3) : null;
 
             return [
                 'nama' => $item->pegawai->nama ?? '-',
+                'nip' => $item->pegawai->nip ?? '-',
                 'golongan_ruang' => "{$currentGolongan} → {$nextGolongan}",
                 'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
                 'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
-                'tmt_golongan' => $tmt ? $tmt->format('d/m/Y') : '-',
+                'tmt_golongan' => $tmt ? $tmt->translatedFormat('d F Y') : '-',
                 'nomor' => $item->pegawai->nomor ?? '-',
-                'tanggal_siap' => $threeMonthsBefore ? $threeMonthsBefore->format('d/m/Y') : '-',
+                'email' => $item->pegawai->email ?? '-',
+                'tanggal_siap' => $twoMonthsBefore ? $twoMonthsBefore->format('d/m/Y') : '-',
             ];
         })->values(); // values() agar index-nya rapi
 
@@ -75,10 +79,10 @@ class DashboardController extends Controller
     private function getNextGolongan($current)
     {
         $urutanGolongan = [
-            'I/A', 'I/B', 'I/C', 'I/D',
-            'II/A', 'II/B', 'II/C', 'II/D',
-            'III/A', 'III/B', 'III/C', 'III/D',
-            'IV/A', 'IV/B', 'IV/C', 'IV/D', 'IV/E',
+            'I/a', 'I/b', 'I/c', 'I/d',
+            'II/a', 'II/b', 'II/c', 'II/d',
+            'III/a', 'III/b', 'III/c', 'III/d',
+            'IV/a', 'IV/b', 'IV/c', 'IV/d', 'IV/e',
         ];
 
         $current = strtoupper(trim($current));

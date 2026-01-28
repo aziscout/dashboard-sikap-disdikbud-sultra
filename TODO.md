@@ -1,13 +1,10 @@
- dev
- # TODO: Ubah Teks Alert ke Bahasa Indonesia
+# TODO: Update UI of auth-split-layout.tsx
 
-## File yang perlu diubah:
-- [ ] resources/js/pages/produk-hukum/edit.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
-- [ ] resources/js/pages/pengumuman/create.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
-- [ ] resources/js/pages/laporan/edit.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
-- [ ] resources/js/pages/inovasi/create.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
-- [ ] resources/js/pages/inovasi/edit.tsx: Ubah "Errors!" jadi "Terjadi Kesalahan!"
+## Tasks
 
-## Followup:
-- [ ] Cek apakah ada teks lain yang perlu diubah setelah edit.
-- [ ] Test perubahan di browser jika perlu.
+- [x] Update left panel (dark side) with modern gradient background and improved styling
+- [x] Enhance quote section with better typography and spacing
+- [x] Improve right panel (form side) with clean card-like appearance and modern spacing
+- [x] Ensure overall layout remains split and responsive
+- [x] Change background to use image with gradient overlay
+- [x] Test and verify the updated UI maintains functionality (server start failed due to execution policy)

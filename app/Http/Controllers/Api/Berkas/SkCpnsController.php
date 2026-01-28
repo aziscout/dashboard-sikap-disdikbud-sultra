@@ -10,91 +10,97 @@ use Illuminate\Support\Facades\Storage;
 
 class SkCpnsController extends Controller
 {
+    private function formatFile(string $path, int $nextId): array
+    {
+        return [
+            'id' => $nextId,
+            'created_at' => now()->format('Y-m-d H:i:s'),
+            'file' => $path,
+        ];
+    }
+
+
     public function show()
     {
         $pegawai = auth('pegawai')->user();
+        if (!$pegawai) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)->first();
+        
+        $files = is_array($berkas?->sk_cpns) ? $berkas->sk_cpns : [];
+
+        $dataResponse = collect($files)->map(function ($item) {
+            return [
+                'id' => $item['id'],
+                'created_at' => $item['created_at'],
+                'file'       => asset('storage/' . $item['file']),
+            ];
+        });
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'sk_cpns' => $berkas?->sk_cpns
-                    ? asset('storage/' . $berkas->sk_cpns)
-                    : null,
-            ],
+            'data'   => $dataResponse,
         ]);
     }
 
-    /**
-     * CREATE SK CPNS
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'sk_cpns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'sk_cpns' => 'required|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
         $pegawai = auth('pegawai')->user();
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::where('role', 'admin_sikap')->first();
 
-        $berkas = Berkas::firstOrCreate(
+        $path = $request->file('sk_cpns')->store('berkas/sk_cpns', 'public');
+
+        $newFile = $this->formatFile($path, 1);
+
+        $berkas = Berkas::updateOrCreate(
             ['pegawais_id' => $pegawai->id],
             [
-                'users_id' => $admin?->id,
-                'status' => 'berkas terkirim',
+                'users_id'   => $admin?->id,
+                'status'     => 'berkas terkirim',
+                'sk_cpns' => [$newFile],
             ]
         );
 
-        // Jika sebelumnya sudah ada → hapus
-        if ($berkas->sk_cpns) {
-            Storage::disk('public')->delete($berkas->sk_cpns);
-        }
-
-        $berkas->sk_cpns = $request->file('sk_cpns')
-            ->store('berkas/sk_cpns', 'public');
-
-        $berkas->save();
-
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'SK CPNS berhasil diupload',
-            'data' => [
-                'sk_cpns' => asset('storage/' . $berkas->sk_cpns),
-            ],
+            'data'    => $newFile,
         ], 201);
     }
 
-    /**
-     * UPDATE SK CPNS (REPLACE)
-     */
     public function update(Request $request)
     {
         $request->validate([
-            'sk_cpns' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'sk_cpns' => 'required|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
         $pegawai = auth('pegawai')->user();
-
         $berkas = Berkas::where('pegawais_id', $pegawai->id)->firstOrFail();
 
-        // Hapus file lama
-        if ($berkas->sk_cpns) {
-            Storage::disk('public')->delete($berkas->sk_cpns);
-        }
+        $existingFiles = $berkas->sk_cpns ?? [];
 
-        // Simpan file baru
-        $berkas->sk_cpns = $request->file('sk_cpns')
-            ->store('berkas/sk_cpns', 'public');
+        // 🔥 hitung auto increment ID
+        $lastId = collect($existingFiles)->max('id') ?? 0;
+        $nextId = $lastId + 1;
 
-        $berkas->save();
+        $path = $request->file('sk_cpns')->store('berkas/sk_cpns', 'public');
+
+        $existingFiles[] = $this->formatFile($path, $nextId);
+
+        $berkas->update([
+            'sk_cpns' => $existingFiles,
+        ]);
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'SK CPNS berhasil diperbarui',
-            'data' => [
-                'sk_cpns' => asset('storage/' . $berkas->sk_cpns),
-            ],
+            'status'  => 'success',
+            'message' => 'SK CPNS berhasil ditambahkan',
+            'data'    => end($existingFiles),
         ]);
     }
 }

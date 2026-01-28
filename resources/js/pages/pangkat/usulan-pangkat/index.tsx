@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -19,20 +18,24 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Eye, ListFilterPlus, Megaphone } from 'lucide-react';
+import { Eye, ListFilterPlus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Usulan Pangkat', href: '/pangkat/usulanPangkat' },
+    { title: 'Usulan Kenaikan Pangkat', href: '/pangkat/usulan-pangkat' },
 ];
+
+interface BerkasObject {
+    file: string;
+    created_at?: string;
+}
 
 interface Berkas {
     sk_cpns?: string;
     sk_pns?: string;
-    sk_gaji_berkala?: string;
-    sk_pangkat_terakhir?: string;
-    sk_jabatan?: string;
-    // Tambahkan properti lain yang mungkin ada di model Berkas jika diperlukan
+    sk_gaji_berkala?: BerkasObject[];
+    sk_pangkat_terakhir?: BerkasObject[];
+    sk_jabatan?: BerkasObject[];
 }
 
 interface Pegawai {
@@ -41,10 +44,9 @@ interface Pegawai {
     nama: string;
     nomor: string;
     created_at: string;
-    berkas?: Berkas[]; // Pastikan ini adalah array of Berkas atau ambil data berkas tunggal
+    berkas?: Berkas[]; 
 }
 
-// Interface untuk data Pagination dari Laravel
 interface PaginationLink {
     url: string | null;
     label: string;
@@ -56,41 +58,81 @@ interface PegawaiPagination {
     links: PaginationLink[];
     current_page: number;
     per_page: number;
-    from: number; // Untuk menghitung nomor urut
-    to: number; // Untuk menghitung nomor urut
+    from: number; 
+    to: number; 
 }
 
 interface PageProps {
     flash: { message?: string };
-    pegawai: PegawaiPagination; // Ubah ke format pagination
+    pegawai: PegawaiPagination; 
 }
 
 export default function Index() {
-    // Ambil data dari props, pastikan pegawai adalah objek pagination
-    const { pegawai, flash } = usePage().props as unknown as PageProps; 
-    const [sortOrder, setSortOrder] = useState<'terbaru' | 'terlama'>('terbaru');
+    const { pegawai } = usePage().props as unknown as PageProps; 
+    const [sortOrder, setSortOrder] = useState<'Terbaru' | 'Terlama'>('Terbaru');
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredAndSortedPegawai = useMemo(() => {
-        // Lakukan filtering dan sorting HANYA pada data di halaman saat ini
-        // Filtering dan sorting menyeluruh (across all pages) harusnya dilakukan di backend, 
-        // tapi karena filtering kompleks sudah dilakukan di backend, kita hanya melakukan sorting/searching dari data yang diterima.
         return [...pegawai.data]
         .filter((item) =>
             item.nama.toLowerCase().includes(searchQuery.toLowerCase()) || 
-            item.nip.includes(searchQuery) // Tambahkan pencarian NIP
+            item.nip.includes(searchQuery)
         )
         .sort((a, b) => {
             const dateA = new Date(a.created_at).getTime();
             const dateB = new Date(b.created_at).getTime();
-            return sortOrder === 'terbaru' ? dateB - dateA : dateA - dateB;
+            return sortOrder === 'Terbaru' ? dateB - dateA : dateA - dateB;
         });
     }, [pegawai.data, sortOrder, searchQuery]);
 
-    // Fungsi untuk mendapatkan data berkas yang relevan (misalnya yang pertama)
-    const getBerkas = (pegawai: Pegawai, key: keyof Berkas) => {
-        return pegawai.berkas?.[0]?.[key];
+    const getLatestBerkas = (
+        pegawai: Pegawai,
+        key: keyof Berkas
+    ): string | null => {
+        const value = pegawai.berkas?.[0]?.[key];
+
+        if (!value) return null;
+
+        if (typeof value === 'string') {
+            return value;
+        }
+
+        if (Array.isArray(value) && value.length > 0) {
+            const lastItem = value[value.length - 1];
+
+            if (lastItem && typeof lastItem === 'object' && 'file' in lastItem) {
+                return lastItem.file;
+            }
+        }
+
+        return null;
     };
+
+
+    const isBerkasLengkap = (pegawai: Pegawai): boolean => {
+        const requiredKeys: (keyof Berkas)[] = [
+            'sk_cpns',
+            'sk_pns',
+            'sk_pangkat_terakhir',
+            'sk_gaji_berkala',
+            'sk_jabatan',
+        ];
+
+        return requiredKeys.every((key) => {
+            const value = pegawai.berkas?.[0]?.[key];
+
+            if (!value) return false;
+
+            if (typeof value === 'string') return true;
+
+            if (Array.isArray(value)) {
+                return value.length > 0 && typeof value[0]?.file === 'string';
+            }
+
+            return false;
+        });
+    };
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -100,14 +142,14 @@ export default function Index() {
             {/* Header Section */}
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <h1
-                className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 
-                bg-clip-text text-transparent tracking-tight"
+                className="text-2xl font-bold 
+                bg-clip-text text-indigo-500 tracking-tight"
             >
-                Usulan Pangkat Pegawai
+                Usulan Kenaikan Pangkat
             </h1>
 
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                {/* 🔍 Search */}
+                {/* Search */}
                 <Input
                 placeholder="Cari nama/NIP pegawai..."
                 value={searchQuery}
@@ -127,10 +169,10 @@ export default function Index() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-40 bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-800 shadow-lg backdrop-blur-md">
                     <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => setSortOrder('terbaru')}>
+                    <DropdownMenuItem onClick={() => setSortOrder('Terbaru')}>
                         Terbaru
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSortOrder('terlama')}>
+                    <DropdownMenuItem onClick={() => setSortOrder('Terlama')}>
                         Terlama
                     </DropdownMenuItem>
                     </DropdownMenuGroup>
@@ -139,24 +181,9 @@ export default function Index() {
             </div>
             </div>
 
-            {/* Notifikasi */}
-            {flash?.message && (
-            <div className="w-full md:w-1/2">
-                <Alert className="border-l-4 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/50">
-                <Megaphone className="h-4 w-4 text-indigo-500" />
-                <AlertTitle className="text-indigo-700 dark:text-indigo-300">
-                    Notifikasi
-                </AlertTitle>
-                <AlertDescription className="text-gray-700 dark:text-gray-300">
-                    {flash.message}
-                </AlertDescription>
-                </Alert>
-            </div>
-            )}
-
             {/* Table Section */}
             <div
-            className="overflow-x-auto rounded-xl border border-indigo-100 
+            className="overflow-x-auto rounded-lg border border-indigo-100 
             dark:border-indigo-900/50 shadow-md backdrop-blur-md transition-all"
             >
             <Table className="w-full min-w-[900px]">
@@ -171,7 +198,7 @@ export default function Index() {
                     <TableHead className="text-center">SK Pangkat Terakhir</TableHead>
                     <TableHead className="text-center">SK Gaji Berkala</TableHead>
                     <TableHead className="text-center">SK Jabatan</TableHead>
-                    <TableHead className="text-center">Detail</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
                 </TableRow>
                 </TableHeader>
 
@@ -192,13 +219,13 @@ export default function Index() {
                         <TableCell className="text-center">{item.nomor}</TableCell>
 
                         {[
-                        'sk_pns',
-                        'sk_cpns',
-                        'sk_gaji_berkala',
-                        'sk_jabatan',
-                        'sk_pangkat_terakhir',
+                            'sk_cpns',
+                            'sk_pns',
+                            'sk_pangkat_terakhir',
+                            'sk_gaji_berkala',
+                            'sk_jabatan',
                         ].map((key) => {
-                            const berkasFile = getBerkas(item, key as keyof Berkas);
+                            const berkasFile = getLatestBerkas(item, key as keyof Berkas);
                             return (
                                 <TableCell key={key} className="text-center">
                                     {berkasFile ? (
@@ -208,8 +235,7 @@ export default function Index() {
                                             rel="noopener noreferrer"
                                         >
                                             <Button
-                                            className="bg-gradient-to-r from-indigo-500 to-indigo-500 
-                                            hover:from-indigo-600 hover:to-purple-600 text-white text-xs 
+                                            className="bg-indigo-500 hover:bg-indigo-600 text-white text-xs 
                                             px-3 py-1 shadow-md hover:shadow-lg transition-all"
                                             >
                                             Lihat Dokumen
@@ -225,18 +251,29 @@ export default function Index() {
                         })}
 
                         <TableCell className="text-center">
-                        <Link
-                            href={route('pangkat.usulan-pangkat.status', item.id)}
-                            title="Cek Status"
-                        >
-                            <Button
-                            className="bg-gradient-to-r from-indigo-500 to-purple-500 
-                            hover:from-indigo-600 hover:to-purple-600 text-white shadow-md 
-                            hover:shadow-lg transition-all"
-                            >
-                            <Eye className="w-4 h-4" />
-                            </Button>
-                        </Link>
+                            {isBerkasLengkap(item) ? (
+                                <Link
+                                    href={route('pangkat.usulan-pangkat.status', item.id)}
+                                    title="Cek Status Usulan"
+                                >
+                                    <Button
+                                        className="bg-indigo-500 hover:bg-indigo-600 text-white 
+                                        shadow-md hover:shadow-lg transition-all"
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                    </Button>
+                                </Link>
+                            ) : (
+                                <Button
+                                    disabled
+                                    className="bg-gray-300 dark:bg-gray-700 
+                                    text-gray-500 dark:text-gray-400 
+                                    cursor-not-allowed shadow-none"
+                                    title="Berkas belum lengkap"
+                                >
+                                    <Eye className="w-4 h-4" />
+                                </Button>
+                            )}
                         </TableCell>
                     </TableRow>
                     ))
@@ -262,16 +299,14 @@ export default function Index() {
                     size="sm"
                     variant={link.active ? 'default' : 'outline'}
                     disabled={!link.url}
-                    // Menggunakan Link Inertia atau window.location untuk navigasi pagination
                     onClick={() => link.url && (window.location.href = link.url)}
-                    // Menggunakan dangerouslySetInnerHTML untuk menampilkan simbol navigasi (seperti << atau >>)
                     dangerouslySetInnerHTML={{ __html: link.label }}
                     className={`
                         min-w-[40px] h-9 rounded-full text-sm font-medium
                         transition-all duration-200 ease-in-out
                         ${
                         link.active
-                            ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
+                            ? 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
                             : 'border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
                         }
                         ${!link.url ? 'opacity-40 cursor-not-allowed' : ''}
@@ -280,7 +315,6 @@ export default function Index() {
                 ))}
             </div>
             {/* End Pagination Links */}
-
         </div>
         </AppLayout>
     );

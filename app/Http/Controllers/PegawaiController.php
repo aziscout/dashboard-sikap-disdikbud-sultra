@@ -11,45 +11,49 @@ class PegawaiController extends Controller
 {
     public function index()
     {
+        Carbon::setLocale('id');
+
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])
-            ->select('id', 'nama', 'nomor', 'email', 'jenis_kelamin', 'unit_kerja', 'created_at')
+            ->select('id', 'nama', 'nomor', 'nip', 'email', 'unit_kerja', 'created_at')
             // ->get();
             ->paginate(20);
 
         $pegawai->transform(function ($item) {
-            $tmt = $item->dataDiri->tmt_golongan ?? null;
+            $dataDiri = $item->dataDiri;
+
+            $tmt = $dataDiri->tmt_golongan ?? null;
+            $kgbTerakhir = $dataDiri->kgb_terakhir ?? null;
+
             $status = 'Belum Siap';
             $isActive = false;
 
             if ($tmt) {
-                // 1️⃣ Konversi TMT ke Carbon
                 $tmtDate = Carbon::parse($tmt);
-
-                // 2️⃣ Tambahkan 4 tahun dari TMT
                 $nextPromotionDate = $tmtDate->copy()->addYears(4);
+                $twoMonthsBefore = $nextPromotionDate->copy()->subMonths(2);
 
-                // 3️⃣ Hitung 3 bulan sebelum tanggal kenaikan pangkat berikutnya
-                $threeMonthsBefore = $nextPromotionDate->copy()->subMonths(3);
-
-                // 4️⃣ Jika tanggal saat ini >= tiga bulan sebelum, maka Siap
-                if (Carbon::now()->greaterThanOrEqualTo($threeMonthsBefore)) {
+                if (Carbon::now()->greaterThanOrEqualTo($twoMonthsBefore)) {
                     $status = 'Siap';
                 }
             }
 
-            // 5️⃣ Pastikan berkas juga sudah lengkap
             $hasBerkas = $item->berkas && $item->berkas->count() > 0;
-
-            // 6️⃣ Aktif jika status siap dan berkas lengkap
             $isActive = $status === 'Siap' && $hasBerkas;
 
-            // 7️⃣ Format data untuk dikirim ke frontend
             $item->status = $status;
-            $item->tmt_golongan = $tmt ? Carbon::parse($tmt)->format('d/m/Y') : '-';
             $item->is_active = $isActive;
+
+            $item->tmt_golongan = $tmt
+                ? Carbon::parse($tmt)->translatedFormat('d F Y')
+                : '-';
+
+            $item->kgb_terakhir = $kgbTerakhir
+                ? Carbon::parse($kgbTerakhir)->translatedFormat('d F Y')
+                : '-';
 
             return $item;
         });
+
 
         return Inertia::render('pangkat/pegawai/index', [
             'pegawai' => $pegawai,
@@ -61,10 +65,36 @@ class PegawaiController extends Controller
 
     public function show($id)
     {
+        Carbon::setLocale('id');
+
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])->find($id);
 
         if (!$pegawai) {
             return redirect()->route('pangkat.pegawai')->with('message', 'Data pegawai tidak ditemukan.');
+        }
+
+        // Format dates in pegawai
+        $pegawai->tanggal_lahir = $pegawai->tanggal_lahir
+            ? Carbon::parse($pegawai->tanggal_lahir)->translatedFormat('d F Y')
+            : '-';
+
+        // Format dates in data_diri
+        if ($pegawai->dataDiri) {
+            $pegawai->dataDiri->tmt_golongan = $pegawai->dataDiri->tmt_golongan
+                ? Carbon::parse($pegawai->dataDiri->tmt_golongan)->translatedFormat('d F Y')
+                : '-';
+
+            $pegawai->dataDiri->tanggal_sk = $pegawai->dataDiri->tanggal_sk
+                ? Carbon::parse($pegawai->dataDiri->tanggal_sk)->translatedFormat('d F Y')
+                : '-';
+
+            $pegawai->dataDiri->tanggal_pertek_bkn = $pegawai->dataDiri->tanggal_pertek_bkn
+                ? Carbon::parse($pegawai->dataDiri->tanggal_pertek_bkn)->translatedFormat('d F Y')
+                : '-';
+
+            $pegawai->dataDiri->kgb_terakhir = $pegawai->dataDiri->kgb_terakhir
+                ? Carbon::parse($pegawai->dataDiri->kgb_terakhir)->translatedFormat('d F Y')
+                : '-';
         }
 
         return Inertia::render('pangkat/pegawai/show', [
