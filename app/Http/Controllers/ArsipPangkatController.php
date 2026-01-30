@@ -14,7 +14,9 @@ class ArsipPangkatController extends Controller
         Carbon::setLocale('id');
 
         $arsip = Berkas::with(['pegawai.dataDiri'])
-            ->where('status', 'sk telah terbit')
+            ->whereHas('pegawai.dataDiri', function ($query) {
+                $query->where('tmt_golongan', '>=', Carbon::now()->subMonths(2));
+            })
             ->latest()
             ->paginate(10)
             ->through(function ($item) {
@@ -25,9 +27,6 @@ class ArsipPangkatController extends Controller
                     'nip' => $item->pegawai->nip ?? '-',
                     'email' => $item->pegawai->email ?? '-',
                     'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
-                    'kgb_terakhir' => optional($item->pegawai->dataDiri)->kgb_terakhir
-                        ? Carbon::parse($item->pegawai->dataDiri->kgb_terakhir)->translatedFormat('d F Y')
-                        : '-',
                     'tmt_golongan' => optional($item->pegawai->dataDiri)->tmt_golongan
                         ? Carbon::parse($item->pegawai->dataDiri->tmt_golongan)->translatedFormat('d F Y')
                         : '-',
@@ -42,7 +41,9 @@ class ArsipPangkatController extends Controller
     public function show($id)
     {
         $berkas = Berkas::with(['pegawai.dataDiri'])
-            ->where('status', 'sk telah terbit')
+            ->whereHas('pegawai.dataDiri', function ($query) {
+                $query->where('tmt_golongan', '>=', Carbon::now()->subMonths(2));
+            })
             ->find($id);
 
         if (!$berkas) {

@@ -44,10 +44,10 @@ export default function Show() {
     const daftarBerkas = [
         { label: 'SK CPNS', key: 'sk_cpns', icon: FileText },
         { label: 'SK PNS', key: 'sk_pns', icon: FileText },
-        { label: 'SK Gaji Berkala', key: 'sk_gaji_berkala', icon: FileText },
         { label: 'SK Pangkat Terakhir', key: 'sk_pangkat_terakhir', icon: FileText },
+        { label: 'SK Gaji Berkala', key: 'sk_gaji_berkala', icon: FileText },
         { label: 'SK Jabatan', key: 'sk_jabatan', icon: FileText },
-        { label: 'File SK Naik Pangkat', key: 'file_sk', icon: FileText },
+        // { label: 'File SK Naik Pangkat', key: 'file_sk', icon: FileText },
     ];
 
     const getLatestFile = (key: keyof Berkas): string | null => {
@@ -132,26 +132,26 @@ export default function Show() {
                             </div>
                             <div>
                                 {latestFile && (
-    <div className="flex gap-2 mt-2">
-        <a
-            href={`/storage/${latestFile}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-lg bg-indigo-500 p-2 text-white shadow-sm transition-all hover:bg-indigo-600"
-            title="Lihat Dokumen"
-        >
-            <Eye className="h-4 w-4" />
-        </a>
-        <a
-            href={`/storage/${latestFile}`}
-            download
-            className="rounded-lg bg-green-500 p-2 text-white shadow-sm transition-all hover:bg-green-600"
-            title="Download Dokumen"
-        >
-            <Download className="h-4 w-4" />
-        </a>
-    </div>
-)}
+                                    <div className="flex gap-2 mt-2">
+                                        <a
+                                            href={`/storage/${latestFile}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="rounded-lg bg-indigo-500 p-2 text-white shadow-sm transition-all hover:bg-indigo-600"
+                                            title="Lihat Dokumen"
+                                        >
+                                            <Eye className="h-4 w-4" />
+                                        </a>
+                                        <a
+                                            href={`/storage/${latestFile}`}
+                                            download
+                                            className="rounded-lg bg-green-500 p-2 text-white shadow-sm transition-all hover:bg-green-600"
+                                            title="Download Dokumen"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </a>
+                                    </div>
+                                )}
 
                             </div>
                         </div>

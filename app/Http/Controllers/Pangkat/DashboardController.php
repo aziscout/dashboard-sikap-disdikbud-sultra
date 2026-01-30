@@ -16,7 +16,7 @@ class DashboardController extends Controller
         Carbon::setLocale('id');
         
         $totalPegawai = Pegawai::count();
-        $tahunSekarang = Carbon::now()->year;
+        // $tahunSekarang = Carbon::now()->year;
         $today = Carbon::now();
 
         // Ambil semua data pegawai dengan relasi
@@ -34,45 +34,60 @@ class DashboardController extends Controller
             return $today->greaterThanOrEqualTo($twoMonthsBefore);
         });
 
-        // --- 2️⃣ Hitung pegawai yang sudah SK terbit tahun berjalan ---
-        $pegawaiSudahNaik = $dataDiris->filter(function ($item) use ($tahunSekarang) {
-            return $item->pegawai &&
-                $item->pegawai->berkas &&
-                $item->pegawai->berkas->where('status', 'sk telah terbit')
-                    ->whereBetween('updated_at', [
-                        Carbon::create($tahunSekarang, 1, 1),
-                        Carbon::create($tahunSekarang, 12, 31)
-                    ])->count() > 0;
+        // --- 2️⃣ Hitung pegawai siap naik gaji berkala (>= 2 bulan sebelum 2 tahun dari KGB terakhir) ---
+        $pegawaiSiapNaikKgb = $dataDiris->filter(function ($item) use ($today) {
+            if (!$item->kgb_terakhir) return false;
+
+            $kgb = Carbon::parse($item->kgb_terakhir);
+            $nextKgb = $kgb->copy()->addYears(2);
+            $twoMonthsBefore = $nextKgb->copy()->subMonths(2);
+
+            // Pegawai dianggap siap jika sudah masuk 2 bulan sebelum masa 2 tahun
+            return $today->greaterThanOrEqualTo($twoMonthsBefore);
         });
 
-        // --- 3️⃣ Siapkan data tabel: hanya ambil maksimal 10 pegawai siap naik pangkat ---
-        $pegawaiNaikPangkat = $pegawaiSiapNaik->take(10)->map(function ($item) {
-            $currentGolongan = $item->golongan_ruang ?? '-';
-            $nextGolongan = $this->getNextGolongan($currentGolongan);
+        // // --- 3️⃣ Hitung pegawai yang sudah SK terbit tahun berjalan ---
+        // $pegawaiSudahNaik = $dataDiris->filter(function ($item) use ($tahunSekarang) {
+        //     return $item->pegawai &&
+        //         $item->pegawai->berkas &&
+        //         $item->pegawai->berkas->where('status', 'sk telah terbit')
+        //             ->whereBetween('updated_at', [
+        //                 Carbon::create($tahunSekarang, 1, 1),
+        //                 Carbon::create($tahunSekarang, 12, 31)
+        //             ])->count() > 0;
+        // });
 
+        // --- 3️⃣ Siapkan data tabel pangkat: 10 random pegawai siap naik pangkat ---
+        $pegawaiNaikPangkat = $pegawaiSiapNaik->shuffle()->take(10)->map(function ($item) {
             $tmt = $item->tmt_golongan ? Carbon::parse($item->tmt_golongan) : null;
-            $nextPromotion = $tmt ? $tmt->copy()->addYears(4) : null;
-            $twoMonthsBefore = $nextPromotion ? $nextPromotion->copy()->subMonths(3) : null;
 
             return [
                 'nama' => $item->pegawai->nama ?? '-',
                 'nip' => $item->pegawai->nip ?? '-',
-                'golongan_ruang' => "{$currentGolongan} → {$nextGolongan}",
-                'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
                 'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
                 'tmt_golongan' => $tmt ? $tmt->translatedFormat('d F Y') : '-',
-                'nomor' => $item->pegawai->nomor ?? '-',
-                'email' => $item->pegawai->email ?? '-',
-                'tanggal_siap' => $twoMonthsBefore ? $twoMonthsBefore->format('d/m/Y') : '-',
             ];
-        })->values(); // values() agar index-nya rapi
+        })->values();
+
+        // --- 4️⃣ Siapkan data tabel KGB: 10 random pegawai siap naik gaji berkala ---
+        $pegawaiNaikKgb = $pegawaiSiapNaikKgb->shuffle()->take(10)->map(function ($item) {
+            $kgb = $item->kgb_terakhir ? Carbon::parse($item->kgb_terakhir) : null;
+
+            return [
+                'nama' => $item->pegawai->nama ?? '-',
+                'nip' => $item->pegawai->nip ?? '-',
+                'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
+                'kgb_terakhir' => $kgb ? $kgb->translatedFormat('d F Y') : '-',
+            ];
+        })->values();
 
         // --- 4️⃣ Kirim data ke Inertia ---
         return Inertia::render('pangkat/dashboard/index', [
             'totalPegawai' => $totalPegawai,
             'totalNaikPangkat' => $pegawaiSiapNaik->count(),
-            'totalSudahNaikPangkat' => $pegawaiSudahNaik->count(),
+            'totalSiapNaikKgb' => $pegawaiSiapNaikKgb->count(),
             'pegawaiNaikPangkat' => $pegawaiNaikPangkat,
+            'pegawaiNaikKgb' => $pegawaiNaikKgb,
         ]);
     }
 

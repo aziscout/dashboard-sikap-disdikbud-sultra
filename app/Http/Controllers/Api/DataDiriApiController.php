@@ -110,14 +110,14 @@ class DataDiriApiController extends Controller
             'nomor_sk' => 'sometimes|string|max:100',
             'tmt_golongan' => 'sometimes|string|max:100',
             'nomor_pertek_bkn' => 'sometimes|string|max:100',
-            'tanggal_pertek_bkn' => 'required|string|max:100',
+            'tanggal_pertek_bkn' => 'sometimes|string|max:100',
             'masa_gk_bulanan' => 'sometimes|string|max:50',
             'masa_gk_tahunan' => 'sometimes|integer|max:50',
             'golongan_ruang' => 'sometimes|string|max:50',
             'jenis_kp' => 'sometimes|string|max:20',
             'pangkat' => 'sometimes|string',
             'gaji_pokok' => 'sometimes|integer',
-            'kgb_terakhir' => 'required|string',
+            'kgb_terakhir' => 'sometimes|string',
         ]);
 
         $data->update($validated);

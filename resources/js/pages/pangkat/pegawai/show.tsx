@@ -231,7 +231,7 @@ export default function Show() {
                     className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500
                     bg-clip-text text-transparent tracking-tight mb-4"
                     >
-                    Data Diri
+                    Data Diri Pegawai
                     </h1>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                         Informasi lengkap data diri {pegawai.nama}.

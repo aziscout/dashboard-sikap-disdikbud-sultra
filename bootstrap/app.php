@@ -82,8 +82,8 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->delay($currentTime);
                 });
             }
-        // })->everyMinute(); 
-        })->dailyAt('09:00'); 
+        })->everyMinute(); 
+        // })->dailyAt('09:00'); 
 
         $schedule->call(function () {
 
@@ -123,14 +123,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 if ($exists) return;
 
-                $gajiBaru = $dataDiri->gaji_pokok + 200000;
+                // $gajiBaru = $dataDiri->gaji_pokok + 200000;
 
                 $message =
                     "Halo {$pegawai->nama},\n\n"
-                    ."Kami menginformasikan bahwa Anda akan memasuki "
-                    ."masa Kenaikan Gaji Berkala (KGB) dalam 2 bulan ke depan.\n\n"
-                    ."Perkiraan gaji pokok baru: Rp "
-                    . number_format($gajiBaru, 0, ',', '.') . "\n\n"
+                    ."Kami menginformasikan bahwa masa kenaikan gaji berkala Anda sudah dekat.\n"
                     ."Silakan menyiapkan dokumen pendukung.\n\n"
                     ."Terima kasih 🙏";
 
@@ -147,8 +144,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->onQueue('wa-messages')
                     ->delay($currentTime);
             }); 
-        // })->everyMinute();
-        })->dailyAt('09:00');
+        })->everyMinute();
+        // })->dailyAt('09:00');
 
     })
     ->withMiddleware(function (Middleware $middleware) {

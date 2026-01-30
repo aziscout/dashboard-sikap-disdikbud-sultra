@@ -108,7 +108,7 @@ export default function Password() {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <Button disabled={processing} className='bg-indigo-500 hover:bg-indigo-600'>simpan kata sandi</Button>
+                            <Button disabled={processing} className='bg-indigo-500 hover:bg-indigo-600 dark:text-neutral-100'>simpan kata sandi</Button>
 
                             <Transition
                                 show={recentlySuccessful}
@@ -117,7 +117,7 @@ export default function Password() {
                                 leave="transition ease-in-out"
                                 leaveTo="opacity-0"
                             >
-                                <p className="text-sm text-neutral-600">Saved</p>
+                                <p className="text-sm text-neutral-600">Disimpan</p>
                             </Transition>
                         </div>
                     </form>

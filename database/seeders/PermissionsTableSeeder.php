@@ -17,7 +17,7 @@ class PermissionsTableSeeder extends Seeder
                 ['role'=> 'admin_sikap', 'feature' => 'Dashboard Pangkat', 'created_at' => now() ],
                 ['role'=> 'admin_sikap', 'feature' => 'Pegawai','created_at' => now() ],
                 ['role'=> 'admin_sikap', 'feature' => 'Kenaikan Pangkat','created_at' => now() ],
-                ['role'=> 'admin_sikap', 'feature' => 'Berkala','created_at' => now() ],
+                ['role'=> 'admin_sikap', 'feature' => 'Kenaikan Gaji Berkala','created_at' => now() ],
                 ['role'=> 'admin_sikap', 'feature' => 'Pensiun','created_at' => now() ],
             ];
 
