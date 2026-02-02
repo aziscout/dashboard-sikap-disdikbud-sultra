@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Berkas\SkGajiBerkalaController;
 use App\Http\Controllers\Api\Berkas\SkJabatanController;
 use App\Http\Controllers\Api\Berkas\SkPangkatTerakhirController;
 use App\Http\Controllers\Api\Berkas\SkPnsController;
+use App\Http\Controllers\Api\Berkas\StatusBerkasController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\PegawaiApiController;
 use App\Http\Controllers\Api\DataDiriApiController;
@@ -41,29 +42,32 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::get('/pegawai/arsip-pangkat/show',[ArsipApiController::class,'show  ']);
       
       // cpns
-      Route::post('/berkas/kenaikan-pangkat/sk-cpns', [SkCpnsController::class, 'store']);
-      Route::post('/berkas/kenaikan-pangkat/sk-cpns/update', [SkCpnsController::class, 'update']);
-      Route::get('/berkas/kenaikan-pangkat/sk-cpns', [SkCpnsController::class, 'show']);
+      Route::post('/berkas/sk-cpns', [SkCpnsController::class, 'store']);
+      Route::post('/berkas/sk-cpns/update', [SkCpnsController::class, 'update']);
+      Route::get('/berkas/sk-cpns', [SkCpnsController::class, 'show']);
 
       // pns
-      Route::post('/berkas/kenaikan-pangkat/sk-pns', [SkPnsController::class, 'store']);
-      Route::post('/berkas/kenaikan-pangkat/sk-pns/update', [SkPnsController::class, 'update']);
-      Route::get('/berkas/kenaikan-pangkat/sk-pns', [SkPnsController::class, 'show']);
+      Route::post('/berkas/sk-pns', [SkPnsController::class, 'store']);
+      Route::post('/berkas/sk-pns/update', [SkPnsController::class, 'update']);
+      Route::get('/berkas/sk-pns', [SkPnsController::class, 'show']);
 
       // gaji berkala
-      Route::post('/berkas/kenaikan-pangkat/sk-gaji-berkala', [SkGajiBerkalaController::class, 'store']);
-      Route::post('/berkas/kenaikan-pangkat/sk-gaji-berkala/update', [SkGajiBerkalaController::class, 'update']);
-      Route::get('/berkas/kenaikan-pangkat/sk-gaji-berkala', [SkGajiBerkalaController::class, 'show']);
+      Route::post('/berkas/sk-gaji-berkala', [SkGajiBerkalaController::class, 'store']);
+      Route::post('/berkas/sk-gaji-berkala/update', [SkGajiBerkalaController::class, 'update']);
+      Route::get('/berkas/sk-gaji-berkala', [SkGajiBerkalaController::class, 'show']);
 
       // pangkat terakhir
-      Route::post('berkas/kenaikan-pangkat/sk-pangkat-terakhir', [SkPangkatTerakhirController::class, 'store']);
-      Route::post('berkas/kenaikan-pangkat/sk-pangkat-terakhir/update', [SkPangkatTerakhirController::class, 'update']);
-      Route::get('berkas/kenaikan-pangkat/sk-pangkat-terakhir', [SkPangkatTerakhirController::class, 'show']);
+      Route::post('berkas/sk-pangkat-terakhir', [SkPangkatTerakhirController::class, 'store']);
+      Route::post('berkas/sk-pangkat-terakhir/update', [SkPangkatTerakhirController::class, 'update']);
+      Route::get('berkas/sk-pangkat-terakhir', [SkPangkatTerakhirController::class, 'show']);
 
       // jabatan
-      Route::post('/berkas/kenaikan-pangkat/sk-jabatan', [SkJabatanController::class, 'store']);
-      Route::post('/berkas/kenaikan-pangkat/sk-jabatan/update', [SkJabatanController::class, 'update']);
-      Route::get('/berkas/kenaikan-pangkat/sk-jabatan', [SkJabatanController::class, 'show']);
+      Route::post('/berkas/sk-jabatan', [SkJabatanController::class, 'store']);
+      Route::post('/berkas/sk-jabatan/update', [SkJabatanController::class, 'update']);
+      Route::get('/berkas/sk-jabatan', [SkJabatanController::class, 'show']);
 
-      Route::get('berkas/kenaikan-pangkat/file-sk', [FileSkController::class, 'show']);
+      Route::get('berkas/file-sk', [FileSkController::class, 'show']);
+      
+      Route::put('berkas/status', [StatusBerkasController::class, 'update']);
+      Route::get('berkas/status', [StatusBerkasController::class, 'show']);
    });

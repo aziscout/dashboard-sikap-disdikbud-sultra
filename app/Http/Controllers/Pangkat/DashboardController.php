@@ -22,16 +22,32 @@ class DashboardController extends Controller
         // Ambil semua data pegawai dengan relasi
         $dataDiris = DataDiri::with(['pegawai.berkas'])->get();
 
-        // --- 1️⃣ Hitung pegawai siap naik pangkat (>= 3 bulan sebelum 4 tahun dari TMT) ---
+        // Sembunyikan data pegawai jika tepat 1 hari setelah 4 tahun dari tmt_golongan DAN 1 hari setelah 2 tahun dari kgb_terakhir
+        $dataDiris = $dataDiris->filter(function ($item) use ($today) {
+            if (!$item->tmt_golongan || !$item->kgb_terakhir) {
+                return true; // Tetap tampilkan jika salah satu tanggal tidak ada
+            }
+
+            $tmt = Carbon::parse($item->tmt_golongan);
+            $fourYearsOneDay = $tmt->copy()->addYears(4)->addDay();
+            $condition1 = $today->isSameDay($fourYearsOneDay);
+
+            $kgb = Carbon::parse($item->kgb_terakhir);
+            $twoYearsOneDay = $kgb->copy()->addYears(2)->addDay();
+            $condition2 = $today->isSameDay($twoYearsOneDay);
+
+            // Sembunyikan hanya jika kedua kondisi terpenuhi
+            return !($condition1 && $condition2);
+        });
+
         $pegawaiSiapNaik = $dataDiris->filter(function ($item) use ($today) {
             if (!$item->tmt_golongan) return false;
 
             $tmt = Carbon::parse($item->tmt_golongan);
-            $nextPromotion = $tmt->copy()->addYears(4);
-            $twoMonthsBefore = $nextPromotion->copy()->subMonths(2);
+            $targetLunas = $tmt->copy()->addYears(4);
+            $duaBulanSebelum = $targetLunas->copy()->subMonths(2);
 
-            // Pegawai dianggap siap jika sudah masuk 2 bulan sebelum masa 4 tahun
-            return $today->greaterThanOrEqualTo($twoMonthsBefore);
+            return $today->between($duaBulanSebelum, $targetLunas);
         });
 
         // --- 2️⃣ Hitung pegawai siap naik gaji berkala (>= 2 bulan sebelum 2 tahun dari KGB terakhir) ---
@@ -39,11 +55,11 @@ class DashboardController extends Controller
             if (!$item->kgb_terakhir) return false;
 
             $kgb = Carbon::parse($item->kgb_terakhir);
-            $nextKgb = $kgb->copy()->addYears(2);
-            $twoMonthsBefore = $nextKgb->copy()->subMonths(2);
+            $targetLunasKgb = $kgb->copy()->addYears(2); // Tepat 2 tahun
+            $duaBulanSebelumKgb = $targetLunasKgb->copy()->subMonths(2);
 
-            // Pegawai dianggap siap jika sudah masuk 2 bulan sebelum masa 2 tahun
-            return $today->greaterThanOrEqualTo($twoMonthsBefore);
+            // Sama seperti pangkat, hilang jika sudah lewat 2 tahun
+            return $today->between($duaBulanSebelumKgb, $targetLunasKgb);
         });
 
         // // --- 3️⃣ Hitung pegawai yang sudah SK terbit tahun berjalan ---
@@ -65,7 +81,7 @@ class DashboardController extends Controller
                 'nama' => $item->pegawai->nama ?? '-',
                 'nip' => $item->pegawai->nip ?? '-',
                 'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
-                'tmt_golongan' => $tmt ? $tmt->translatedFormat('d F Y') : '-',
+                'tmt_golongan' => $tmt ? $tmt->translatedFormat('d-m-Y') : '-',
             ];
         })->values();
 
@@ -77,7 +93,7 @@ class DashboardController extends Controller
                 'nama' => $item->pegawai->nama ?? '-',
                 'nip' => $item->pegawai->nip ?? '-',
                 'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
-                'kgb_terakhir' => $kgb ? $kgb->translatedFormat('d F Y') : '-',
+                'kgb_terakhir' => $kgb ? $kgb->translatedFormat('d-m-Y') : '-',
             ];
         })->values();
 

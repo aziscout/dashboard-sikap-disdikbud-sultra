@@ -1,2 +1,4 @@
-- [x] Update ArsipPangkatController index method to filter by recent tmt_golongan updates (within last 2 months) instead of status 'sk telah terbit'
-- [x] Update ArsipPangkatController show method to filter by recent tmt_golongan updates (within last 2 months) instead of status 'sk telah terbit'
+- [x] Modify ArsipPangkatController to filter Berkas where status = true, remove tmt_golongan filter
+- [ ] Modify StatusBerkasController to prevent changing status from true to false
+- [ ] Modify BerkasApiController store to set status => false (boolean)
+- [ ] Modify BerkasApiController update to use boolean status

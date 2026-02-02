@@ -14,9 +14,7 @@ class ArsipPangkatController extends Controller
         Carbon::setLocale('id');
 
         $arsip = Berkas::with(['pegawai.dataDiri'])
-            ->whereHas('pegawai.dataDiri', function ($query) {
-                $query->where('tmt_golongan', '>=', Carbon::now()->subMonths(2));
-            })
+            ->where('status', true)
             ->latest()
             ->paginate(10)
             ->through(function ($item) {

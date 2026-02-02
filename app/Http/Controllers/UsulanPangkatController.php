@@ -15,28 +15,29 @@ class UsulanPangkatController extends Controller
 {
     public function index(Request $request)
     {
+        Carbon::setLocale('id');
+
         $today = Carbon::today();
 
         $pegawai = Pegawai::with(['dataDiri', 'berkas'])->get();
 
         $filteredPegawai = $pegawai->filter(function ($item) use ($today) {
-            $tmt = $item->dataDiri->tmt_golongan ?? null;
+            $tmtStr = $item->dataDiri->tmt_golongan ?? null;
 
-            if (!$tmt) {
+            if (!$tmtStr) {
                 return false;
             }
 
-            $tmtKenaikan = Carbon::parse($tmt)->addYears(4);
+            $tmt = Carbon::parse($tmtStr);
+            $tmtKenaikan = $tmt->copy()->addYears(4); // Titik tepat 4 tahun
+            $duaBulanSebelum = $tmtKenaikan->copy()->subMonths(2); // Titik mulai muncul
 
-            $duaBulanSebelum = $tmtKenaikan->copy()->subMonths(2);
-
-            $isEligibleByDate = $today->greaterThanOrEqualTo($duaBulanSebelum);
+            $isWithinWindow = $today->between($duaBulanSebelum, $tmtKenaikan);
 
             $berkas = $item->berkas->first();
+            $belumSelesai = !$berkas || $berkas->status !== false;
 
-            $belumNaikPangkat = !$berkas || $berkas->status !== 'sk telah terbit';
-
-            return $isEligibleByDate && $belumNaikPangkat;
+            return $isWithinWindow && $belumSelesai;
         })->values();
 
         
@@ -81,99 +82,99 @@ class UsulanPangkatController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:berkas terkirim,telah dikirim ke bkd,telah dikirim ke bkn,sk telah terbit',
-            'file_sk' => 'nullable|mimes:pdf|max:5120',
-        ]);
+    // public function updateStatus(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'status' => 'required|in:berkas terkirim,telah dikirim ke bkd,telah dikirim ke bkn,sk telah terbit',
+    //         'file_sk' => 'nullable|mimes:pdf|max:5120',
+    //     ]);
 
-        $berkas = Berkas::where('pegawais_id', $id)->first();
+    //     $berkas = Berkas::where('pegawais_id', $id)->first();
 
-        if (!$berkas) {
-            return redirect()->back()->with('message', 'Data berkas tidak ditemukan.')->with('error', true);
-        }
+    //     if (!$berkas) {
+    //         return redirect()->back()->with('message', 'Data berkas tidak ditemukan.')->with('error', true);
+    //     }
 
-        $statusOrder = [
-            'berkas terkirim',
-            'telah dikirim ke bkd',
-            'telah dikirim ke bkn',
-            'sk telah terbit',
-        ];
+    //     $statusOrder = [
+    //         'berkas terkirim',
+    //         'telah dikirim ke bkd',
+    //         'telah dikirim ke bkn',
+    //         'sk telah terbit',
+    //     ];
 
-        $currentIndex = array_search($berkas->status, $statusOrder);
-        $newIndex = array_search($request->status, $statusOrder);
+    //     $currentIndex = array_search($berkas->status, $statusOrder);
+    //     $newIndex = array_search($request->status, $statusOrder);
 
-        // Cegah loncat status
-        if ($newIndex !== $currentIndex + 1 && $newIndex !== $currentIndex) {
-            return redirect()->back()
-                ->with('message', 'Status hanya bisa diubah secara berurutan.')
-                ->with('error', true);
-        }
+    //     // Cegah loncat status
+    //     if ($newIndex !== $currentIndex + 1 && $newIndex !== $currentIndex) {
+    //         return redirect()->back()
+    //             ->with('message', 'Status hanya bisa diubah secara berurutan.')
+    //             ->with('error', true);
+    //     }
 
-        // === CASE 1: Status biasa (tanpa upload file SK) ===
-        if ($request->status !== 'sk telah terbit') {
-            $berkas->status = $request->status;
-            $berkas->save();
+    //     // === CASE 1: Status biasa (tanpa upload file SK) ===
+    //     if ($request->status !== 'sk telah terbit') {
+    //         $berkas->status = $request->status;
+    //         $berkas->save();
 
-            return redirect()->back()
-                ->with('message', 'Status berhasil diperbarui.')
-                ->with('error', false);
-        }
+    //         return redirect()->back()
+    //             ->with('message', 'Status berhasil diperbarui.')
+    //             ->with('error', false);
+    //     }
 
-        // === CASE 2: Status "SK telah terbit" ===
-        if ($request->status === 'sk telah terbit') {
-            // File SK wajib untuk status ini
-            if (!$request->hasFile('file_sk')) {
-                return redirect()->back()
-                    ->with('message', 'File SK wajib diunggah untuk status SK telah terbit.')
-                    ->with('error', true);
-            }
+    //     // === CASE 2: Status "SK telah terbit" ===
+    //     if ($request->status === 'sk telah terbit') {
+    //         // File SK wajib untuk status ini
+    //         if (!$request->hasFile('file_sk')) {
+    //             return redirect()->back()
+    //                 ->with('message', 'File SK wajib diunggah untuk status SK telah terbit.')
+    //                 ->with('error', true);
+    //         }
 
-            $existingFiles = $berkas->file_sk ?? [];
+    //         $existingFiles = $berkas->file_sk ?? [];
 
-            $file = $request->file('file_sk');
+    //         $file = $request->file('file_sk');
 
-            $path = $file->store('berkas/file_sk', 'public');
+    //         $path = $file->store('berkas/file_sk', 'public');
 
-            $existingFiles[] = [
-                'file' => $path,
-                'created_at' => Carbon::now()->format('d/m/Y'),
-            ];
+    //         $existingFiles[] = [
+    //             'file' => $path,
+    //             'created_at' => Carbon::now()->format('d/m/Y'),
+    //         ];
 
-            $berkas->status = 'sk telah terbit';
-            $berkas->file_sk = $existingFiles;
-            $berkas->save();
+    //         $berkas->status = 'sk telah terbit';
+    //         $berkas->file_sk = $existingFiles;
+    //         $berkas->save();
 
 
-            $dataDiri = DataDiri::where('pegawais_id', $id)->first();
-            if ($dataDiri) {
-                $urutanGolongan = [
-                    'I/a', 'I/b', 'I/c', 'I/d',
-                    'II/a', 'II/b', 'II/c', 'II/d',
-                    'III/a', 'III/b', 'III/c', 'III/d',
-                    'IV/a', 'IV/b', 'IV/c', 'IV/d', 'IV/e',
-                ];
+    //         $dataDiri = DataDiri::where('pegawais_id', $id)->first();
+    //         if ($dataDiri) {
+    //             $urutanGolongan = [
+    //                 'I/a', 'I/b', 'I/c', 'I/d',
+    //                 'II/a', 'II/b', 'II/c', 'II/d',
+    //                 'III/a', 'III/b', 'III/c', 'III/d',
+    //                 'IV/a', 'IV/b', 'IV/c', 'IV/d', 'IV/e',
+    //             ];
 
-                $current = strtoupper(trim($dataDiri->golongan_ruang));
-                $currentIndex = array_search($current, array_map('strtoupper', $urutanGolongan));
+    //             $current = strtoupper(trim($dataDiri->golongan_ruang));
+    //             $currentIndex = array_search($current, array_map('strtoupper', $urutanGolongan));
 
-                if ($currentIndex !== false && isset($urutanGolongan[$currentIndex + 1])) {
-                    $nextGolongan = $urutanGolongan[$currentIndex + 1];
-                    $dataDiri->golongan_ruang = $nextGolongan;
-                }
+    //             if ($currentIndex !== false && isset($urutanGolongan[$currentIndex + 1])) {
+    //                 $nextGolongan = $urutanGolongan[$currentIndex + 1];
+    //                 $dataDiri->golongan_ruang = $nextGolongan;
+    //             }
 
-                $today = now();
-                $dataDiri->tanggal_sk = $today->toDateString();
+    //             $today = now();
+    //             $dataDiri->tanggal_sk = $today->toDateString();
 
-                $dataDiri->tmt_golongan = $today->toDateString();
+    //             $dataDiri->tmt_golongan = $today->toDateString();
 
-                $dataDiri->save();
-            }
+    //             $dataDiri->save();
+    //         }
 
-            return redirect()->route('pangkat.usulan-pangkat.status', $id)
-                ->with('message', 'File SK berhasil diunggah dan data pangkat diperbarui.')
-                ->with('error', false);
-        }
-    }
+    //         return redirect()->route('pangkat.usulan-pangkat.status', $id)
+    //             ->with('message', 'File SK berhasil diunggah dan data pangkat diperbarui.')
+    //             ->with('error', false);
+    //     }
+    // }
 }

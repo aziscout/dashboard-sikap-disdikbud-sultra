@@ -32,6 +32,7 @@ interface Pegawai {
     nomor: number;
     email: string;
     unit_kerja: string;
+    kgb_terakhir: string;
     tmt_golongan: string;
     is_active: boolean;
     created_at: string;
@@ -137,9 +138,10 @@ export default function Index() {
                             <TableHead>Nama</TableHead>
                             <TableHead>NIP</TableHead>
                             <TableHead>Nomor</TableHead>
-                            <TableHead>Email</TableHead>
+                            {/* <TableHead>Email</TableHead> */}
                             <TableHead>Unit Kerja</TableHead>
-                            <TableHead>TMT Golongan</TableHead>
+                            <TableHead className='w-[120px]'>KGB Terakhir</TableHead>
+                            <TableHead className='w-[130px]'>TMT Golongan</TableHead>
                             <TableHead>Detail</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -157,9 +159,12 @@ export default function Index() {
                                     <TableCell>{item.nama}</TableCell>
                                     <TableCell>{renderValue(item.nip)}</TableCell>
                                     <TableCell>{renderValue(item.nomor)}</TableCell>
-                                    <TableCell>{renderValue(item.email)}</TableCell>
+                                    {/* <TableCell>{renderValue(item.email)}</TableCell> */}
                                     <TableCell className="capitalize">
                                         {renderValue(item.unit_kerja)}
+                                    </TableCell>
+                                    <TableCell className="capitalize">
+                                        {renderValue(item.kgb_terakhir)}
                                     </TableCell>
                                     <TableCell className="capitalize">
                                         {renderValue(item.tmt_golongan)}

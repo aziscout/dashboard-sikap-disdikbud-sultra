@@ -70,7 +70,7 @@ class BerkasApiController extends Controller
                 ? [$request->file('sk_jabatan')->store('berkas', 'public')]
                 : [],
 
-            'status' => 'berkas terkirim',
+            'status' => false,
             'users_id' => $admin?->id,
             'pegawais_id' => $pegawai->id,
         ]);
@@ -132,20 +132,16 @@ class BerkasApiController extends Controller
             }
 
             if ($request->filled('status')) {
-                $flow = [
-                    'berkas terkirim' => 'telah dikirim ke bkd',
-                    'telah dikirim ke bkd' => 'telah dikirim ke bkn',
-                    'telah dikirim ke bkn' => 'sk telah terbit',
-                ];
+                $request->validate([
+                    'status' => 'required|boolean',
+                ]);
 
-                if (
-                    $request->status === $berkas->status ||
-                    $request->status === ($flow[$berkas->status] ?? null)
-                ) {
-                    $berkas->status = $request->status;
-                } else {
-                    return response()->json(['message' => 'Status tidak valid'], 422);
+                // Prevent changing status from true to false
+                if ($berkas->status === true && $request->status === false) {
+                    return response()->json(['message' => 'Status tidak dapat diubah dari true ke false'], 422);
                 }
+
+                $berkas->status = $request->status;
             }
         }
 

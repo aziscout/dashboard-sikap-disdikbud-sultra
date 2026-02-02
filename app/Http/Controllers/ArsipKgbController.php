@@ -27,6 +27,7 @@ class ArsipKgbController extends Controller
                     'nip' => $item->pegawai->nip ?? '-',
                     'email' => $item->pegawai->email ?? '-',
                     'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
+                    'gaji_pokok' => optional($item->pegawai->dataDiri)->gaji_pokok ?? '-',
                     'kgb_terakhir' => optional($item->pegawai->dataDiri)->kgb_terakhir
                         ? Carbon::parse($item->pegawai->dataDiri->kgb_terakhir)->translatedFormat('d F Y')
                         : '-',

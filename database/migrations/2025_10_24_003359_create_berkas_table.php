@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('berkas', function (Blueprint $table) {
             $table->id();
-            $table->json('sk_cpns')->nullable();
-            $table->json('sk_pns')->nullable();
-            $table->json('sk_gaji_berkala')->nullable();
-            $table->json('sk_pangkat_terakhir')->nullable();
-            $table->json('sk_jabatan')->nullable();
-            $table->json('file_sk')->nullable();
-            $table->enum('status', ['berkas terkirim','telah dikirim ke bkd', 'telah dikirim ke bkn', 'sk telah terbit']);
+            $table->string('sk_cpns')->nullable();
+            $table->string('sk_pns')->nullable();
+            $table->string('sk_gaji_berkala')->nullable();
+            $table->string('sk_pangkat_terakhir')->nullable();
+            $table->string('sk_jabatan')->nullable();
+            $table->boolean('status')->default(false);
             $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('pegawais_id')->constrained('pegawais')->onDelete('cascade');
             $table->timestamps();

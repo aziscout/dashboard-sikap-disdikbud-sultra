@@ -22,6 +22,7 @@ interface Arsip {
     nip: string;
     email: string;
     unit_kerja: string;
+    gaji_pokok: string;
     kgb_terakhir: string;
     created_at: string;
 }
@@ -66,6 +67,14 @@ export default function Index() {
                 return sortOrder === 'Terbaru' ? dateB - dateA : dateA - dateB;
             });
     }, [arsip.data, sortOrder, searchQuery]);
+
+    const formatRupiah = (number: number | string) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+        }).format(Number(number));
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -116,6 +125,7 @@ export default function Index() {
                                 <TableHead>Nomor</TableHead>
                                 <TableHead>Email</TableHead>
                                 <TableHead>Unit Kerja</TableHead>
+                                <TableHead>Gaji Pokok</TableHead>
                                 <TableHead>KGB Terakhir</TableHead>
                                 <TableHead>Detail</TableHead>
                             </TableRow>
@@ -131,6 +141,11 @@ export default function Index() {
                                         <TableCell>{renderValue(item.nomor)}</TableCell>
                                         <TableCell>{renderValue(item.email)}</TableCell>
                                         <TableCell className="capitalize">{renderValue(item.unit_kerja)}</TableCell>
+                                        <TableCell>
+                                            {item.gaji_pokok 
+                                                ? formatRupiah(item.gaji_pokok) 
+                                                : ''}
+                                        </TableCell>
                                         <TableCell className="capitalize">{renderValue(item.kgb_terakhir)}</TableCell>
                                         <TableCell>
                                             <Link href={route('pangkat.arsip-kgb.show', item.id)} title="Detail">

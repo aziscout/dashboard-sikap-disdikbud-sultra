@@ -12,28 +12,24 @@ class UsulanKgbController extends Controller
 {
     public function index(Request $request)
     {
+        Carbon::setLocale('id');
+
         $today = Carbon::today();
 
-        $pegawai = Pegawai::with(['dataDiri', 'berkas'])->get();
+        $pegawai = Pegawai::with(['dataDiri'])->get();
+
+        $pegawai = Pegawai::with(['dataDiri'])->get();
 
         $filteredPegawai = $pegawai->filter(function ($item) use ($today) {
-            $kgb = $item->dataDiri->kgb_terakhir ?? null;
+            $kgbTerakhirStr = $item->dataDiri->kgb_terakhir ?? null;
+            
+            if (!$kgbTerakhirStr) return false;
 
-            if (!$kgb) {
-                return false;
-            }
+            $kgbTerakhir = Carbon::parse($kgbTerakhirStr);
+            $jatuhTempoKgb = $kgbTerakhir->copy()->addYears(2); // Tepat 2 tahun kemudian
+            $duaBulanSebelum = $jatuhTempoKgb->copy()->subMonths(2); // Mulai muncul 2 bulan sebelum
 
-            $kgbKenaikan = Carbon::parse($kgb)->addYears(2);
-
-            $duaBulanSebelum = $kgbKenaikan->copy()->subMonths(2);
-
-            $isEligibleByDate = $today->greaterThanOrEqualTo($duaBulanSebelum);
-
-            $berkas = $item->berkas->first();
-
-            $belumNaikBerkala = !$berkas || $berkas->status !== 'sk telah terbit';
-
-            return $isEligibleByDate && $belumNaikBerkala;
+            return $today->between($duaBulanSebelum, $jatuhTempoKgb);
         })->values();
 
         
@@ -53,27 +49,21 @@ class UsulanKgbController extends Controller
 
         return Inertia::render('pangkat/usulan-kgb/index', [
             'pegawai' => $paginatedPegawai,
-            'flash' => [
-                'message' => session('message'),
-            ],
         ]);
     }
 
     public function status($id)
     {
-        $pegawai = Pegawai::with(['dataDiri', 'berkas'])->find($id);
+        $pegawai = Pegawai::with(['dataDiri'])->find($id);
 
         if (!$pegawai) {
             return redirect()->route('pangkat.usulan-kgb')
                 ->with('message', 'Data pegawai tidak ditemukan.');
         }
 
-        $berkas = $pegawai->berkas()->latest()->first();
-
         return Inertia::render('pangkat/usulan-kgb/status', [
             'pegawai' => $pegawai,
             'data_diri' => $pegawai->dataDiri,
-            'berkas' => $berkas,
         ]);
     }
 }

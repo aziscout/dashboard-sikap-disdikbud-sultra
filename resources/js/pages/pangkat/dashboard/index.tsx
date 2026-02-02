@@ -77,7 +77,7 @@ export default function Index() {
                 </div>
 
                 {/* 🔹 Tables */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {/* <div className="grid grid-cols-1 gap-6 lg:grid-cols-2"> */}
                     {/* Left Table: Pegawai Siap Naik Pangkat */}
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center justify-between">
@@ -99,9 +99,9 @@ export default function Index() {
                                         pegawaiNaikPangkat.map((p, index) => (
                                             <TableRow key={index}>
                                                 <TableCell className="text-center">{index + 1}</TableCell>
-                                                <TableCell className="font-medium">{p.nama}</TableCell>
-                                                <TableCell className="font-medium">{p.nip}</TableCell>
-                                                <TableCell className="font-medium">{p.unit_kerja}</TableCell>
+                                                <TableCell>{p.nama}</TableCell>
+                                                <TableCell>{p.nip}</TableCell>
+                                                <TableCell>{p.unit_kerja}</TableCell>
                                                 <TableCell>{p.tmt_golongan}</TableCell>
                                             </TableRow>
                                         ))
@@ -147,9 +147,9 @@ export default function Index() {
                                         pegawaiNaikKgb.map((p, index) => (
                                             <TableRow key={index}>
                                                 <TableCell className="text-center">{index + 1}</TableCell>
-                                                <TableCell className="font-medium">{p.nama}</TableCell>
-                                                <TableCell className="font-medium">{p.nip}</TableCell>
-                                                <TableCell className="font-medium">{p.unit_kerja}</TableCell>
+                                                <TableCell>{p.nama}</TableCell>
+                                                <TableCell>{p.nip}</TableCell>
+                                                <TableCell>{p.unit_kerja}</TableCell>
                                                 <TableCell>{p.kgb_terakhir}</TableCell>
                                             </TableRow>
                                         ))
@@ -173,7 +173,7 @@ export default function Index() {
                             </div>
                         )} */}
                     </div>
-                </div>
+                {/* </div> */}
             </div>
         </AppLayout>
     );

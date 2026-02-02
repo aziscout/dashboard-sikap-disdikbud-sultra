@@ -25,17 +25,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Usulan Kenaikan Gaji Berkala', href: '/pangkat/usulan-kgb' },
 ];
 
-interface BerkasObject {
-    file: string;
-    created_at?: string;
-}
-
-interface Berkas {
-    // sk_cpns?: string;
-    // sk_pns?: string;
-    sk_gaji_berkala?: BerkasObject[];
-    sk_pangkat_terakhir?: BerkasObject[];
-    // sk_jabatan?: BerkasObject[];
+interface DataDiri {
+    gaji_pokok: number;
+    kgb_terakhir: string;
 }
 
 interface Pegawai {
@@ -43,9 +35,10 @@ interface Pegawai {
     nip: string;
     nama: string;
     nomor: string;
+    email: string;
     unit_kerja: string;
     created_at: string;
-    berkas?: Berkas[]; 
+    data_diri?: DataDiri;
 }
 
 interface PaginationLink {
@@ -87,52 +80,38 @@ export default function Index() {
         });
     }, [pegawai.data, sortOrder, searchQuery]);
 
-    const getLatestBerkas = (
-        pegawai: Pegawai,
-        key: keyof Berkas
-    ): string | null => {
-        const value = pegawai.berkas?.[0]?.[key];
+    const isDataLengkap = (p: Pegawai): boolean => {
+        const profileKeys: (keyof Pegawai)[] = [
+            'nama', 'nip', 'nomor', 'email', 'unit_kerja'
+        ];
+        const profileOk = profileKeys.every(key => p[key] !== null && p[key] !== '');
 
-        if (!value) return null;
+        if (!p.data_diri) return false;
+        const dataDiriKeys: (keyof DataDiri)[] = [
+            'gaji_pokok', 'kgb_terakhir'
+        ];
+        const dataDiriOk = dataDiriKeys.every(key => 
+            p.data_diri![key] !== null && p.data_diri![key] !== ''
+        );
 
-        if (typeof value === 'string') {
-            return value;
-        }
-
-        if (Array.isArray(value) && value.length > 0) {
-            const lastItem = value[value.length - 1];
-
-            if (lastItem && typeof lastItem === 'object' && 'file' in lastItem) {
-                return lastItem.file;
-            }
-        }
-
-        return null;
+        return profileOk && dataDiriOk;
     };
 
+    const formatRupiah = (number: number | string) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+        }).format(Number(number));
+    };
 
-    const isBerkasLengkap = (pegawai: Pegawai): boolean => {
-        const requiredKeys: (keyof Berkas)[] = [
-            // 'sk_cpns',
-            // 'sk_pns',
-            'sk_pangkat_terakhir',
-            'sk_gaji_berkala',
-            // 'sk_jabatan',
-        ];
-
-        return requiredKeys.every((key) => {
-            const value = pegawai.berkas?.[0]?.[key];
-
-            if (!value) return false;
-
-            if (typeof value === 'string') return true;
-
-            if (Array.isArray(value)) {
-                return value.length > 0 && typeof value[0]?.file === 'string';
-            }
-
-            return false;
-        });
+    const formatTanggalIndo = (dateString: string | null) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
     };
 
 
@@ -188,111 +167,71 @@ export default function Index() {
             className="overflow-x-auto rounded-lg border border-indigo-100 
             dark:border-indigo-900/50 shadow-md backdrop-blur-md transition-all"
             >
-            <Table className="w-full min-w-[900px]">
-                <TableHeader>
-                <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
-                    <TableHead className="w-[60px] text-center">No</TableHead>
-                    <TableHead>Nama</TableHead>
-                    <TableHead className="text-center">NIP</TableHead>
-                    <TableHead className="text-center">Nomor</TableHead>
-                    <TableHead className="text-center">Unit Kerja</TableHead>
-                    {/* <TableHead className="text-center">SK CPNS</TableHead>
-                    <TableHead className="text-center">SK PNS</TableHead> */}
-                    <TableHead className="text-center">SK Pangkat Terakhir</TableHead>
-                    <TableHead className="text-center">SK Gaji Berkala</TableHead>
-                    {/* <TableHead className="text-center">SK Jabatan</TableHead> */}
-                    <TableHead className="text-center">Status</TableHead>
-                </TableRow>
-                </TableHeader>
+                <Table className="w-full min-w-[900px]">
+                    <TableHeader>
+                        <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
+                            <TableHead className="w-[60px] text-center">No</TableHead>
+                            <TableHead>Nama</TableHead>
+                            <TableHead>NIP</TableHead>
+                            <TableHead>Nomor</TableHead>
+                            <TableHead>email</TableHead>
+                            <TableHead>Unit Kerja</TableHead>
+                            <TableHead>Gaji Pokok</TableHead>
+                            <TableHead className="w-[120px]">KGB Terakhir</TableHead>
+                            <TableHead>Status</TableHead>
+                        </TableRow>
+                    </TableHeader>
 
-                <TableBody>
-                {filteredAndSortedPegawai.length > 0 ? (
-                    filteredAndSortedPegawai.map((item, index) => (
-                    <TableRow
-                        key={item.id}
-                        className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
-                    >
-                        <TableCell className="text-center">
-                            {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
-                        </TableCell>
-                        <TableCell className="font-medium capitalize">
-                        {item.nama}
-                        </TableCell>
-                        <TableCell className="text-center">{item.nip}</TableCell>
-                        <TableCell className="text-center">{item.nomor}</TableCell>
-                        <TableCell className="text-center">{item.unit_kerja}</TableCell>
-
-                        {[
-                            // 'sk_cpns',
-                            // 'sk_pns',
-                            'sk_pangkat_terakhir',
-                            'sk_gaji_berkala',
-                            // 'sk_jabatan',
-                        ].map((key) => {
-                            const berkasFile = getLatestBerkas(item, key as keyof Berkas);
-                            return (
-                                <TableCell key={key} className="text-center">
-                                    {berkasFile ? (
-                                        <a
-                                            href={`/storage/${berkasFile}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <Button
-                                            className="bg-indigo-500 hover:bg-indigo-600 text-white text-xs 
-                                            px-3 py-1 shadow-md hover:shadow-lg transition-all"
-                                            >
-                                            Lihat Dokumen
+                    <TableBody>
+                        { filteredAndSortedPegawai.length > 0 ? (
+                        filteredAndSortedPegawai.map((item, index) => (
+                            <TableRow key={item.id}>
+                                <TableCell className="text-center">
+                                    {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
+                                </TableCell>
+                                <TableCell>{item.nama}</TableCell>
+                            <TableCell>{item.nip}</TableCell>
+                                <TableCell>{item.nomor ?? '-'}</TableCell>
+                                <TableCell>{item.email ?? '-'}</TableCell>
+                                <TableCell>{item.unit_kerja ?? '-'}</TableCell>
+                                <TableCell>
+                                    {item.data_diri?.gaji_pokok 
+                                        ? formatRupiah(item.data_diri.gaji_pokok) 
+                                        : '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {item.data_diri?.kgb_terakhir 
+                                        ? formatTanggalIndo(item.data_diri.kgb_terakhir) 
+                                        : '-'}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {isDataLengkap(item) ? (
+                                        <Link href={route('pangkat.usulan-kgb.status', item.id)}>
+                                            <Button className="bg-indigo-500 hover:bg-indigo-600 text-white">
+                                                <Eye className="w-4 h-4" />
                                             </Button>
-                                        </a>
+                                        </Link>
                                     ) : (
-                                        <span className="text-gray-400 dark:text-gray-500">
-                                            -
-                                        </span>
+                                        <Button 
+                                            disabled 
+                                            className="bg-gray-300 dark:bg-gray-700 text-gray-500"
+                                            title="Lengkapi Profile dan Data Diri di menu Pegawai untuk mengaktifkan tombol ini"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                        </Button>
                                     )}
                                 </TableCell>
-                            );
-                        })}
-
-                        <TableCell className="text-center">
-                            {isBerkasLengkap(item) ? (
-                                <Link
-                                    href={route('pangkat.usulan-kgb.status', item.id)}
-                                    title="Detail"
-                                >
-                                    <Button
-                                        className="bg-indigo-500 hover:bg-indigo-600 text-white 
-                                        shadow-md hover:shadow-lg transition-all"
-                                    >
-                                        <Eye className="w-4 h-4" />
-                                    </Button>
-                                </Link>
-                            ) : (
-                                <Button
-                                    disabled
-                                    className="bg-gray-300 dark:bg-gray-700 
-                                    text-gray-500 dark:text-gray-400 
-                                    cursor-not-allowed shadow-none"
-                                    title="Berkas belum lengkap"
-                                >
-                                    <Eye className="w-4 h-4" />
-                                </Button>
-                            )}
-                        </TableCell>
-                    </TableRow>
-                    ))
-                ) : (
-                    <TableRow>
-                    <TableCell
-                        colSpan={9}
-                        className="text-center text-gray-500 py-6 dark:text-gray-400"
-                    >
-                        Tidak ada data pegawai yang memenuhi syarat usulan gaji berkala.
-                    </TableCell>
-                    </TableRow>
-                )}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={9} className="py-6 text-center text-gray-500">
+                                Tidak ada data usulan kenaikan gaji berkala.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
             </div>
             
             {/* Pagination Links */}

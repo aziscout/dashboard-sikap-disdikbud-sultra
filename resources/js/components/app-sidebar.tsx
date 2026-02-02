@@ -53,25 +53,6 @@ const { auth } = usePage<PageProps>().props;
         });
     }
     
-    if (userPermissions.includes('Kenaikan Gaji Berkala')) {
-        mainNavPangkat.push({
-            title: 'Kenaikan Gaji Berkala',
-            icon: TrendingUp,
-            subItems: [
-                {
-                    title: 'Usulan KGB',
-                    href: '/pangkat/usulan-kgb',
-                    icon: FilePlus
-                },
-                {
-                    title: 'Arsip KGB',
-                    href: '/pangkat/arsip-kgb',
-                    icon: Archive
-                }
-            ]
-        });
-    }
-    
     if (userPermissions.includes('Kenaikan Pangkat')) {
         mainNavPangkat.push({
             title: 'Kenaikan Pangkat',
@@ -90,7 +71,25 @@ const { auth } = usePage<PageProps>().props;
             ]
         });
     }
-    
+
+    if (userPermissions.includes('Kenaikan Gaji Berkala')) {
+        mainNavPangkat.push({
+            title: 'Kenaikan Gaji Berkala',
+            icon: TrendingUp,
+            subItems: [
+                {
+                    title: 'Usulan KGB',
+                    href: '/pangkat/usulan-kgb',
+                    icon: FilePlus
+                },
+                {
+                    title: 'Arsip KGB',
+                    href: '/pangkat/arsip-kgb',
+                    icon: Archive
+                }
+            ]
+        });
+    }
 
     if (userPermissions.includes('Pensiun')) {
         mainNavPangkat.push({

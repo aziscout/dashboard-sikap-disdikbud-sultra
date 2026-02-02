@@ -44,11 +44,11 @@ class PegawaiController extends Controller
             $item->is_active = $isActive;
 
             $item->tmt_golongan = $tmt
-                ? Carbon::parse($tmt)->translatedFormat('d F Y')
+                ? Carbon::parse($tmt)->translatedFormat('d-m-Y')
                 : '-';
 
             $item->kgb_terakhir = $kgbTerakhir
-                ? Carbon::parse($kgbTerakhir)->translatedFormat('d F Y')
+                ? Carbon::parse($kgbTerakhir)->translatedFormat('d-m-Y')
                 : '-';
 
             return $item;

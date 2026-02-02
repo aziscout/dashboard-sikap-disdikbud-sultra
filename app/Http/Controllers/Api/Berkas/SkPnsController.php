@@ -10,16 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class SkPnsController extends Controller
 {
-    private function formatFile(string $path, int $nextId): array
-    {
-        return [
-            'id' => $nextId,
-            'created_at' => now()->format('Y-m-d H:i:s'),
-            'file' => $path,
-        ];
-    }
-
-
     public function show()
     {
         $pegawai = auth('pegawai')->user();
@@ -29,19 +19,12 @@ class SkPnsController extends Controller
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)->first();
         
-        $files = is_array($berkas?->sk_pns) ? $berkas->sk_pns : [];
-
-        $dataResponse = collect($files)->map(function ($item) {
-            return [
-                'id' => $item['id'],
-                'created_at' => $item['created_at'],
-                'file'       => asset('storage/' . $item['file']),
-            ];
-        });
+        // Cek jika berkas ada dan kolom sk_pns tidak null
+        $path = $berkas?->sk_pns;
 
         return response()->json([
             'status' => 'success',
-            'data'   => $dataResponse,
+            'data'   => $path ? asset('storage/' . $path) : null,
         ]);
     }
 
@@ -54,23 +37,22 @@ class SkPnsController extends Controller
         $pegawai = auth('pegawai')->user();
         $admin = User::where('role', 'admin_sikap')->first();
 
+        // Simpan file dan ambil path-nya saja (String)
         $path = $request->file('sk_pns')->store('berkas/sk_pns', 'public');
-
-        $newFile = $this->formatFile($path, 1);
 
         $berkas = Berkas::updateOrCreate(
             ['pegawais_id' => $pegawai->id],
             [
-                'users_id'   => $admin?->id,
-                'status'     => 'berkas terkirim',
-                'sk_pns' => [$newFile],
+                'users_id' => $admin?->id,
+                'status'   => false,
+                'sk_pns'  => $path, // Simpan string path
             ]
         );
 
         return response()->json([
             'status'  => 'success',
             'message' => 'SK PNS berhasil diupload',
-            'data'    => $newFile,
+            'data'    => asset('storage/' . $path),
         ], 201);
     }
 
@@ -83,24 +65,21 @@ class SkPnsController extends Controller
         $pegawai = auth('pegawai')->user();
         $berkas = Berkas::where('pegawais_id', $pegawai->id)->firstOrFail();
 
-        $existingFiles = $berkas->sk_pns ?? [];
-
-        // 🔥 hitung auto increment ID
-        $lastId = collect($existingFiles)->max('id') ?? 0;
-        $nextId = $lastId + 1;
+        // Hapus file lama jika ada agar storage tidak penuh
+        if ($berkas->sk_pns) {
+            Storage::disk('public')->delete($berkas->sk_pns);
+        }
 
         $path = $request->file('sk_pns')->store('berkas/sk_pns', 'public');
 
-        $existingFiles[] = $this->formatFile($path, $nextId);
-
         $berkas->update([
-            'sk_pns' => $existingFiles,
+            'sk_pns' => $path, // Update dengan string path baru
         ]);
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'SK PNS berhasil ditambahkan',
-            'data'    => end($existingFiles),
+            'message' => 'SK PNS berhasil diperbarui',
+            'data'    => asset('storage/' . $path),
         ]);
     }
 }

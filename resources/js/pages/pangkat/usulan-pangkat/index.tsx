@@ -191,8 +191,8 @@ export default function Index() {
                 <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
                     <TableHead className="w-[60px] text-center">No</TableHead>
                     <TableHead>Nama</TableHead>
-                    <TableHead className="text-center">NIP</TableHead>
-                    <TableHead className="text-center">Nomor</TableHead>
+                    <TableHead>NIP</TableHead>
+                    {/* <TableHead>Nomor</TableHead> */}
                     <TableHead className="text-center">SK CPNS</TableHead>
                     <TableHead className="text-center">SK PNS</TableHead>
                     <TableHead className="text-center">SK Pangkat Terakhir</TableHead>
@@ -212,11 +212,11 @@ export default function Index() {
                         <TableCell className="text-center">
                             {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
                         </TableCell>
-                        <TableCell className="font-medium capitalize">
+                        <TableCell className="capitalize">
                         {item.nama}
                         </TableCell>
-                        <TableCell className="text-center">{item.nip}</TableCell>
-                        <TableCell className="text-center">{item.nomor}</TableCell>
+                        <TableCell>{item.nip}</TableCell>
+                        {/* <TableCell>{item.nomor}</TableCell> */}
 
                         {[
                             'sk_cpns',

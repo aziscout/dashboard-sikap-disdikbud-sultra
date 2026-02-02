@@ -6,22 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Berkas extends Model
 {
-    protected $casts = [
-        'sk_cpns' => 'array',
-        'sk_pns' => 'array',
-        'sk_gaji_berkala' => 'array',
-        'sk_pangkat_terakhir' => 'array',
-        'sk_jabatan' => 'array',
-        'file_sk' => 'array',
-    ];
-
     protected $fillable = [
         'sk_cpns',
         'sk_pns',
         'sk_gaji_berkala',
         'sk_pangkat_terakhir',
         'sk_jabatan',
-        'file_sk',
         'status',
         'users_id',
         'pegawais_id',
