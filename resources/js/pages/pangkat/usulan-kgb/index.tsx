@@ -178,7 +178,7 @@ export default function Index() {
                             <TableHead>Unit Kerja</TableHead>
                             <TableHead>Gaji Pokok</TableHead>
                             <TableHead className="w-[120px]">KGB Terakhir</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead>Detail</TableHead>
                         </TableRow>
                     </TableHeader>
 

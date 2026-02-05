@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Berkas;
+use App\Models\Pegawai; // Ubah ke Model Pegawai
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,24 +13,25 @@ class ArsipKgbController extends Controller
     public function index()
     {
         Carbon::setLocale('id');
+        $today = Carbon::today();
 
-        $arsip = Berkas::with(['pegawai.dataDiri'])
-            ->whereHas('pegawai.dataDiri', function ($query) {
-                $query->where('kgb_terakhir', '>=', Carbon::now()->subMonths(2));
+        $arsip = Pegawai::with(['dataDiri'])
+            ->whereHas('dataDiri', function ($query) use ($today) {
+                $query->where('kgb_terakhir', '<=', $today->copy()->subYears(2));
             })
             ->latest()
             ->paginate(10)
-            ->through(function ($item) {
+            ->through(function ($pegawai) {
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->pegawai->nama ?? '-',
-                    'nomor' => $item->pegawai->nomor ?? '-',
-                    'nip' => $item->pegawai->nip ?? '-',
-                    'email' => $item->pegawai->email ?? '-',
-                    'unit_kerja' => $item->pegawai->unit_kerja ?? '-',
-                    'gaji_pokok' => optional($item->pegawai->dataDiri)->gaji_pokok ?? '-',
-                    'kgb_terakhir' => optional($item->pegawai->dataDiri)->kgb_terakhir
-                        ? Carbon::parse($item->pegawai->dataDiri->kgb_terakhir)->translatedFormat('d F Y')
+                    'id' => $pegawai->id,
+                    'nama' => $pegawai->nama ?? '-',
+                    'nomor' => $pegawai->nomor ?? '-',
+                    'nip' => $pegawai->nip ?? '-',
+                    'email' => $pegawai->email ?? '-',
+                    'unit_kerja' => $pegawai->unit_kerja ?? '-',
+                    'gaji_pokok' => optional($pegawai->dataDiri)->gaji_pokok ?? '-',
+                    'kgb_terakhir' => optional($pegawai->dataDiri)->kgb_terakhir
+                        ? Carbon::parse($pegawai->dataDiri->kgb_terakhir)->translatedFormat('d F Y')
                         : '-',
                 ];
             });
@@ -41,17 +43,17 @@ class ArsipKgbController extends Controller
 
     public function show($id)
     {
-        $berkas = Berkas::with(['pegawai.dataDiri'])
-            ->whereHas('pegawai.dataDiri', function ($query) {
-                $query->where('kgb_terakhir', '>=', Carbon::now()->subMonths(2));
+        $pegawai = Pegawai::with(['dataDiri', 'berkas'])
+            ->whereHas('dataDiri', function ($query) {
+                $query->where('kgb_terakhir', '<=', Carbon::now()->subYears(2));
             })
             ->find($id);
 
-        if (!$berkas) {
+        if (!$pegawai) {
             return redirect()->route('pangkat.arsip-kgb')->with('message', 'Data arsip tidak ditemukan.');
         }
 
-        $pegawai = $berkas->pegawai;
+        $berkas = $pegawai->berkas->first();
 
         return Inertia::render('pangkat/arsip-kgb/show', [
             'pegawai' => $pegawai,

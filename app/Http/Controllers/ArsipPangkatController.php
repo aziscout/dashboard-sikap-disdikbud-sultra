@@ -44,7 +44,7 @@ class ArsipPangkatController extends Controller
             })
             ->find($id);
 
-        if (!$berkas) {
+    if (!$berkas) {
             return redirect()->route('pangkat.arsip-pangkat')->with('message', 'Data arsip tidak ditemukan.');
         }
 

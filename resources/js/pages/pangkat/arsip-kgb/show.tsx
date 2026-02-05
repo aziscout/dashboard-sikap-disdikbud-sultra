@@ -4,7 +4,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { Download, Eye, FileText } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Arsip Kenaikan Pangkat', href: '/pangkat/arsip-pangkat' },
+    { title: 'Arsip Kenaikan Gaji Berkala', href: '/pangkat/arsip-kgb' },
     { title: 'Detail Arsip', href: '#' },
 ];
 

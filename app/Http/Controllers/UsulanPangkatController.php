@@ -19,25 +19,30 @@ class UsulanPangkatController extends Controller
 
         $today = Carbon::today();
 
-        $pegawai = Pegawai::with(['dataDiri', 'berkas'])->get();
+        $pegawai = Pegawai::with(['dataDiri', 'berkas' => function($query) {
+            $query->where('status', false);
+        }])->get();
 
         $filteredPegawai = $pegawai->filter(function ($item) use ($today) {
             $tmtStr = $item->dataDiri->tmt_golongan ?? null;
-
-            if (!$tmtStr) {
-                return false;
-            }
+            if (!$tmtStr) return false;
 
             $tmt = Carbon::parse($tmtStr);
-            $tmtKenaikan = $tmt->copy()->addYears(4); // Titik tepat 4 tahun
-            $duaBulanSebelum = $tmtKenaikan->copy()->subMonths(2); // Titik mulai muncul
+            $tmtKenaikan = $tmt->copy()->addYears(4);
+            $duaBulanSebelum = $tmtKenaikan->copy()->subMonths(2);
 
             $isWithinWindow = $today->between($duaBulanSebelum, $tmtKenaikan);
 
-            $berkas = $item->berkas->first();
-            $belumSelesai = !$berkas || $berkas->status !== false;
+            $berkasAktif = $item->berkas->where('status', false)->first();
+            
+            $belumSelesai = !$item->berkas->where('status', true)->where('updated_at', '>', $duaBulanSebelum)->count() > 0;
+            
+            $sudahPernahLulusPeriodeIni = $item->berkas()
+                ->where('status', true)
+                ->where('updated_at', '>=', $duaBulanSebelum)
+                ->exists();
 
-            return $isWithinWindow && $belumSelesai;
+            return $isWithinWindow && !$sudahPernahLulusPeriodeIni;
         })->values();
 
         

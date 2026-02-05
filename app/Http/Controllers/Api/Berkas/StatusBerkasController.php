@@ -19,7 +19,10 @@ class StatusBerkasController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $berkas = Berkas::where('pegawais_id', $pegawai->id)->first();
+        $berkas = Berkas::where('pegawais_id', $pegawai->id)
+                        ->where('status', false)
+                        ->latest()
+                        ->first();
 
         if (!$berkas) {
             return response()->json(['message' => 'Berkas not found'], 404);
@@ -32,6 +35,7 @@ class StatusBerkasController extends Controller
             'status'  => 'success',
             'message' => 'Status berkas berhasil diperbarui',
             'data'    => [
+                'id_berkas' => $berkas->id,
                 'status' => $berkas->status,
             ],
         ]);
@@ -44,7 +48,10 @@ class StatusBerkasController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $berkas = Berkas::where('pegawais_id', $pegawai->id)->first();
+        $berkas = Berkas::where('pegawais_id', $pegawai->id)
+                        ->where('status', false)
+                        ->latest()
+                        ->first();
 
         if (!$berkas) {
             return response()->json(['message' => 'Berkas not found'], 404);
@@ -53,6 +60,7 @@ class StatusBerkasController extends Controller
         return response()->json([
             'status' => 'success',
             'data'   => [
+                'id_berkas' => $berkas->id,
                 'status' => $berkas->status,
             ],
         ]);

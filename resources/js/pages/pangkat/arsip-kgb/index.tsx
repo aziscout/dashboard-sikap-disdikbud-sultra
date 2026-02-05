@@ -83,7 +83,7 @@ export default function Index() {
             <div className="container mx-auto space-y-6 p-6">
                 {/* Header Section */}
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <h1 className="bg-gradient-to-r bg-clip-text text-2xl font-bold tracking-tight text-indigo-500">Arsip Naik Pangkat</h1>
+                    <h1 className="bg-gradient-to-r bg-clip-text text-2xl font-bold tracking-tight text-indigo-500">Arsip Gaji Berkala</h1>
 
                     <div className="flex flex-col gap-2 md:flex-row md:items-center">
                         {/*  Search */}

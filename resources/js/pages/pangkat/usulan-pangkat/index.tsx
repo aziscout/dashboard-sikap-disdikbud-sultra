@@ -198,7 +198,7 @@ export default function Index() {
                     <TableHead className="text-center">SK Pangkat Terakhir</TableHead>
                     <TableHead className="text-center">SK Gaji Berkala</TableHead>
                     <TableHead className="text-center">SK Jabatan</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
+                    <TableHead className="text-center">Detail</TableHead>
                 </TableRow>
                 </TableHeader>
 

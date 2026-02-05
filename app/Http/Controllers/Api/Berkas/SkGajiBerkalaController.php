@@ -17,14 +17,24 @@ class SkGajiBerkalaController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $berkas = Berkas::where('pegawais_id', $pegawai->id)->first();
-        
-        // Cek jika berkas ada dan kolom sk_gaji_berkala tidak null
-        $path = $berkas?->sk_gaji_berkala;
+        $riwayatBerkas = Berkas::where('pegawais_id', $pegawai->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $dataMapped = $riwayatBerkas->map(function ($berkas) {
+            return [
+                'id' => $berkas->id,
+                'status_usulan' => $berkas->status ? 'Selesai' : 'Sedang Diproses',
+                'is_locked' => (bool)$berkas->status,
+                'tanggal_upload' => $berkas->created_at->translatedFormat('d F Y'),
+                'sk_gaji_berkala' => $berkas->sk_gaji_berkala ? asset('storage/' . $berkas->sk_gaji_berkala) : null,
+            ];
+        });
 
         return response()->json([
             'status' => 'success',
-            'data'   => $path ? asset('storage/' . $path) : null,
+            'total_berkas' => $dataMapped->count(),
+            'data' => $dataMapped,
         ]);
     }
 
@@ -36,22 +46,29 @@ class SkGajiBerkalaController extends Controller
 
         $pegawai = auth('pegawai')->user();
         $admin = User::where('role', 'admin_sikap')->first();
-
-        // Simpan file dan ambil path-nya saja (String)
         $path = $request->file('sk_gaji_berkala')->store('berkas/sk_gaji_berkala', 'public');
 
-        $berkas = Berkas::updateOrCreate(
-            ['pegawais_id' => $pegawai->id],
-            [
-                'users_id' => $admin?->id,
-                'status'   => false,
-                'sk_gaji_berkala'  => $path, // Simpan string path
-            ]
-        );
+        $berkas = Berkas::where('pegawais_id', $pegawai->id)
+                        ->where('status', false)
+                        ->first();
+
+        if ($berkas) {
+            if ($berkas->sk_gaji_berkala) {
+                Storage::disk('public')->delete($berkas->sk_gaji_berkala);
+            }
+            $berkas->update(['sk_gaji_berkala' => $path]);
+        } else {
+            $berkas = Berkas::create([
+                'pegawais_id' => $pegawai->id,
+                'users_id'    => $admin?->id,
+                'status'      => false,
+                'sk_gaji_berkala'     => $path,
+            ]);
+        }
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'SK Gaji Berkala berhasil diupload',
+            'message' => 'SK Gaji Berkala berhasil diupload ke usulan baru',
             'data'    => asset('storage/' . $path),
         ], 201);
     }
@@ -63,23 +80,29 @@ class SkGajiBerkalaController extends Controller
         ]);
 
         $pegawai = auth('pegawai')->user();
-        $berkas = Berkas::where('pegawais_id', $pegawai->id)->firstOrFail();
 
-        // Hapus file lama jika ada agar storage tidak penuh
+        $berkas = Berkas::where('pegawais_id', $pegawai->id)
+                        ->where('status', false)
+                        ->first();
+
+        if (!$berkas) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada usulan aktif. Silahkan upload untuk membuat usulan baru.'
+            ], 404);
+        }
+
         if ($berkas->sk_gaji_berkala) {
             Storage::disk('public')->delete($berkas->sk_gaji_berkala);
         }
 
         $path = $request->file('sk_gaji_berkala')->store('berkas/sk_gaji_berkala', 'public');
-
-        $berkas->update([
-            'sk_gaji_berkala' => $path, // Update dengan string path baru
-        ]);
+        $berkas->update(['sk_gaji_berkala' => $path]);
 
         return response()->json([
-            'status'  => 'success',
-            'message' => 'SK Gaji Berkala berhasil diperbarui',
-            'data'    => asset('storage/' . $path),
+            'status' => 'success',
+            'message' => 'SK Gaji Berkala pada usulan aktif berhasil diperbarui',
+            'data' => asset('storage/' . $path),
         ]);
     }
 }
