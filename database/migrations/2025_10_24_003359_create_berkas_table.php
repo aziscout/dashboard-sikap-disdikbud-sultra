@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('sk_gaji_berkala')->nullable();
             $table->string('sk_pangkat_terakhir')->nullable();
             $table->string('sk_jabatan')->nullable();
-            $table->boolean('status')->default(false);
             $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('pegawais_id')->constrained('pegawais')->onDelete('cascade');
             $table->timestamps();

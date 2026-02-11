@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class PegawaiApiController extends Controller
 {
@@ -112,5 +114,47 @@ class PegawaiApiController extends Controller
             'status' => 'success',
             'message' => 'Logout berhasil!.',
         ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password_baru' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $pegawai = null;
+
+        if (Auth::check()) {
+            $pegawai = Auth::user();
+        } else {
+            $validatorLogin = Validator::make($request->all(), [
+                'identifier' => 'required',
+            ]);
+
+            if ($validatorLogin->fails()) {
+                return response()->json(['errors' => ['identifier' => ['NIP atau Email wajib diisi untuk reset.']]], 422);
+            }
+
+            $pegawai = Pegawai::where('nip', $request->identifier)
+                ->orWhere('email', $request->identifier)
+                ->first();
+
+            if (!$pegawai) {
+                return response()->json(['message' => 'Pegawai tidak ditemukan.'], 404);
+            }
+        }
+
+        // 3. Update Password
+        $pegawai->password = Hash::make($request->password_baru);
+        $pegawai->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Kata sandi berhasil diperbarui.',
+        ], 200);
     }
 }

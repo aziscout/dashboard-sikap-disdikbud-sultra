@@ -24,8 +24,6 @@ class SkCpnsController extends Controller
         $dataMapped = $riwayatBerkas->map(function ($berkas) {
             return [
                 'id' => $berkas->id,
-                'status_usulan' => $berkas->status ? 'Selesai' : 'Sedang Diproses',
-                'is_locked' => (bool)$berkas->status,
                 'tanggal_upload' => $berkas->created_at->translatedFormat('d F Y'),
                 'sk_cpns' => $berkas->sk_cpns ? asset('storage/' . $berkas->sk_cpns) : null,
             ];
@@ -49,27 +47,27 @@ class SkCpnsController extends Controller
         $path = $request->file('sk_cpns')->store('berkas/sk_cpns', 'public');
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                        ->where('status', false)
+                        ->whereNull('sk_cpns')
+                        ->latest()
                         ->first();
 
         if ($berkas) {
-            if ($berkas->sk_cpns) {
-                Storage::disk('public')->delete($berkas->sk_cpns);
-            }
             $berkas->update(['sk_cpns' => $path]);
         } else {
             $berkas = Berkas::create([
                 'pegawais_id' => $pegawai->id,
                 'users_id'    => $admin?->id,
-                'status'      => false,
-                'sk_cpns'     => $path,
+                'sk_cpns'      => $path,
             ]);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'SK CPNS berhasil diupload ke usulan baru',
-            'data'    => asset('storage/' . $path),
+            'message' => 'SK CPNS berhasil diupload',
+            'data'    => [
+                'file_url' => asset('storage/' . $path),
+                'created_at' => $berkas->created_at->format('d/m/Y H:i:s'), 
+            ],
         ], 201);
     }
 
@@ -82,13 +80,13 @@ class SkCpnsController extends Controller
         $pegawai = auth('pegawai')->user();
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                        ->where('status', false)
+                        ->orderBy('created_at', 'desc')
                         ->first();
 
         if (!$berkas) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Tidak ada usulan aktif. Silahkan upload untuk membuat usulan baru.'
+                'message' => 'Tidak ada berkas yang ditemukan untuk diupdate.'
             ], 404);
         }
 
@@ -101,7 +99,7 @@ class SkCpnsController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'SK CPNS pada usulan aktif berhasil diperbarui',
+            'message' => 'SK CPNS berhasil diperbarui',
             'data' => asset('storage/' . $path),
         ]);
     }

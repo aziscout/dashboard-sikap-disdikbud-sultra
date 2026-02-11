@@ -39,6 +39,11 @@ class Pegawai extends Authenticatable
         return $this->hasMany(Berkas::class, "pegawais_id");
     }
 
+public function arsip()
+    {
+        return $this->hasMany(Arsip::class, "pegawais_id");
+    }
+
     public function notifikasis()
     {
         return $this->hasMany(Notifikasi::class,"pegawais_id");

@@ -3,6 +3,8 @@
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\SendWaNotification;
+use App\Models\Arsip;
+use App\Models\Berkas;
 use App\Models\DataDiri;
 use App\Models\Notifikasi;
 use App\Models\Pegawai;
@@ -146,6 +148,27 @@ return Application::configure(basePath: dirname(__DIR__))
             }); 
         })->everyMinute();
         // })->dailyAt('09:00');
+
+        $schedule->call(function () {
+            $duaBulanLalu = Carbon::now()->subMonths(2);
+            
+            // 2. Ambil semua berkas yang dibuat lebih dari 60 hari yang lalu
+            $berkasLama = Berkas::where('created_at', '<', $duaBulanLalu)
+                ->get();
+
+            foreach ($berkasLama as $berkas) {
+                Arsip::create([
+                    'sk_cpns' => $berkas->sk_cpns,
+                    'sk_pns' => $berkas->sk_pns,
+                    'sk_gaji_berkala' => $berkas->sk_gaji_berkala,
+                    'sk_pangkat_terakhir' => $berkas->sk_pangkat_terakhir,
+                    'sk_jabatan' => $berkas->sk_jabatan,
+                    'pegawais_id' => $berkas->pegawais_id,
+                ]);
+
+                $berkas->delete();
+            }
+        })->everyMinute();
 
     })
     ->withMiddleware(function (Middleware $middleware) {

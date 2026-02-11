@@ -3,60 +3,45 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Berkas;
-use Carbon\Carbon;
+use App\Models\Arsip;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class ArsipApiController extends Controller
 {
-    public function index()
-    {
-        $arsip = Berkas::with(['pegawai.dataDiri'])
-            ->where('status', 'sk telah terbit')
-            ->latest()
-            ->paginate(10)
-            ->through(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama' => $item->pegawai->nama ?? '-',
-                    'nomor' => $item->pegawai->nomor ?? '-',
-                    'email' => $item->pegawai->email ?? '-',
-                    'jenis_kelamin' => $item->pegawai->jenis_kelamin ?? '-',
-                    'alamat' => $item->pegawai->alamat ?? '-',
-                    'tmt_golongan' => optional($item->pegawai->dataDiri)->tmt_golongan
-                        ? Carbon::parse($item->pegawai->dataDiri->tmt_golongan)->format('d/m/Y')
-                        : '-',
-                    'tanggal_naik_pangkat' => Carbon::parse($item->updated_at)->format('d/m/Y'),
-                ];
-            });
-
-        return Inertia::render('pangkat/arsip-pangkat/index', [
-            'arsip' => $arsip,
-        ]);
-    }
-
     public function show(Request $request)
     {
-        $pegawai = $request->user();
+        $pegawai = Auth::user();
 
-        $berkas = Berkas::with(['pegawai.dataDiri'])
-            ->where('status', 'sk telah terbit')
-            ->find($pegawai);
+        $arsip = Arsip::where('pegawais_id', $pegawai->id)
+            ->with(['pegawai.dataDiri'])
+            ->get(); 
 
-        if (!$berkas) {
-            return redirect()->route('pangkat.arsip-pangkat')->with('message', 'Data arsip tidak ditemukan.');
+        if ($arsip->isEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'data' => [],
+                'message' => 'Belum ada arsip untuk pegawai ini.',
+            ], 200);
         }
 
-        $pegawai = $berkas->pegawai;
+        $responseData = [
+            'status' => 'success',
+            'data' => $arsip->map(function ($arsip) {
+                return [
+                    'id' => $arsip->id,
+                    'sk_cpns' => $arsip->sk_cpns,
+                    'sk_pns' => $arsip->sk_pns,
+                    'sk_gaji_berkala' => $arsip->sk_gaji_berkala,
+                    'sk_pangkat_terakhir' => $arsip->sk_pangkat_terakhir,
+                    'sk_jabatan' => $arsip->sk_jabatan,
+                    'pegawais_id' => $arsip->pegawais_id,
+                    'created_at' => $arsip->created_at->format('d/m/Y H:i:s'),
+                    'updated_at' => $arsip->updated_at->format('d/m/Y H:i:s'),
+                ];
+            }),
+        ];
 
-        return Inertia::render('pangkat/arsip-pangkat/show', [
-            'pegawai' => $pegawai,
-            'data_diri' => $pegawai?->dataDiri,
-            'berkas' => $berkas,
-            'flash' => [
-                'message' => session('message'),
-            ],
-        ]);
+        return response()->json($responseData, 200);
     }
 }

@@ -49,27 +49,27 @@ class SkPnsController extends Controller
         $path = $request->file('sk_pns')->store('berkas/sk_pns', 'public');
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                        ->where('status', false)
+                        ->whereNull('sk_pns')
+                        ->latest()
                         ->first();
 
         if ($berkas) {
-            if ($berkas->sk_pns) {
-                Storage::disk('public')->delete($berkas->sk_pns);
-            }
             $berkas->update(['sk_pns' => $path]);
         } else {
             $berkas = Berkas::create([
                 'pegawais_id' => $pegawai->id,
                 'users_id'    => $admin?->id,
-                'status'      => false,
-                'sk_pns'     => $path,
+                'sk_pns'      => $path,
             ]);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'SK PNS berhasil diupload ke usulan baru',
-            'data'    => asset('storage/' . $path),
+            'message' => 'SK PNS berhasil diupload',
+            'data'    => [
+                'file_url' => asset('storage/' . $path),
+                'created_at' => $berkas->created_at->format('d/m/Y H:i:s'), 
+            ],
         ], 201);
     }
 

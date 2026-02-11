@@ -24,8 +24,6 @@ class SkJabatanController extends Controller
         $dataMapped = $riwayatBerkas->map(function ($berkas) {
             return [
                 'id' => $berkas->id,
-                'status_usulan' => $berkas->status ? 'Selesai' : 'Sedang Diproses',
-                'is_locked' => (bool)$berkas->status,
                 'tanggal_upload' => $berkas->created_at->translatedFormat('d F Y'),
                 'sk_jabatan' => $berkas->sk_jabatan ? asset('storage/' . $berkas->sk_jabatan) : null,
             ];
@@ -49,27 +47,27 @@ class SkJabatanController extends Controller
         $path = $request->file('sk_jabatan')->store('berkas/sk_jabatan', 'public');
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                        ->where('status', false)
+                        ->whereNull('sk_jabatan')
+                        ->latest()
                         ->first();
 
         if ($berkas) {
-            if ($berkas->sk_jabatan) {
-                Storage::disk('public')->delete($berkas->sk_jabatan);
-            }
             $berkas->update(['sk_jabatan' => $path]);
         } else {
             $berkas = Berkas::create([
                 'pegawais_id' => $pegawai->id,
                 'users_id'    => $admin?->id,
-                'status'      => false,
-                'sk_jabatan'     => $path,
+                'sk_jabatan'      => $path,
             ]);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'SK Jabatan berhasil diupload ke usulan baru',
-            'data'    => asset('storage/' . $path),
+            'message' => 'SK Jabatan berhasil diupload',
+            'data'    => [
+                'file_url' => asset('storage/' . $path),
+                'created_at' => $berkas->created_at->format('d/m/Y H:i:s'), 
+            ],
         ], 201);
     }
 
@@ -82,13 +80,13 @@ class SkJabatanController extends Controller
         $pegawai = auth('pegawai')->user();
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                        ->where('status', false)
+                        ->orderBy('created_at', 'desc')
                         ->first();
 
         if (!$berkas) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Tidak ada usulan aktif. Silahkan upload untuk membuat usulan baru.'
+                'message' => 'Tidak ada berkas yang ditemukan untuk diupdate.'
             ], 404);
         }
 
@@ -101,7 +99,7 @@ class SkJabatanController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'SK Jabatan pada usulan aktif berhasil diperbarui',
+            'message' => 'SK Jabatan berhasil diperbarui',
             'data' => asset('storage/' . $path),
         ]);
     }

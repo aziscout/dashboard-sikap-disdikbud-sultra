@@ -8,19 +8,19 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Detail Arsip', href: '#' },
 ];
 
-interface BerkasObject {
+interface ArsipObject {
     file: string;
     created_at?: string;
 }
 
-interface Berkas {
+interface Arsip {
     id: number;
     sk_cpns?: string;
     sk_pns?: string;
-    sk_gaji_berkala?: BerkasObject[];
-    sk_pangkat_terakhir?: BerkasObject[];
-    sk_jabatan?: BerkasObject[];
-    file_sk?: BerkasObject[];
+    sk_gaji_berkala?: ArsipObject[];
+    sk_pangkat_terakhir?: ArsipObject[];
+    sk_jabatan?: ArsipObject[];
+    file_sk?: ArsipObject[];
     status?: string;
     created_at: string;
 }
@@ -35,13 +35,13 @@ interface Pegawai {
 
 interface PageProps {
     pegawai: Pegawai;
-    berkas: Berkas;
+    arsip: Arsip;
 }
 
 export default function Show() {
-    const { pegawai, berkas } = usePage().props as unknown as PageProps;
+    const { pegawai, arsip } = usePage().props as unknown as PageProps;
 
-    const daftarBerkas = [
+    const daftarArsip = [
         { label: 'SK CPNS', key: 'sk_cpns', icon: FileText },
         { label: 'SK PNS', key: 'sk_pns', icon: FileText },
         { label: 'SK Pangkat Terakhir', key: 'sk_pangkat_terakhir', icon: FileText },
@@ -50,8 +50,8 @@ export default function Show() {
         // { label: 'File SK Naik Pangkat', key: 'file_sk', icon: FileText },
     ];
 
-    const getLatestFile = (key: keyof Berkas): string | null => {
-        const value = berkas?.[key];
+    const getLatestFile = (key: keyof Arsip): string | null => {
+        const value = arsip?.[key];
 
         if (!value) return null;
 
@@ -86,9 +86,9 @@ export default function Show() {
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {daftarBerkas.map((item, i) => {
+                    {daftarArsip.map((item, i) => {
                         const Icon = item.icon;
-                        const latestFile = getLatestFile(item.key as keyof Berkas);
+                        const latestFile = getLatestFile(item.key as keyof Arsip);
                         return (
                         <div
                             key={i}

@@ -12,7 +12,6 @@ class Berkas extends Model
         'sk_gaji_berkala',
         'sk_pangkat_terakhir',
         'sk_jabatan',
-        'status',
         'users_id',
         'pegawais_id',
     ];

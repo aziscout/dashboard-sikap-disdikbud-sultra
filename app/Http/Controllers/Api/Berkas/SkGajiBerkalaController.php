@@ -24,8 +24,6 @@ class SkGajiBerkalaController extends Controller
         $dataMapped = $riwayatBerkas->map(function ($berkas) {
             return [
                 'id' => $berkas->id,
-                'status_usulan' => $berkas->status ? 'Selesai' : 'Sedang Diproses',
-                'is_locked' => (bool)$berkas->status,
                 'tanggal_upload' => $berkas->created_at->translatedFormat('d F Y'),
                 'sk_gaji_berkala' => $berkas->sk_gaji_berkala ? asset('storage/' . $berkas->sk_gaji_berkala) : null,
             ];
@@ -49,27 +47,27 @@ class SkGajiBerkalaController extends Controller
         $path = $request->file('sk_gaji_berkala')->store('berkas/sk_gaji_berkala', 'public');
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                        ->where('status', false)
+                        ->whereNull('sk_gaji_berkala')
+                        ->latest()
                         ->first();
 
         if ($berkas) {
-            if ($berkas->sk_gaji_berkala) {
-                Storage::disk('public')->delete($berkas->sk_gaji_berkala);
-            }
             $berkas->update(['sk_gaji_berkala' => $path]);
         } else {
             $berkas = Berkas::create([
                 'pegawais_id' => $pegawai->id,
                 'users_id'    => $admin?->id,
-                'status'      => false,
-                'sk_gaji_berkala'     => $path,
+                'sk_gaji_berkala'      => $path,
             ]);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'SK Gaji Berkala berhasil diupload ke usulan baru',
-            'data'    => asset('storage/' . $path),
+            'message' => 'SK Gaji Berkala berhasil diupload',
+            'data'    => [
+                'file_url' => asset('storage/' . $path),
+                'created_at' => $berkas->created_at->format('d/m/Y H:i:s'), 
+            ],
         ], 201);
     }
 
@@ -82,13 +80,13 @@ class SkGajiBerkalaController extends Controller
         $pegawai = auth('pegawai')->user();
 
         $berkas = Berkas::where('pegawais_id', $pegawai->id)
-                        ->where('status', false)
+                        ->orderBy('created_at', 'desc')
                         ->first();
 
         if (!$berkas) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Tidak ada usulan aktif. Silahkan upload untuk membuat usulan baru.'
+                'message' => 'Tidak ada berkas yang ditemukan untuk diupdate.'
             ], 404);
         }
 
@@ -101,7 +99,7 @@ class SkGajiBerkalaController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'SK Gaji Berkala pada usulan aktif berhasil diperbarui',
+            'message' => 'SK Gaji Berkala berhasil diperbarui',
             'data' => asset('storage/' . $path),
         ]);
     }

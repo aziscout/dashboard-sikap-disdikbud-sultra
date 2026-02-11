@@ -10,7 +10,6 @@ use App\Http\Controllers\Api\Berkas\SkJabatanController;
 use App\Http\Controllers\Api\Berkas\SkPangkatTerakhirController;
 use App\Http\Controllers\Api\Berkas\SkPnsController;
 use App\Http\Controllers\Api\Berkas\StatusBerkasController;
-use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\PegawaiApiController;
 use App\Http\Controllers\Api\DataDiriApiController;
 
@@ -24,6 +23,9 @@ use App\Http\Controllers\Api\DataDiriApiController;
    // pegawai
    Route::post('/register', [PegawaiApiController::class, 'register']);
    Route::post('/login', [PegawaiApiController::class, 'login']);
+
+   Route::post('/pegawai/ubah-password', [PegawaiApiController::class, 'updatePassword']);
+
    Route::middleware('auth:sanctum')->group(function () {
       Route::get('/pegawai/profile', [PegawaiApiController::class, 'getProfile']);
       Route::put('/pegawai/profile', [PegawaiApiController::class, 'updateProfile']);
@@ -38,8 +40,9 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::put('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'update']);
       Route::delete('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
 
-      Route::get('/pegawai/arsip-pangkat',[ArsipApiController::class,'index']);
-      Route::get('/pegawai/arsip-pangkat/show',[ArsipApiController::class,'show  ']);
+      // Route::get('/pegawai/arsip-pangkat',[ArsipApiController::class,'index']);
+      // Route::get('/pegawai/arsip-pangkat/show',[ArsipApiController::class,'show  ']);
+      Route::get('/arsip',[ArsipApiController::class,'show']);
       
       // cpns
       Route::post('/berkas/sk-cpns', [SkCpnsController::class, 'store']);
