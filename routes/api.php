@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Berkas\SkPnsController;
 use App\Http\Controllers\Api\Berkas\StatusBerkasController;
 use App\Http\Controllers\Api\PegawaiApiController;
 use App\Http\Controllers\Api\DataDiriApiController;
+use App\Http\Controllers\Api\ForgotPasswordApiController;
 
    // admin pangkat
    Route::get('/admin', [AdminApiController::class, 'index']);
@@ -24,12 +25,14 @@ use App\Http\Controllers\Api\DataDiriApiController;
    Route::post('/register', [PegawaiApiController::class, 'register']);
    Route::post('/login', [PegawaiApiController::class, 'login']);
 
-   Route::post('/pegawai/ubah-password', [PegawaiApiController::class, 'updatePassword']);
+   Route::post('/password/send-link', [ForgotPasswordApiController::class, 'sendResetLink']);
+   Route::post('/password/reset', [ForgotPasswordApiController::class, 'resetPassword']);
 
    Route::middleware('auth:sanctum')->group(function () {
       Route::get('/pegawai/profile', [PegawaiApiController::class, 'getProfile']);
       Route::put('/pegawai/profile', [PegawaiApiController::class, 'updateProfile']);
       Route::post('/logout', [PegawaiApiController::class, 'logout']);
+      Route::post('/password/update', [ForgotPasswordApiController::class, 'updatePassword']);
    });
 
    // pegawai data diri and berkas
@@ -39,6 +42,8 @@ use App\Http\Controllers\Api\DataDiriApiController;
       Route::post('/pegawai/data-diri', [DataDiriApiController::class, 'store']);
       Route::put('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'update']);
       Route::delete('/pegawai/data-diri/{id}', [DataDiriApiController::class, 'destroy']);
+
+      // Route::post('/pegawai/update-password', [PegawaiApiController::class, 'updatePassword']);
 
       // Route::get('/pegawai/arsip-pangkat',[ArsipApiController::class,'index']);
       // Route::get('/pegawai/arsip-pangkat/show',[ArsipApiController::class,'show  ']);

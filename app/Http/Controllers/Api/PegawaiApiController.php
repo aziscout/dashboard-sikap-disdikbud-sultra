@@ -116,45 +116,44 @@ class PegawaiApiController extends Controller
         ]);
     }
 
-    public function updatePassword(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'password_baru' => 'required|string|min:8|confirmed',
-        ]);
+    // public function updatePassword(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'password_baru' => 'required|string|min:8|confirmed',
+    //     ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
 
-        $pegawai = null;
+    //     $pegawai = null;
 
-        if (Auth::check()) {
-            $pegawai = Auth::user();
-        } else {
-            $validatorLogin = Validator::make($request->all(), [
-                'identifier' => 'required',
-            ]);
+    //     if (Auth::check()) {
+    //         $pegawai = Auth::user();
+    //     } else {
+    //         $validatorLogin = Validator::make($request->all(), [
+    //             'identifier' => 'required',
+    //         ]);
 
-            if ($validatorLogin->fails()) {
-                return response()->json(['errors' => ['identifier' => ['NIP atau Email wajib diisi untuk reset.']]], 422);
-            }
+    //         if ($validatorLogin->fails()) {
+    //             return response()->json(['errors' => ['identifier' => ['NIP atau Email wajib diisi untuk reset.']]], 422);
+    //         }
 
-            $pegawai = Pegawai::where('nip', $request->identifier)
-                ->orWhere('email', $request->identifier)
-                ->first();
+    //         $pegawai = Pegawai::where('nip', $request->identifier)
+    //             ->orWhere('email', $request->identifier)
+    //             ->first();
 
-            if (!$pegawai) {
-                return response()->json(['message' => 'Pegawai tidak ditemukan.'], 404);
-            }
-        }
+    //         if (!$pegawai) {
+    //             return response()->json(['message' => 'Pegawai tidak ditemukan.'], 404);
+    //         }
+    //     }
 
-        // 3. Update Password
-        $pegawai->password = Hash::make($request->password_baru);
-        $pegawai->save();
+    //     $pegawai->password = Hash::make($request->password_baru);
+    //     $pegawai->save();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Kata sandi berhasil diperbarui.',
-        ], 200);
-    }
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Kata sandi berhasil diperbarui.',
+    //     ], 200);
+    // }
 }
