@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Berkas\StatusBerkasController;
 use App\Http\Controllers\Api\PegawaiApiController;
 use App\Http\Controllers\Api\DataDiriApiController;
 use App\Http\Controllers\Api\ForgotPasswordApiController;
+use App\Http\Controllers\Api\PanduanApiController;
 
    // admin pangkat
    Route::get('/admin', [AdminApiController::class, 'index']);
@@ -78,4 +79,7 @@ use App\Http\Controllers\Api\ForgotPasswordApiController;
       
       Route::put('berkas/status', [StatusBerkasController::class, 'update']);
       Route::get('berkas/status', [StatusBerkasController::class, 'show']);
+
+      Route::post('/panduan', [PanduanApiController::class, 'store']);
+      Route::get('/panduan', [PanduanApiController::class, 'index']);
    });

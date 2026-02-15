@@ -11,6 +11,13 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
+    private function isValidDate($date)
+    {
+        return !empty($date)
+            && $date !== '-'
+            && Carbon::hasFormat($date, 'Y-m-d');
+    }
+
     public function index()
     {
         Carbon::setLocale('id');
@@ -22,45 +29,52 @@ class DashboardController extends Controller
         // Ambil semua data pegawai dengan relasi
         $dataDiris = DataDiri::with(['pegawai.berkas'])->get();
 
-        // Sembunyikan data pegawai jika tepat 1 hari setelah 4 tahun dari tmt_golongan DAN 1 hari setelah 2 tahun dari kgb_terakhir
         $dataDiris = $dataDiris->filter(function ($item) use ($today) {
-            if (!$item->tmt_golongan || !$item->kgb_terakhir) {
-                return true; // Tetap tampilkan jika salah satu tanggal tidak ada
+            if (
+                !$this->isValidDate($item->tmt_golongan) ||
+                !$this->isValidDate($item->kgb_terakhir)
+            ) {
+                return true; // tetap tampilkan jika salah satu tanggal tidak valid
             }
 
-            $tmt = Carbon::parse($item->tmt_golongan);
+            $tmt = Carbon::createFromFormat('Y-m-d', $item->tmt_golongan);
             $fourYearsOneDay = $tmt->copy()->addYears(4)->addDay();
             $condition1 = $today->isSameDay($fourYearsOneDay);
 
-            $kgb = Carbon::parse($item->kgb_terakhir);
+            $kgb = Carbon::createFromFormat('Y-m-d', $item->kgb_terakhir);
             $twoYearsOneDay = $kgb->copy()->addYears(2)->addDay();
             $condition2 = $today->isSameDay($twoYearsOneDay);
 
-            // Sembunyikan hanya jika kedua kondisi terpenuhi
             return !($condition1 && $condition2);
         });
 
+
         $pegawaiSiapNaik = $dataDiris->filter(function ($item) use ($today) {
-            if (!$item->tmt_golongan) return false;
+            if (!$this->isValidDate($item->tmt_golongan)) {
+                return false;
+            }
 
-            $tmt = Carbon::parse($item->tmt_golongan);
-            $targetLunas = $tmt->copy()->addYears(4);
-            $duaBulanSebelum = $targetLunas->copy()->subMonths(2);
+            $tmt = Carbon::createFromFormat('Y-m-d', $item->tmt_golongan);
+            $target = $tmt->copy()->addYears(4);
+            $duaBulanSebelum = $target->copy()->subMonths(2);
 
-            return $today->between($duaBulanSebelum, $targetLunas);
+            return $today->between($duaBulanSebelum, $target);
         });
+
 
         // --- 2️⃣ Hitung pegawai siap naik gaji berkala (>= 2 bulan sebelum 2 tahun dari KGB terakhir) ---
         $pegawaiSiapNaikKgb = $dataDiris->filter(function ($item) use ($today) {
-            if (!$item->kgb_terakhir) return false;
+            if (!$this->isValidDate($item->kgb_terakhir)) {
+                return false;
+            }
 
-            $kgb = Carbon::parse($item->kgb_terakhir);
-            $targetLunasKgb = $kgb->copy()->addYears(2); // Tepat 2 tahun
-            $duaBulanSebelumKgb = $targetLunasKgb->copy()->subMonths(2);
+            $kgb = Carbon::createFromFormat('Y-m-d', $item->kgb_terakhir);
+            $target = $kgb->copy()->addYears(2);
+            $duaBulanSebelum = $target->copy()->subMonths(2);
 
-            // Sama seperti pangkat, hilang jika sudah lewat 2 tahun
-            return $today->between($duaBulanSebelumKgb, $targetLunasKgb);
+            return $today->between($duaBulanSebelum, $target);
         });
+
 
         // // --- 3️⃣ Hitung pegawai yang sudah SK terbit tahun berjalan ---
         // $pegawaiSudahNaik = $dataDiris->filter(function ($item) use ($tahunSekarang) {
