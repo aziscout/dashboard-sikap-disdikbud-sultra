@@ -18,21 +18,34 @@ class UsulanKgbController extends Controller
 
         $pegawai = Pegawai::with(['dataDiri'])->get();
 
-        $pegawai = Pegawai::with(['dataDiri'])->get();
-
         $filteredPegawai = $pegawai->filter(function ($item) use ($today) {
-            $kgbTerakhirStr = $item->dataDiri->kgb_terakhir ?? null;
-            
-            if (!$kgbTerakhirStr) return false;
 
-            $kgbTerakhir = Carbon::parse($kgbTerakhirStr);
-            $jatuhTempoKgb = $kgbTerakhir->copy()->addYears(2); // Tepat 2 tahun kemudian
-            $duaBulanSebelum = $jatuhTempoKgb->copy()->subMonths(2); // Mulai muncul 2 bulan sebelum
+            // Pastikan relasi ada
+            if (!$item->dataDiri) {
+                return false;
+            }
+
+            $kgbTerakhirStr = $item->dataDiri->kgb_terakhir;
+
+            // ⛔ CEGAH '-' / NULL / FORMAT SALAH
+            if (
+                empty($kgbTerakhirStr) ||
+                $kgbTerakhirStr === '-' ||
+                !Carbon::hasFormat($kgbTerakhirStr, 'Y-m-d')
+            ) {
+                return false;
+            }
+
+            // ✅ AMAN DIPARSE
+            $kgbTerakhir = Carbon::createFromFormat('Y-m-d', $kgbTerakhirStr);
+
+            $jatuhTempoKgb = $kgbTerakhir->copy()->addYears(2);
+            $duaBulanSebelum = $jatuhTempoKgb->copy()->subMonths(2);
 
             return $today->between($duaBulanSebelum, $jatuhTempoKgb);
         })->values();
 
-        
+        // ================= PAGINATION =================
         $perPage = 20;
         $currentPage = $request->get('page', 1);
         $offset = ($currentPage - 1) * $perPage;
@@ -51,6 +64,7 @@ class UsulanKgbController extends Controller
             'pegawai' => $paginatedPegawai,
         ]);
     }
+
 
     public function status($id)
     {

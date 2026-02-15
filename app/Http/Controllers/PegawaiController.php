@@ -9,6 +9,13 @@ use Inertia\Inertia;
 
 class PegawaiController extends Controller
 {
+    private function isValidDate($date)
+    {
+        return !empty($date)
+            && $date !== '-'
+            && Carbon::hasFormat($date, 'Y-m-d');
+    }
+
     public function index()
     {
         Carbon::setLocale('id');
@@ -27,8 +34,9 @@ class PegawaiController extends Controller
             $status = 'Belum Siap';
             $isActive = false;
 
-            if ($tmt) {
-                $tmtDate = Carbon::parse($tmt);
+            // ================= TMT =================
+            if ($this->isValidDate($tmt)) {
+                $tmtDate = Carbon::createFromFormat('Y-m-d', $tmt);
                 $nextPromotionDate = $tmtDate->copy()->addYears(4);
                 $twoMonthsBefore = $nextPromotionDate->copy()->subMonths(2);
 
@@ -43,16 +51,18 @@ class PegawaiController extends Controller
             $item->status = $status;
             $item->is_active = $isActive;
 
-            $item->tmt_golongan = $tmt
-                ? Carbon::parse($tmt)->translatedFormat('d-m-Y')
+            // ================= FORMAT OUTPUT =================
+            $item->tmt_golongan = $this->isValidDate($tmt)
+                ? Carbon::createFromFormat('Y-m-d', $tmt)->translatedFormat('d-m-Y')
                 : '-';
 
-            $item->kgb_terakhir = $kgbTerakhir
-                ? Carbon::parse($kgbTerakhir)->translatedFormat('d-m-Y')
+            $item->kgb_terakhir = $this->isValidDate($kgbTerakhir)
+                ? Carbon::createFromFormat('Y-m-d', $kgbTerakhir)->translatedFormat('d-m-Y')
                 : '-';
 
             return $item;
         });
+
 
 
         return Inertia::render('pangkat/pegawai/index', [
@@ -62,6 +72,14 @@ class PegawaiController extends Controller
             ],
         ]);
     }
+
+    private function formatTanggal($date)
+    {
+        return $this->isValidDate($date)
+            ? Carbon::createFromFormat('Y-m-d', $date)->translatedFormat('d F Y')
+            : '-';
+    }
+
 
     public function show($id)
     {
@@ -74,28 +92,15 @@ class PegawaiController extends Controller
         }
 
         // Format dates in pegawai
-        $pegawai->tanggal_lahir = $pegawai->tanggal_lahir
-            ? Carbon::parse($pegawai->tanggal_lahir)->translatedFormat('d F Y')
-            : '-';
+        $pegawai->tanggal_lahir = $this->formatTanggal($pegawai->tanggal_lahir);
 
-        // Format dates in data_diri
         if ($pegawai->dataDiri) {
-            $pegawai->dataDiri->tmt_golongan = $pegawai->dataDiri->tmt_golongan
-                ? Carbon::parse($pegawai->dataDiri->tmt_golongan)->translatedFormat('d F Y')
-                : '-';
-
-            $pegawai->dataDiri->tanggal_sk = $pegawai->dataDiri->tanggal_sk
-                ? Carbon::parse($pegawai->dataDiri->tanggal_sk)->translatedFormat('d F Y')
-                : '-';
-
-            $pegawai->dataDiri->tanggal_pertek_bkn = $pegawai->dataDiri->tanggal_pertek_bkn
-                ? Carbon::parse($pegawai->dataDiri->tanggal_pertek_bkn)->translatedFormat('d F Y')
-                : '-';
-
-            $pegawai->dataDiri->kgb_terakhir = $pegawai->dataDiri->kgb_terakhir
-                ? Carbon::parse($pegawai->dataDiri->kgb_terakhir)->translatedFormat('d F Y')
-                : '-';
+            $pegawai->dataDiri->tmt_golongan = $this->formatTanggal($pegawai->dataDiri->tmt_golongan);
+            $pegawai->dataDiri->tanggal_sk = $this->formatTanggal($pegawai->dataDiri->tanggal_sk);
+            $pegawai->dataDiri->tanggal_pertek_bkn = $this->formatTanggal($pegawai->dataDiri->tanggal_pertek_bkn);
+            $pegawai->dataDiri->kgb_terakhir = $this->formatTanggal($pegawai->dataDiri->kgb_terakhir);
         }
+
 
         return Inertia::render('pangkat/pegawai/show', [
             'pegawai' => $pegawai,
