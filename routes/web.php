@@ -4,6 +4,7 @@ use App\Http\Controllers\ArsipKgbController;
 use App\Http\Controllers\Pangkat\DashboardController as PangkatDashboardController;
 use App\Http\Controllers\ArsipPangkatController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\PensiunController;
 use App\Http\Controllers\UsulanKgbController;
 use App\Http\Controllers\UsulanPangkatController;
 use Illuminate\Support\Facades\Route;
@@ -48,7 +49,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pangkat/usulan-kgb/detail/{id}', [ UsulanKgbController::class, 'status'])->name('pangkat.usulan-kgb.status');
         Route::get('/pangkat/arsip-kgb', [ArsipKgbController::class, 'index'])->name('pangkat.arsip-kgb');
         Route::get('/pangkat/arsip-kgb/show/{id}', [ArsipKgbController::class, 'show'])->name('pangkat.arsip-kgb.show');
+    });
 
+    Route::middleware(['permission:Pensiun'])->group(function() {
+        Route::get('/pangkat/pensiun', [ PensiunController::class, 'index'])->name('pangkat.pensiun');
     });
 });
 
