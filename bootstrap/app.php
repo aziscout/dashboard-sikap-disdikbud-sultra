@@ -84,7 +84,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->delay($currentTime);
                 });
             }
-        })->everyMinute(); 
+        })->everyMinute();
         // })->dailyAt('09:00'); 
 
         $schedule->call(function () {

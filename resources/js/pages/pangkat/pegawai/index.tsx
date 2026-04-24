@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -18,7 +17,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Eye, ListFilterPlus } from 'lucide-react';
+import { Eye, Search, ListFilterPlus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -64,159 +63,129 @@ export default function Index() {
     const filteredPegawai = useMemo(() => {
         return [...pegawai.data]
             .filter((item) =>
-            // item.nama.toLowerCase().includes(searchQuery.toLowerCase())
-            (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (item.nip ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (item.unit_kerja ?? '').toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .sort((a, b) => {
-            const dateA = new Date(a.created_at).getTime();
-            const dateB = new Date(b.created_at).getTime();
-            return sortOrder === 'Terbaru' ? dateB - dateA : dateA - dateB;
-        });
+                (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (item.nip ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (item.unit_kerja ?? '').toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .sort((a, b) => {
+                const dateA = new Date(a.created_at).getTime();
+                const dateB = new Date(b.created_at).getTime();
+                return sortOrder === 'Terbaru' ? dateB - dateA : dateA - dateB;
+            });
     }, [pegawai.data, sortOrder, searchQuery]);
 
     const renderValue = (value?: string | number | null) =>
-    value !== null && value !== undefined && value !== '' ? value : '-';
+        value !== null && value !== undefined && value !== '' ? value : '-';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-        <Head title="Data Pegawai" />
+            <Head title="Data Pegawai" />
 
-            <div className="container mx-auto p-6 space-y-6">
-                {/* Header Section */}
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <h1
-                    className="text-2xl font-bold bg-gradient-to-r text-indigo-500 
-                    bg-clip-text tracking-tight"
-                    >
-                    Daftar Pegawai
-                    </h1>
+            <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 p-4 md:p-8 space-y-6">
+                
+                {/* Header Modern */}
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between dark:bg-slate-900  ">
+                    <div>
+                        <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
+                            Daftar <span className="text-indigo-500">Pegawai</span>
+                        </h1>
+                        <p className="text-sm text-slate-500 font-medium">Total {pegawai.data.length} data ditampilkan pada halaman ini</p>
+                    </div>
 
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                    {/*  Search */}
-                    <Input
-                        placeholder="Cari nama,nip, atau unit kerja..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full md:w-64 border-indigo-200 dark:border-indigo-800 focus:ring-2 focus:ring-indigo-400"
-                    />
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="relative group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                            <Input
+                                placeholder="Cari nama, nip, unit..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full md:w-72 pl-10 border-indigo-100 dark:border-indigo-900 focus:ring-indigo-500/20 rounded-xl"
+                            />
+                        </div>
 
-                    {/*  Sort */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="outline"
-                            className="flex items-center gap-2 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all"
-                        >
-                            <ListFilterPlus className="w-4 h-4" /> {sortOrder}
-                        </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-40 bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-800 shadow-lg backdrop-blur-md">
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem onClick={() => setSortOrder('Terbaru')}>
-                            Terbaru
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setSortOrder('Terlama')}>
-                            Terlama
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="rounded-xl border-indigo-100 dark:border-indigo-900 text-indigo-600 gap-2 hover:bg-indigo-50">
+                                    <ListFilterPlus className="w-4 h-4" /> {sortOrder}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl">
+                                <DropdownMenuItem onClick={() => setSortOrder('Terbaru')}>Terbaru</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSortOrder('Terlama')}>Terlama</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
 
-                {/* Table Section */}
-                <div
-                    className="overflow-hidden rounded-lg border border-indigo-100 
-                    dark:border-indigo-900/50 shadow-md backdrop-blur-md transition-all"
-                >
-                    <Table className="w-full">
-                        <TableHeader>
-                            <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
-                            <TableHead className="w-[60px] text-center">No</TableHead>
-                            <TableHead>Nama</TableHead>
-                            <TableHead>NIP</TableHead>
-                            <TableHead>Nomor</TableHead>
-                            {/* <TableHead>Email</TableHead> */}
-                            <TableHead>Unit Kerja</TableHead>
-                            <TableHead className='w-[120px]'>KGB Terakhir</TableHead>
-                            <TableHead className='w-[130px]'>TMT Golongan</TableHead>
-                            <TableHead>Detail</TableHead>
+                {/* Table Card Section */}
+                <div className="bg-white dark:bg-slate-900 rounded-md border border-indigo-100 dark:border-indigo-900 shadow-xl shadow-indigo-500/5 overflow-hidden">
+                    <Table>
+                        <TableHeader className="bg-indigo-50/50 dark:bg-indigo-900/20">
+                            <TableRow className="hover:bg-transparent">
+                                <TableHead className="w-[60px] text-center font-bold text-indigo-600 uppercase text-[10px] tracking-widest">No</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Nama</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">NIP</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Nomor</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Unit Kerja</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">KGB Terakhir</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">TMT Golongan</TableHead>
+                                <TableHead className="text-center font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Detail</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredPegawai.length > 0 ? (
-                            filteredPegawai.map((item, index) => (
-                                <TableRow
-                                key={item.id}
-                                className="hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40 transition-all"
-                                >
-                                    {/* <TableCell className="text-center">{index + 1}</TableCell> */}
-                                    <TableCell className="text-center">
-                                        {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
-                                    </TableCell>
-                                    <TableCell>{item.nama}</TableCell>
-                                    <TableCell>{renderValue(item.nip)}</TableCell>
-                                    <TableCell>{renderValue(item.nomor)}</TableCell>
-                                    {/* <TableCell>{renderValue(item.email)}</TableCell> */}
-                                    <TableCell className="capitalize">
-                                        {renderValue(item.unit_kerja)}
-                                    </TableCell>
-                                    <TableCell className="capitalize">
-                                        {renderValue(item.kgb_terakhir)}
-                                    </TableCell>
-                                    <TableCell className="capitalize">
-                                        {renderValue(item.tmt_golongan)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Link
-                                            href={route('pegawai.show', item.id)}
-                                            title="Detail"
-                                        >
-                                            <Button
-                                            className="bg-indigo-500 
-                                            hover:bg-indigo-600 text-white shadow-md 
-                                            hover:shadow-lg transition-all"
-                                            >
-                                            <Eye className="w-4 h-4" />
-                                            </Button>
-                                        </Link>
+                                filteredPegawai.map((item, index) => (
+                                    <TableRow key={item.id} className="group hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors border-indigo-50/50 dark:border-indigo-900/20">
+                                        <TableCell className="text-center font-mono text-xs text-slate-400">
+                                            {(pegawai.current_page - 1) * pegawai.per_page + (index + 1)}
+                                        </TableCell>
+                                        <TableCell className="font-semibold text-slate-700 dark:text-slate-200">{item.nama}</TableCell>
+                                        <TableCell className="font-mono text-slate-500">{renderValue(item.nip)}</TableCell>
+                                        <TableCell className="text-xs text-slate-500 font-medium">{renderValue(item.nomor)}</TableCell>
+                                        <TableCell>
+                                            <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-tight border border-indigo-100 dark:border-indigo-800">
+                                                {renderValue(item.unit_kerja)}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell className="text-xs font-medium text-emerald-600 dark:text-emerald-500 capitalize">{renderValue(item.kgb_terakhir)}</TableCell>
+                                        <TableCell className="text-xs font-medium text-rose-600 dark:text-rose-400 capitalize">{renderValue(item.tmt_golongan)}</TableCell>
+                                        <TableCell className="text-center">
+                                            <Link href={route('pegawai.show', item.id)}>
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-indigo-500 hover:bg-indigo-500 hover:text-white transition-all">
+                                                    <Eye className="w-4 h-4" />
+                                                </Button>
+                                            </Link>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={8} className="h-32 text-center text-slate-400 italic">
+                                        Tidak ada data pegawai ditemukan.
                                     </TableCell>
                                 </TableRow>
-                            ))
-                            ) : (
-                            <TableRow>
-                                <TableCell
-                                colSpan={8}
-                                className="text-center text-gray-500 py-6"
-                                >
-                                Tidak ada data pegawai.
-                                </TableCell>
-                            </TableRow>
                             )}
                         </TableBody>
                     </Table>
                 </div>
-                <div className="flex justify-end items-center gap-2 my-8 flex-wrap">
+
+                {/* Modern Pagination */}
+                <div className="flex justify-center md:justify-end items-center gap-1.5 pt-4">
                     {pegawai.links.map((link, i) => (
                         <Button
-                        key={i}
-                        size="sm"
-                        variant={link.active ? 'default' : 'outline'}
-                        disabled={!link.url}
-                        onClick={() => link.url && (window.location.href = link.url)}
-                        dangerouslySetInnerHTML={{ __html: link.label }}
-                        className={`
-                            min-w-[40px] h-9 rounded-full text-sm font-medium
-                            transition-all duration-200 ease-in-out
-                            ${
-                            link.active
-                                ? 'bg-indigo-500 hover:bg-indigo-600 to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-purple-800/40 scale-105'
-                                : 'border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
-                            }
-                            ${!link.url ? 'opacity-40 cursor-not-allowed' : ''}
-                        `}
+                            key={i}
+                            variant="ghost"
+                            disabled={!link.url}
+                            onClick={() => link.url && (window.location.href = link.url)}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                            className={`
+                                h-9 min-w-[36px] rounded-xl text-xs font-bold transition-all
+                                ${link.active 
+                                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-200 dark:shadow-none' 
+                                    : 'text-slate-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                                }
+                                ${!link.url ? 'opacity-20' : ''}
+                            `}
                         />
                     ))}
                 </div>

@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Eye, ListFilterPlus } from 'lucide-react';
+import { Eye, ListFilterPlus, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -55,7 +55,6 @@ export default function Index() {
         return [...arsip.data]
             .filter(
                 (item) =>
-                    // item.nama.toLowerCase().includes(searchQuery.toLowerCase())
                     (item.nama ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                     (item.nip ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                     (item.unit_kerja ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -80,77 +79,96 @@ export default function Index() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Arsip Gaji Berkala" />
 
-            <div className="container mx-auto space-y-6 p-6">
+            <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 p-4 md:p-8 space-y-6">
+
                 {/* Header Section */}
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <h1 className="bg-gradient-to-r bg-clip-text text-2xl font-bold tracking-tight text-indigo-500">Arsip Gaji Berkala</h1>
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
+                            Arsip <span className="text-indigo-500">Gaji Berkala</span>
+                        </h1>
+                        <p className="text-sm text-slate-500 font-medium">
+                            Ditemukan {filteredArsip.length} berkas arsip tersimpan
+                        </p>
+                    </div>
 
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                        {/*  Search */}
-                        <Input
-                            placeholder="Cari nama,nip, atau unit kerja..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full border-indigo-200 focus:ring-2 focus:ring-indigo-400 md:w-64 dark:border-indigo-800"
-                        />
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="relative group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                            <Input
+                                placeholder="Cari nama, NIP, unit..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full md:w-72 pl-10 border-indigo-100 dark:border-indigo-900 focus:ring-indigo-500/20 rounded-xl bg-white dark:bg-slate-900 shadow-sm"
+                            />
+                        </div>
 
-                        {/*  Sort */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="flex items-center gap-2 border-indigo-200 text-indigo-600 transition-all hover:bg-indigo-50 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-900/30"
-                                >
-                                    <ListFilterPlus className="h-4 w-4" /> {sortOrder}
+                                <Button variant="outline" className="rounded-xl border-indigo-100 dark:border-indigo-900 text-indigo-600 gap-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 shadow-sm transition-all">
+                                    <ListFilterPlus className="w-4 h-4" /> {sortOrder}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-40 border border-indigo-100 bg-white shadow-lg backdrop-blur-md dark:border-indigo-800 dark:bg-gray-900">
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl border-indigo-50 dark:border-indigo-900">
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem onClick={() => setSortOrder('Terbaru')}>Terbaru</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setSortOrder('Terlama')}>Terlama</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSortOrder('Terbaru')} className="cursor-pointer">Terbaru</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSortOrder('Terlama')} className="cursor-pointer">Terlama</DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </div>
 
-                {/* 📋 Table Section */}
-                <div className="overflow-hidden rounded-lg border border-indigo-100 shadow-md backdrop-blur-md transition-all dark:border-indigo-900/50">
-                    <Table className="w-full">
-                        <TableHeader>
-                            <TableRow className="bg-indigo-100/40 dark:bg-indigo-900/40">
-                                <TableHead className="w-[60px] text-center">No</TableHead>
-                                <TableHead>Nama</TableHead>
-                                <TableHead>NIP</TableHead>
-                                <TableHead>Nomor</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Unit Kerja</TableHead>
-                                <TableHead>Gaji Pokok</TableHead>
-                                <TableHead>KGB Terakhir</TableHead>
-                                <TableHead>Detail</TableHead>
+                {/* Table Card Section */}
+                <div className="bg-white dark:bg-slate-900 rounded-xl border border-indigo-100 dark:border-indigo-900 shadow-xl shadow-indigo-500/5 overflow-hidden">
+                    <Table>
+                        <TableHeader className="bg-indigo-50/40 dark:bg-indigo-900/20">
+                            <TableRow className="hover:bg-transparent border-b border-indigo-100 dark:border-indigo-900">
+                                <TableHead className="w-[60px] text-center font-bold text-indigo-600 uppercase text-[10px] tracking-widest">No</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Nama Pegawai</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">NIP</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Nomor</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Email</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Unit Kerja</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Gaji Pokok</TableHead>
+                                <TableHead className="font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">KGB Terakhir</TableHead>
+                                <TableHead className="text-center font-bold text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-widest">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredArsip.length > 0 ? (
                                 filteredArsip.map((item, index) => (
-                                    <TableRow key={item.id} className="transition-all hover:bg-indigo-50/50 dark:hover:bg-indigo-900/40">
-                                        {/* <TableCell className="text-center">{index + 1}</TableCell> */}
-                                        <TableCell className="text-center">{(arsip.current_page - 1) * arsip.per_page + (index + 1)}</TableCell>
-                                        <TableCell>{item.nama}</TableCell>
-                                        <TableCell>{renderValue(item.nip)}</TableCell>
-                                        <TableCell>{renderValue(item.nomor)}</TableCell>
-                                        <TableCell>{renderValue(item.email)}</TableCell>
-                                        <TableCell className="capitalize">{renderValue(item.unit_kerja)}</TableCell>
-                                        <TableCell>
-                                            {item.gaji_pokok 
-                                                ? formatRupiah(item.gaji_pokok) 
-                                                : ''}
+                                    <TableRow key={item.id} className="group hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors border-indigo-50/50 dark:border-indigo-900/20">
+                                        <TableCell className="text-center font-mono text-xs text-slate-400">
+                                            {(arsip.current_page - 1) * arsip.per_page + (index + 1)}
                                         </TableCell>
-                                        <TableCell className="capitalize">{renderValue(item.kgb_terakhir)}</TableCell>
+                                        <TableCell className="font-semibold text-slate-700 dark:text-slate-200 tracking-tight">
+                                            {item.nama}
+                                        </TableCell>
+                                        <TableCell className="font-mono text-slate-500">
+                                            {renderValue(item.nip)}
+                                        </TableCell>
+                                        <TableCell className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                            {renderValue(item.nomor)}
+                                        </TableCell>
+                                        <TableCell className="text-xs text-slate-500">
+                                            {renderValue(item.email)}
+                                        </TableCell>
                                         <TableCell>
+                                            <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-tight border border-indigo-100 dark:border-indigo-800">
+                                                {renderValue(item.unit_kerja)}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                            {item.gaji_pokok ? formatRupiah(item.gaji_pokok) : '-'}
+                                        </TableCell>
+                                        <TableCell className="text-xs font-semibold text-rose-600 dark:text-rose-400 capitalize">
+                                            {renderValue(item.kgb_terakhir)}
+                                        </TableCell>
+                                        <TableCell className="text-center">
                                             <Link href={route('pangkat.arsip-kgb.show', item.id)} title="Detail">
-                                                <Button className="bg-indigo-500 text-white shadow-md transition-all hover:bg-indigo-600 hover:shadow-lg">
-                                                    <Eye className="h-4 w-4" />
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-indigo-500 hover:bg-indigo-500 hover:text-white transition-all duration-300">
+                                                    <Eye className="w-4 h-4" />
                                                 </Button>
                                             </Link>
                                         </TableCell>
@@ -158,8 +176,8 @@ export default function Index() {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={8} className="py-6 text-center text-gray-500">
-                                        Tidak ada data arsip naik pangkat.
+                                    <TableCell colSpan={9} className="h-32 text-center text-slate-400 italic">
+                                        Data arsip tidak ditemukan.
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -167,23 +185,23 @@ export default function Index() {
                     </Table>
                 </div>
 
-                {/* 4. Implementasi Pagination (menggunakan style dari kode Pegawai Anda) */}
-                <div className="my-8 flex flex-wrap items-center justify-end gap-2">
+                {/* Pagination */}
+                <div className="flex justify-center md:justify-end items-center gap-1.5 pt-4">
                     {arsip.links.map((link, i) => (
                         <Button
                             key={i}
-                            size="sm"
-                            // Menggunakan link.active untuk menentukan variant
-                            variant={link.active ? 'default' : 'outline'}
+                            variant="ghost"
                             disabled={!link.url}
-                            // Menggunakan window.location.href (seperti kode pegawai Anda)
                             onClick={() => link.url && (window.location.href = link.url)}
                             dangerouslySetInnerHTML={{ __html: link.label }}
-                            className={`h-9 min-w-[40px] rounded-full text-sm font-medium transition-all duration-200 ease-in-out ${
-                                link.active
-                                    ? 'scale-105 bg-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-600 dark:shadow-purple-800/40'
-                                    : 'border border-indigo-200 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-300 dark:hover:bg-indigo-900/30'
-                            } ${!link.url ? 'cursor-not-allowed opacity-40' : ''} `}
+                            className={`
+                                h-9 min-w-[36px] rounded-xl text-xs font-bold transition-all
+                                ${link.active 
+                                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-200 dark:shadow-none' 
+                                    : 'text-slate-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
+                                }
+                                ${!link.url ? 'opacity-20 cursor-not-allowed' : ''}
+                            `}
                         />
                     ))}
                 </div>
