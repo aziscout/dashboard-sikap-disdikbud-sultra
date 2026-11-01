@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN'),
+    ],
+
+    'frontend_url' => env('FRONTEND_URL', env('APP_URL', 'http://localhost:8080')),
+
 ];

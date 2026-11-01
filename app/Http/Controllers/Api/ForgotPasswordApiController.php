@@ -35,7 +35,8 @@ class ForgotPasswordApiController extends Controller
             ]
         );
 
-        $resetUrl = "http://localhost:8080/reset-password?token={$token}&email={$pegawai->email}";
+        $frontendUrl = rtrim(config('services.frontend_url'), '/');
+        $resetUrl = "{$frontendUrl}/reset-password?token={$token}&email=" . urlencode($pegawai->email);
 
         try {
             Mail::to($pegawai->email)->send(new SendOtpMail($resetUrl)); 
@@ -70,7 +71,7 @@ class ForgotPasswordApiController extends Controller
             return response()->json(['message' => 'Link reset tidak valid atau sudah kadaluarsa.'], 400);
         }
 
-        if (now()->diffInMinutes($tokenData->created_at) > 1) {
+        if (now()->diffInMinutes($tokenData->created_at) > 60) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
             return response()->json(['message' => 'Link reset sudah kedaluwarsa.'], 400);
         }

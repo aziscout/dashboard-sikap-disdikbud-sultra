@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\ForgotPasswordApiController;
 use App\Http\Controllers\Api\PanduanApiController;
 
    // admin pangkat
-   Route::get('/admin', [AdminApiController::class, 'index']);
+   Route::middleware('auth:sanctum')->get('/admin', [AdminApiController::class, 'index']);
    // Route::get('/datadiri', [AdminApiController::class, 'index']);
 
    //datadiri

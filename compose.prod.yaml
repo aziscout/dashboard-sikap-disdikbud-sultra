@@ -1,0 +1,98 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sikap-app:latest
+    container_name: sikap_app
+    restart: unless-stopped
+    working_dir: /var/www
+    env_file:
+      - .env
+    volumes:
+      - public_assets:/var/www/public
+      - storage_data:/var/www/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sikap-net
+
+  web:
+    image: nginx:alpine
+    container_name: sikap_web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8001}:80"
+    volumes:
+      - public_assets:/var/www/public:ro
+      - storage_data:/var/www/storage:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - app
+    networks:
+      - sikap-net
+
+  queue:
+    image: sikap-app:latest
+    container_name: sikap_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    env_file:
+      - .env
+    command: php artisan queue:work database --queue=wa-messages,default --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - storage_data:/var/www/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sikap-net
+
+  scheduler:
+    image: sikap-app:latest
+    container_name: sikap_scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    env_file:
+      - .env
+    command: php artisan schedule:work
+    volumes:
+      - storage_data:/var/www/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sikap-net
+
+  db:
+    image: mysql:8.0
+    container_name: sikap_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-dashboard_sikap}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-sikap_user}
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sikap-net
+
+networks:
+  sikap-net:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
+  public_assets:
+    driver: local
+  storage_data:
+    driver: local
+

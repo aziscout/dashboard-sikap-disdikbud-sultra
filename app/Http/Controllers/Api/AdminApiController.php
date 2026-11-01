@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class AdminApiController extends Controller
 {
     public function index() {
-        $admin = User::where('role','admin')->get();
+        $admin = User::where('role', 'admin_sikap')->get();
         return response()->json($admin);
     }
 
@@ -21,7 +21,7 @@ class AdminApiController extends Controller
             'password' => 'required',
         ]);
 
-        $admin = User::where('email', $request->email)->where('role','admin')->first();
+        $admin = User::where('email', $request->email)->where('role', 'admin_sikap')->first();
 
         if (! $admin || ! Hash::check($request->password, $admin->password)) {
             return response()->json(['message' => 'Email atau password salah'], 401);

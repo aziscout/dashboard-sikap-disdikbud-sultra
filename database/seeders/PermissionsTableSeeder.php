@@ -21,6 +21,11 @@ class PermissionsTableSeeder extends Seeder
                 ['role'=> 'admin_sikap', 'feature' => 'Pensiun','created_at' => now() ],
             ];
 
-            DB::table('permissions')->insert($permissions);
+            foreach ($permissions as $permission) {
+                DB::table('permissions')->updateOrInsert(
+                    ['role' => $permission['role'], 'feature' => $permission['feature']],
+                    ['created_at' => $permission['created_at'], 'updated_at' => now()]
+                );
+            }
     }
 }

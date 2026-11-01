@@ -17,11 +17,14 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionsTableSeeder::class);
 
         // Create default Admin user
-        User::factory()->create([
-            'name' => 'Admin SIKAP',
-            'email' => 'adminsikap@gmail.com',
-            'password' => Hash::make('12345678'),
-            'role' => 'admin_sikap',
-        ]);
+        User::updateOrCreate(
+            ['email' => env('ADMIN_EMAIL', 'adminsikap@gmail.com')],
+            [
+                'name' => env('ADMIN_NAME', 'Admin SIKAP'),
+                'password' => Hash::make(env('ADMIN_PASSWORD', '12345678')),
+                'role' => 'admin_sikap',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
