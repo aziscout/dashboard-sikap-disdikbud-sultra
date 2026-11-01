@@ -11,7 +11,8 @@ RUN composer install \
     --no-plugins \
     --no-scripts \
     --prefer-dist \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --ignore-platform-reqs
 
 # ==========================================
 # Stage 2: Build Frontend Assets (Vite/React)
