@@ -41,4 +41,10 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', env('APP_URL', 'http://localhost:8080')),
 
+    'admin' => [
+        'name' => env('ADMIN_NAME', 'Admin SIKAP'),
+        'email' => env('ADMIN_EMAIL', 'adminsikap@gmail.com'),
+        'password' => env('ADMIN_PASSWORD', '12345678'),
+    ],
+
 ];
