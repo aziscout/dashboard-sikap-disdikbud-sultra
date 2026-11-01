@@ -34,10 +34,8 @@ services:
       - sikap-net
 
   queue:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: sikap-app:latest
+    pull_policy: never
     container_name: sikap_queue
     restart: unless-stopped
     working_dir: /var/www
@@ -47,16 +45,16 @@ services:
     volumes:
       - storage_data:/var/www/storage
     depends_on:
+      app:
+        condition: service_started
       db:
         condition: service_healthy
     networks:
       - sikap-net
 
   scheduler:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: sikap-app:latest
+    pull_policy: never
     container_name: sikap_scheduler
     restart: unless-stopped
     working_dir: /var/www
@@ -66,6 +64,8 @@ services:
     volumes:
       - storage_data:/var/www/storage
     depends_on:
+      app:
+        condition: service_started
       db:
         condition: service_healthy
     networks:
