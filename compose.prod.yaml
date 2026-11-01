@@ -34,6 +34,9 @@ services:
       - sikap-net
 
   queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: sikap-app:latest
     container_name: sikap_queue
     restart: unless-stopped
@@ -50,6 +53,9 @@ services:
       - sikap-net
 
   scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: sikap-app:latest
     container_name: sikap_scheduler
     restart: unless-stopped
